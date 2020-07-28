@@ -1,14 +1,27 @@
 version: '3'
 
 services:
+  opencr:
+    container_name: opencr
+    image: intrahealth/opencr
+    ports:
+      - "3000:3000"
+    depends_on:
+      - fhir  
+      - es
+    restart: on-failure
+    environment:
+      - NODE_ENV=cicd
+    # networks: 
+    #   - opencr
 
   fhir:
     container_name: hapi-fhir
-    image: hapiproject/hapi:4.1
+    image: hapiproject/hapi
     ports:
       - "8080:8080"
-    networks:
-      - opencr
+    # networks:
+    #   - opencr
 
   es:
     container_name: es
@@ -26,14 +39,85 @@ services:
       - data01:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-    networks:
-      - opencr
+    # networks:
+    #   - opencr
 
+  openmrs-server:
+    build: ../docker-openmrs-server/openmrs-server
+    depends_on:
+      - openmrs-db
+    env_file:
+        - ./openmrs/2.3.0-refapp-2.10.0/openmrs-server.env
+    volumes:
+      - ./openmrs/2.3.0-refapp-2.10.0/distribution:/openmrs/distribution
+      - openmrs-data:/openmrs/data
+    ports:
+      - "8082:8080"
+    # networks:
+    #   - opencr
 
+  openmrs-db:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    container_name: openmrs-db
+    volumes:
+      - data02:/var/lib/mysql
+    hostname: openmrs-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_USER: root
+      MYSQL_DATABASE: openmrs
+      MYSQL_USER: openmrs
+      MYSQL_PASSWORD: openmrs
+    # networks:
+    #   - opencr
+
+  flink-jobmanager:
+    image: ${FLINK_DOCKER_IMAGE_NAME:-flink}
+    expose:
+      - "6123"
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+
+  flink-taskmanager:
+    image: ${FLINK_DOCKER_IMAGE_NAME:-flink}
+    expose:
+      - "6121"
+      - "6122"
+    depends_on:
+      - flink-jobmanager
+    command: taskmanager
+    links:
+      - "flink-jobmanager:flink-jobmanager"
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    volumes:
+      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - 5672:5672
+      - 15672:15672
 volumes:
   data01:
     driver: local
+  data02:
+    driver: local
+  openmrs-data:
+    driver: local
 
-networks:
-  opencr:
-    driver: bridge
+# networks:
+#   opencr:
+#     driver: bridge
