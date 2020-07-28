@@ -1,0 +1,134 @@
+---
+- name: Preparation
+  hosts: all
+  remote_user: "{{ user }}"
+  become: true
+  tags: prep
+
+  vars_prompt:
+    - name: "user"
+      prompt: "Please enter the username (with sudo)"
+      private: no
+
+  tasks:
+
+  - name: Ensure git
+    yum:
+      name: git
+      state: present
+
+
+  - name: install enterprise packages for enterprise linux
+    yum: 
+      name: epel-release
+      state: present
+
+
+# node and npm
+  - name: Download nodesource script for node v12
+    get_url:
+      url: https://rpm.nodesource.com/setup_12.x
+      dest: $HOME/nodesource.sh
+      mode: 0644
+      # overwrite
+      force: yes
+
+
+  - name: Install nodesource for node 12
+    command: bash $HOME/nodesource.sh
+
+
+  - name: Install nodejs packages
+    yum: 
+      name: nodejs
+      state: present
+
+
+  - name: Ensure npm is latest
+    npm: 
+      name: npm
+      state: present
+      global: yes
+
+
+  - name: Ensure native tools for native builds
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - gcc-c++
+      - make
+
+
+# python psycopg2 for ansible to manage postgres
+  - name: Ensure python-psycopg2 for ansible to manage postgres
+    yum:
+      name: python-psycopg2
+      state: present
+
+
+  - name: Install net-tools (for netstat)
+    yum: 
+      name: net-tools
+      state: present
+
+
+# java
+# need -devel for javac
+  - name: Ensure java 11
+    yum:
+      name: java-11-openjdk-devel
+      state: present
+
+# this works but using another openjdk for now.
+  # - name: Add repository for AdoptOpenJDK
+  #   yum_repository:
+  #     name: AdoptOpenJDK
+  #     description: AdoptOpenJDK
+  #     baseurl: http://adoptopenjdk.jfrog.io/adoptopenjdk/rpm/centos/7/x86_64/
+  #     gpgcheck: yes
+  #     gpgkey: https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
+  #     enabled: yes
+
+
+  # - name: install adoptopenjdk packages
+  #   yum: 
+  #     name: adoptopenjdk-8-openj9
+  #     state: present
+
+
+# maven
+# yum version of maven is too out of date for hapi, need to upgrade
+
+  - name: Download Apache Maven 3.6.3
+    get_url: 
+      url: https://www-us.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+      dest: /tmp/apache-maven-3.6.3-bin.tar.gz
+
+  - name: Untar Maven 
+    shell: 
+      chdir: /tmp 
+      creates: /opt/apache-maven-3.6.3
+      cmd: tar -zxf apache-maven-3.6.3-bin.tar.gz -C /opt
+
+# will have to call maven by its abs path: /opt/apache-maven-3.6.3/bin/mvn
+
+# not upgrading env
+  # - name: Update path for maven use
+  #   shell: export PATH=/opt/apache-maven-3.6.3/bin:$PATH
+
+
+# enable cpu and memory accounting by systemd
+  - name: Ensure memory accounting for systemd
+    replace:
+      path: /etc/systemd/system.conf
+      regexp: '#DefaultMemoryAccounting=no'
+      replace: 'DefaultMemoryAccounting=yes'
+      backup: no
+
+  - name: Ensure cpu accounting for systemd
+    replace:
+      path: /etc/systemd/system.conf
+      regexp: '#DefaultCPUAccounting=no'
+      replace: 'DefaultCPUAccounting=yes'
+      backup: no
