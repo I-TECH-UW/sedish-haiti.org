@@ -1,6 +1,17 @@
-# Shared Health Record - Proof of Concept
+# Shared Health Record
+Proof of Concept Environment
 
 ## Components
+
+### iSantePlus EMR
+
+### OpenMRS EMR
+
+### Local HAPI JPA Server
+
+### OpenHIM
+
+### SHR HAPI JPA Server
 
 ## Installation
 
