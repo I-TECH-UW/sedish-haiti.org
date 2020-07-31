@@ -5,24 +5,24 @@ Proof of Concept Environment
 ### OpenCR
 
 ### iSantePlus EMR
-https://github.com/pmanko/isanteplus-docker/tree/shr
+- https://github.com/pmanko/isanteplus-docker/tree/shr
 
 ### OpenMRS EMR
-https://github.com/pmanko/docker-openmrs-server
+- https://github.com/pmanko/docker-openmrs-server
 
 ### Local HAPI JPA Server
-https://hub.docker.com/r/bhits/hapi-fhir-jpaserver/
+- https://hub.docker.com/r/bhits/hapi-fhir-jpaserver/
 
 ### OpenHIM
-http://openhim.org/docs/installation/docker
+- http://openhim.org/docs/installation/docker
 
 ### SHR HAPI JPA Server
-https://hub.docker.com/_/postgres
-https://github.com/hapifhir/hapi-fhir-jpaserver-starter#deploy-with-docker-compose
+- https://hub.docker.com/_/postgres
+- https://github.com/hapifhir/hapi-fhir-jpaserver-starter#deploy-with-docker-compose
 
 ### Flink & Pipeline
-https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/docker.html
-https://github.com/pmanko/beam-local-sync
+- https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/docker.html
+- https://github.com/pmanko/beam-local-sync
 
 ## Installation
 1. Install Docker
