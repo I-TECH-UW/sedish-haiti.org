@@ -1,29 +1,28 @@
 version: '3'
 
+## Port Assignments:
+##  See .env file
 services:
+  ###
+  # OpenCR
+  ###
   opencr:
     container_name: opencr
     image: intrahealth/opencr
     ports:
-      - "3000:3000"
+      - "${CR_PORT}:3000"
     depends_on:
-      - fhir  
-      - es
+      - opencr-fhir-server
+      - opencr-es
     restart: on-failure
     environment:
       - NODE_ENV=cicd
-    # networks: 
-    #   - opencr
-
-  fhir:
+  opencr-fhir-server:
     container_name: hapi-fhir
     image: hapiproject/hapi
     ports:
-      - "8080:8080"
-    # networks:
-    #   - opencr
-
-  es:
+      - "${CR_FHIR_PORT}:8080"
+  opencr-es:
     container_name: es
     image: intrahealth/elasticsearch:latest
     environment:
@@ -38,12 +37,29 @@ services:
     volumes:
       - data01:/usr/share/elasticsearch/data
     ports:
-      - 9200:9200
-    # networks:
-    #   - opencr
+      - "${CR_ES_PORT}:9200"
 
+  ###
+  # SHR
+  ###
+  shr-fhir-server:
+    build: ./docker/hapi
+    container_name: shr-fhir-server
+    restart: unless-stopped
+    ports:
+      - "${SHR_FHIR_PORT}:8080"
+  shr-db:
+    image: postgres
+    container_name: shr-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: shr
+  ###
+  # OpenMRS
+  ###
   openmrs-server:
-    build: ../docker-openmrs-server/openmrs-server
+    build: ./docker/openmrs-server
     depends_on:
       - openmrs-db
     env_file:
@@ -52,14 +68,11 @@ services:
       - ./openmrs/2.3.0-refapp-2.10.0/distribution:/openmrs/distribution
       - openmrs-data:/openmrs/data
     ports:
-      - "8082:8080"
-    # networks:
-    #   - opencr
-
+      - "${OPENMRS_PORT}:8080"
   openmrs-db:
     image: mysql:5.7
     ports:
-      - "3306:3306"
+      - "${OPENMRS_DB_PORT}:3306"
     container_name: openmrs-db
     volumes:
       - data02:/var/lib/mysql
@@ -71,15 +84,37 @@ services:
       MYSQL_DATABASE: openmrs
       MYSQL_USER: openmrs
       MYSQL_PASSWORD: openmrs
-    # networks:
-    #   - opencr
 
+  isanteplus:
+    build: ./docker/tomcat
+    ports:
+      - "${ISANTEPLUS_PORT}:8080"
+    container_name: isanteplus
+    depends_on:
+      - isanteplus-db
+    volumes:
+      - data03:/opt/isanteplus/data
+    hostname: isanteplus
+    restart: unless-stopped
+  isanteplus-db:
+    build: ./docker/mysql
+    ports:
+      - "${ISANTEPLUS_DB_PORT}:3306"
+    container_name: isanteplus-db
+    volumes:
+      - data03:/opt/isanteplus/data
+    hostname: isanteplus-db
+    restart: unless-stopped
+
+  ###
+  # Flink Pipeline Runner
+  ###
   flink-jobmanager:
     image: ${FLINK_DOCKER_IMAGE_NAME:-flink}
     expose:
       - "6123"
     ports:
-      - "8081:8081"
+      - "${FLINK_CONSOLE_PORT}:8081"
     command: jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
@@ -96,15 +131,10 @@ services:
       - "flink-jobmanager:flink-jobmanager"
     environment:
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
-  mongo-db:
-    container_name: mongo-db
-    image: mongo:4.0
-    networks:
-      - openhim
-    volumes:
-      - "mongo-data:/data/db"
-    restart: unless-stopped
 
+  ###
+  # OpenHIM
+  ###
   openhim-core:
     container_name: openhim-core
     image: jembi/openhim-core:latest
@@ -114,13 +144,11 @@ services:
       mongo_atnaUrl: "mongodb://mongo-db/openhim-development"
       NODE_ENV: "development"
     ports:
-      - "8080:8080"
+      - "${OPENHIM_PORT}:8080"
       - "5000:5000"
       - "5001:5001"
-    networks:
-      - openhim
     healthcheck:
-      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
+      test: "curl -sSk https://openhim-core:${OPENHIM_PORT}/heartbeat || exit 1"
       interval: 30s
       timeout: 30s
       retries: 3
@@ -129,24 +157,31 @@ services:
     container_name: openhim-console
     image: jembi/openhim-console:latest
     restart: unless-stopped
-    networks:
-      - openhim
     ports:
-      - "9000:80"
+      - "${OPENHIM_CONSOLE_PORT}:80"
     healthcheck:
       test: "curl -sS http://openhim-console || exit 1"
       interval: 30s
       timeout: 30s
       retries: 3
+  mongo-db:
+    container_name: mongo-db
+    image: mongo:4.0
+    volumes:
+      - "mongo-data:/data/db"
+    restart: unless-stopped
+
 volumes:
   data01:
     driver: local
   data02:
     driver: local
+  data03:
+    driver: local
   openmrs-data:
     driver: local
   mongo-data:
+    driver: local
+  shr:
+    driver: local
 
-# networks:
-#   opencr:
-#     driver: bridge

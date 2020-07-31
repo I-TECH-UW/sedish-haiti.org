@@ -1,0 +1,33 @@
+#!/bin/sh
+
+date=$(date +%d-%m-%y-%Hh%Mm%Ss)
+path=/opt/isanteplus/data/backups/database
+filename=isanteplus-platform-backup-$date.sql
+zip_filename=$filename.zip
+
+echo
+echo Starting iSantePlus Platform backup
+echo
+
+# Ensure directory exists
+if [ ! -d "$path" ]; then
+  mkdir -p "$path";
+fi
+
+# Create backup
+MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysqldump -uroot "$MYSQL_DATABASE" > "$path/$filename"
+
+# ZIP backup
+cd $path
+zip -9 $zip_filename $filename
+
+# Remove uncompressed
+rm $path/$filename
+
+echo
+echo Completed iSantePlus Platform backup
+echo
+echo Copy backup to current directory by running:
+echo
+echo -e "  \033[1mdocker cp esaude-platform-mysql:$path/$zip_filename .\033[0m"
+echo

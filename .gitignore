@@ -1,3 +1,6 @@
+# Ignore OpenMRS modules + platform
+openmrs/*
+
 # node
 node_modules
 
