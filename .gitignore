@@ -1,4 +1,5 @@
 # Ignore OpenMRS modules + platform
+openmrs
 openmrs/*
 
 # node
@@ -36,3 +37,4 @@ ansible.p12
 
 # notebook checkpoints
 *.ipynb_checkpoints/
+/openmrs/
