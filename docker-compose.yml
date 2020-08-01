@@ -105,6 +105,13 @@ services:
       - data03:/opt/isanteplus/data
     hostname: isanteplus-db
     restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_USER: root
+      MYSQL_DATABASE: openmrs
+      MYSQL_USER: openmrs
+      MYSQL_PASSWORD: openmrs
+
 
   ###
   # Flink Pipeline Runner
