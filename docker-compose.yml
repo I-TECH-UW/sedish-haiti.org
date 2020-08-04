@@ -53,12 +53,16 @@ services:
     container_name: shr-db
     restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: shr
+
   ###
   # OpenMRS
   ###
   openmrs-server:
+    container_name: openmrs-server
+    hostname: openmrs-server
     build: ./docker/openmrs-server
     depends_on:
       - openmrs-db
@@ -70,10 +74,10 @@ services:
     ports:
       - "${OPENMRS_PORT}:8080"
   openmrs-db:
+    container_name: openmrs-db
     image: mysql:5.7
     ports:
       - "${OPENMRS_DB_PORT}:3306"
-    container_name: openmrs-db
     volumes:
       - data02:/var/lib/mysql
     hostname: openmrs-db
@@ -118,6 +122,7 @@ services:
   # Flink Pipeline Runner
   ###
   flink-jobmanager:
+    container_name: flink-jobmanager
     image: ${FLINK_DOCKER_IMAGE_NAME:-flink}
     expose:
       - "6123"
@@ -128,6 +133,7 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
 
   flink-taskmanager:
+    container_name: flink-taskmanager
     image: ${FLINK_DOCKER_IMAGE_NAME:-flink}
     expose:
       - "6121"
