@@ -43,7 +43,7 @@ services:
   # SHR
   ###
   shr-fhir-server:
-    build: ./docker/hapi
+    build: ./docker/shr
     container_name: shr-fhir-server
     restart: unless-stopped
     ports:
@@ -56,6 +56,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: shr
+
 
   ###
   # OpenMRS
@@ -73,6 +74,16 @@ services:
       - openmrs-data:/openmrs/data
     ports:
       - "${OPENMRS_PORT}:8080"
+
+  openmrs-hapi-server:
+    build: ./docker/hapi
+    container_name: openmrs-fhir-server
+    restart: unless-stopped
+    ports:
+      - "${OPENMRS_HAPI_PORT}:8080"
+#    environment:
+#      - JAVA_OPTS: "-Dhapi.properties=/some/custom/directory/hapi.properties"
+
   openmrs-db:
     container_name: openmrs-db
     image: mysql:5.7
@@ -90,6 +101,22 @@ services:
       MYSQL_PASSWORD: openmrs
     command: ['mysqld', '--character-set-server=utf8', '--collation-server=utf8_unicode_ci']
 
+  openmrs-hapi-db:
+    image: mysql
+    container_name: openmrs-hapi-db
+    hostname: openmrs-hapi-db
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: hapi
+      MYSQL_USER: hapi
+      MYSQL_PASSWORD: hapi
+    volumes:
+      - shr:/var/lib/mysql
+###
+# iSantePlus
+###
   isanteplus:
     build: ./docker/tomcat
     ports:
