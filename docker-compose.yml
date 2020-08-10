@@ -65,6 +65,7 @@ services:
     container_name: openmrs-server
     hostname: openmrs-server
     build: ./docker/openmrs-server
+    restart: unless-stopped
     depends_on:
       - openmrs-db
     env_file:
@@ -158,6 +159,7 @@ services:
     command: jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+    restart: unless-stopped
 
   flink-taskmanager:
     container_name: flink-taskmanager
@@ -172,6 +174,7 @@ services:
       - "flink-jobmanager:flink-jobmanager"
     environment:
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+    restart: unless-stopped
 
   ###
   # OpenHIM
