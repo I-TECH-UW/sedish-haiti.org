@@ -1,4 +1,4 @@
-version: '3'
+version: '2.4'
 
 ## Port Assignments:
 ##  See .env file
@@ -48,16 +48,9 @@ services:
     restart: unless-stopped
     ports:
       - "${SHR_FHIR_PORT}:8080"
-  shr-db:
-    image: postgres
-    container_name: shr-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: shr
-
-
+    cpus: .5
+    mem_limit: 1GB
+    
   ###
   # OpenMRS
   ###
@@ -78,12 +71,14 @@ services:
 
   openmrs-hapi-server:
     build: ./docker/hapi
-    container_name: openmrs-fhir-server
+    container_name: openmrs-hapi-server
     restart: unless-stopped
     ports:
       - "${OPENMRS_HAPI_PORT}:8080"
 #    environment:
 #      - JAVA_OPTS: "-Dhapi.properties=/some/custom/directory/hapi.properties"
+    cpus: .5
+    mem_limit: 1GB     
 
   openmrs-db:
     container_name: openmrs-db
@@ -101,20 +96,7 @@ services:
       MYSQL_USER: openmrs
       MYSQL_PASSWORD: openmrs
     command: ['mysqld', '--character-set-server=utf8', '--collation-server=utf8_unicode_ci']
-
-  openmrs-hapi-db:
-    image: mysql
-    container_name: openmrs-hapi-db
-    hostname: openmrs-hapi-db
-    command: --default-authentication-plugin=mysql_native_password
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: hapi
-      MYSQL_USER: hapi
-      MYSQL_PASSWORD: hapi
-    volumes:
-      - shr:/var/lib/mysql
+ 
 ###
 # iSantePlus
 ###
