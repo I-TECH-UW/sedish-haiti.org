@@ -32,4 +32,4 @@ RUN curl -k -L https://www.dropbox.com/s/h6ngkw9bzatrlnd/modules.zip?dl=1 \
 
 VOLUME /opt/isanteplus/data
 
-CMD dockerize -wait tcp://isanteplus-db:3306 -timeout 300s /usr/local/tomcat/bin/catalina.sh run
+CMD dockerize -wait tcp://openmrs-hapi-db.chijnl5rwr2c.eu-central-1.rds.amazonaws.com:3306 -timeout 300s /usr/local/tomcat/bin/catalina.sh run
