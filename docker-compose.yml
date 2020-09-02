@@ -1,4 +1,4 @@
-version: '3.3'
+version: '2.4'
 
 ## Port Assignments:
 ##  See .env file
@@ -18,17 +18,13 @@ services:
     environment:
       - NODE_ENV=docker
   opencr-fhir-server:
+    build: ./docker/opencr-hapi
     container_name: hapi-fhir
-    image: hapiproject/hapi
+    restart: unless-stopped
     ports:
       - "${CR_FHIR_PORT}:8080"
-    configs:
-      - source: opencr-hapi
-        target: ./configs/opencr-hapi/hapi.properties
-    volumes:
-      - opencr-hapi-data:./configs/opencr-hapi
-    environment: 
-      JAVA_OPTS: '-Dhapi.properties=./configs/opencr-hapi/hapi.properties'
+    cpus: .5
+    mem_limit: 1GB
   opencr-es:
     container_name: es
     image: intrahealth/elasticsearch:latest
