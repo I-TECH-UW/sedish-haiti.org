@@ -197,11 +197,6 @@ services:
     volumes:
       - "mongo-data:/data/db"
     restart: unless-stopped
-
-configs:
-  opencr-hapi:
-    external: true
-
 volumes:
   data01:
     driver: local
@@ -215,6 +210,3 @@ volumes:
     driver: local
   shr:
     driver: local
-  opencr-hapi-data:
-    external: true
-
