@@ -10,6 +10,8 @@ ADD catalina.properties /usr/local/tomcat/conf/catalina.properties
 ADD server.xml /usr/local/tomcat/conf/server.xml
 ADD localtime /etc/localtime
 
+RUN mkdir -p /root/.OpenMRS/modules
+
 RUN apk --update add curl unzip; \
     rm -rf /usr/local/tomcat/webapps/*; \
 #    curl -k -L https://bintray.com/isanteplus/clean-database/download_file?file_path=openmrs.war \
@@ -20,9 +22,9 @@ RUN apk --update add curl unzip; \
 
 # RUN curl -k -L https://bintray.com/isanteplus/clean-database/download_file?file_path=modules.zip \
 # RUN curl -k -L https://www.dropbox.com/s/w7qxda2c4aniqm7/modules.zip?dl=1 \
-RUN curl -k -L https://www.dropbox.com/s/h6ngkw9bzatrlnd/modules.zip?dl=1 \
+RUN curl -k -L https://www.dropbox.com/s/9nhowe8p6fkg686/modules_no_xdssender.zip?dl=1 \
          -o /tmp/modules.zip; \
-    unzip /tmp/modules.zip -d /root/.OpenMRS; \
+    unzip /tmp/modules.zip -d /root/.OpenMRS/modules; \
     rm /tmp/modules.zip; \
     curl -k -L https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
          -o /tmp/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz; \
