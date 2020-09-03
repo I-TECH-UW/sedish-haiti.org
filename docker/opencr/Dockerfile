@@ -2,6 +2,9 @@ FROM node:erbium-slim
 
 RUN mkdir -p /var/log
 COPY server/ /src/server
+COPY config/ /src/config
+COPY gui/ /src/gui
+COPY lib/ /src/lib
 WORKDIR /src/server
 RUN npm install
 
