@@ -8,7 +8,7 @@ services:
   ###
   opencr:
     container_name: opencr
-    image: intrahealth/opencr
+    build: ./docker/opencr
     ports:
       - "${CR_PORT}:3000"
     depends_on:

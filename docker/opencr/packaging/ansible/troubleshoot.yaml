@@ -1,0 +1,54 @@
+---
+- name: Troubleshooting
+  hosts: all
+  remote_user: "{{ user }}"
+  become: true
+  tags: prep
+
+  vars_prompt:
+    - name: "user"
+      prompt: "Please enter the username (with sudo)"
+      private: no
+
+  tasks:
+
+# hapi
+
+# logs
+  - name: journalctl since last reboot
+    command: journalctl -u tomcat -b
+    register: tomcat
+
+
+  - debug:
+      msg: "{{ tomcat.stdout_lines }}"
+
+# status
+  - name: status tomcat
+    command: systemctl status tomcat
+    register: statustomcat
+
+  - debug:
+      msg: "{{ statustomcat.stdout_lines }}"
+
+
+# opencr
+
+# logs
+  - name: journalctl since last reboot
+    command: journalctl -u opencr -b
+    register: opencr
+
+
+  - debug:
+      msg: "{{ opencr.stdout_lines }}"
+
+# status
+  - name: status opencr
+    command: systemctl status opencr
+    register: statusopencr
+
+  - debug:
+      msg: "{{ statusopencr.stdout_lines }}"
+
+

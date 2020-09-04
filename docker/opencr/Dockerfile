@@ -2,6 +2,7 @@ FROM node:erbium-slim
 
 RUN mkdir -p /var/log
 COPY server/ /src/server
+COPY resources/ /src/resources
 COPY site/ /src/site
 COPY tools/ /src/tools
 COPY ui/ /src/ui

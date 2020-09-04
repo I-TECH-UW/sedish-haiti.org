@@ -7,10 +7,10 @@
         "fhirServer": {
             "username": "hapi",
             "password": "hapi",
-            "baseURL": "http://localhost:8081/hapi-fhir-jpaserver/fhir"
+            "baseURL": "http://18.158.139.243:8081/hapi-fhir-jpaserver/fhir"
         },
         "elastic": {
-            "server": "http://localhost:9200",
+            "server": "http://18.158.139.243:9200",
             "username": "",
             "password": "",
             "max_compilations_rate": "10000/1m",
@@ -46,7 +46,7 @@
                     "param": "password"
                 }
             ],
-            "values": []
+            "values": ["","",""]
         },
         {
             "param": "elastic",
@@ -85,7 +85,7 @@
                     "param": "index"
                 }
             ],
-            "values": []
+            "values": ["","","","",""]
         },
         {
             "param": "matching",

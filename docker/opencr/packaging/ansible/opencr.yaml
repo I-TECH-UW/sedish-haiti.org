@@ -1,0 +1,99 @@
+---
+- name: Installation
+  hosts: all
+  remote_user: "{{ user }}"
+  tags: install
+
+
+  vars_prompt:
+    - name: "user"
+      prompt: "Please enter the username (without sudo)"
+      private: no
+
+  tasks:
+
+  - name: Does client-registry folder exist
+    stat:
+      path: /home/{{ user }}/client-registry
+    register: stat_result2
+
+
+  - name: git clone repo
+    git:
+      repo: 'https://github.com/intrahealth/client-registry.git'
+      dest: /home/{{ user }}/client-registry
+      clone: yes
+      update: yes
+    when: stat_result2.stat.exists == False
+
+
+  - name: git pull
+    shell: cd /home/{{ user }}/client-registry && git pull
+
+
+  - name: Install/update npm packages in package.json.
+    npm:
+      path: /home/{{ user }}/client-registry/server
+      state: latest
+
+
+  - name: Copy template config for config_production.json
+    copy:
+      remote_src: yes
+      src: /home/{{ user }}/client-registry/server/config/config_production_template.json
+      dest: /home/{{ user }}/client-registry/server/config/config_production.json
+      force: yes
+
+
+# modify /server/config template
+  - name: replace line(s) for config_production.json
+    lineinfile:
+      path: /home/{{ user }}/client-registry/server/config/config_production.json
+      regexp: '"baseURL": "http://localhost:8081/clientregistry/fhir",'
+      line: '"baseURL": "http://localhost:8080/hapi-fhir-jpaserver/fhir",'
+
+
+  - name: install systemd template for opencr service (centos)
+    template:
+      src: opencr.service.j2
+      dest: /etc/systemd/system/opencr.service
+      mode: 644
+      force: yes
+    vars:
+      executable: "/usr/bin/node"
+    become: true
+
+
+  - name: run backend
+    service: 
+      name: opencr.service
+      state: restarted
+      enabled: yes
+      daemon_reload: yes
+    become: true
+
+
+# pause to let opencr start and then check status
+  - pause:
+      seconds: 5
+
+
+# status
+  - name: status
+    command: systemctl status opencr.service
+    register: status
+    become: true
+
+  - debug:
+      msg: "{{ status.stdout_lines }}"
+
+
+  - name: Gather facts on listening ports
+    listen_ports_facts:
+
+
+  - name: List TCP ports
+    debug:
+      msg: "{{ ansible_facts.tcp_listen  | map(attribute='port') | sort | list }}"
+
+
