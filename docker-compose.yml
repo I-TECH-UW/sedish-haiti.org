@@ -46,14 +46,17 @@ services:
   # SHR
   ###
   shr-fhir-server:
-    build: ./docker/shr
+    image: "hapiproject/hapi:latest"
     container_name: shr-fhir-server
     restart: unless-stopped
     ports:
       - "${SHR_FHIR_PORT}:8080"
-    cpus: .5
-    mem_limit: 1GB
-    
+    volumes:
+      - hapi-data:/data/hapi
+      - ./docker/shr/hapi.properties:/conf/hapi/hapi.properties
+    environment:
+      JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
+ 
   ###
   # OpenMRS
   ###
@@ -71,36 +74,17 @@ services:
       - "${OPENMRS_PORT}:8080"
 
   openmrs-hapi-server:
-    build: ./docker/hapi
+    image: "hapiproject/hapi:latest"
     container_name: openmrs-hapi-server
     restart: unless-stopped
+    volumes:
+      - hapi-data:/data/hapi
+      - ./docker/hapi/hapi.properties:/conf/hapi/hapi.properties
+    environment:
+      JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
     ports:
       - "${OPENMRS_HAPI_PORT}:8080"
-    environment:
-      - JAVA_OPTS=-Dhapi.properties=/tmp/hapi.properties
-    cpus: .5
-    mem_limit: 1GB     
-    stdin_open: true
-    tty: true
-    entrypoint: /bin/bash
-
-  # openmrs-db:
-  #   container_name: openmrs-db
-  #   image: mysql:5.7
-  #   ports:
-  #     - "${OPENMRS_DB_PORT}:3306"
-  #   volumes:
-  #     - data02:/var/lib/mysql
-  #   hostname: openmrs-db
-  #   restart: unless-stopped
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #     MYSQL_ROOT_USER: root
-  #     MYSQL_DATABASE: openmrs
-  #     MYSQL_USER: openmrs
-  #     MYSQL_PASSWORD: openmrs
-  #   command: ['mysqld', '--character-set-server=utf8', '--collation-server=utf8_unicode_ci']
- 
+  
 ###
 # iSantePlus
 ###
@@ -113,52 +97,7 @@ services:
       - data03:/opt/isanteplus/data
     hostname: isanteplus
     restart: unless-stopped
-  # isanteplus-db:
-  #   build: ./docker/mysql
-  #   ports:
-  #     - "${ISANTEPLUS_DB_PORT}:3306"
-  #   container_name: isanteplus-db
-  #   volumes:
-  #     - data03:/opt/isanteplus/data
-  #   hostname: isanteplus-db
-  #   restart: unless-stopped
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #     MYSQL_ROOT_USER: root
-  #     MYSQL_DATABASE: openmrs
-  #     MYSQL_USER: openmrs
-  #     MYSQL_PASSWORD: openmrs
-  #   command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
-
-  ###
-  # Flink Pipeline Runner
-  ###
-  flink-jobmanager:
-    container_name: flink-jobmanager
-    image: ${FLINK_DOCKER_IMAGE_NAME:-flink}
-    expose:
-      - "6123"
-    ports:
-      - "${FLINK_CONSOLE_PORT}:8081"
-    command: jobmanager
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
-    restart: unless-stopped
-
-  flink-taskmanager:
-    container_name: flink-taskmanager
-    image: ${FLINK_DOCKER_IMAGE_NAME:-flink}
-    expose:
-      - "6121"
-      - "6122"
-    depends_on:
-      - flink-jobmanager
-    command: taskmanager
-    links:
-      - "flink-jobmanager:flink-jobmanager"
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
-    restart: unless-stopped
+  
 
   ###
   # OpenHIM
@@ -212,4 +151,6 @@ volumes:
   mongo-data:
     driver: local
   shr:
+    driver: local
+  hapi-data:
     driver: local
