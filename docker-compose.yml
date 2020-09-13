@@ -76,10 +76,13 @@ services:
     restart: unless-stopped
     ports:
       - "${OPENMRS_HAPI_PORT}:8080"
-#    environment:
-#      - JAVA_OPTS: "-Dhapi.properties=/some/custom/directory/hapi.properties"
+    environment:
+      - JAVA_OPTS=-Dhapi.properties=/tmp/hapi.properties
     cpus: .5
     mem_limit: 1GB     
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/bash
 
   # openmrs-db:
   #   container_name: openmrs-db

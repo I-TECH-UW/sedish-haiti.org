@@ -7,25 +7,6 @@ const isJSON = require('is-json');
 const logger = require('./winston');
 const config = require('./config');
 
-class InvalidRequestError extends Error {
-  constructor (message, status) {
-    super( message );
-    this.response = {
-      status: status || 400,
-      body: {
-        resourceType: "OperationOutcome",
-        issue: [
-          {
-            severity: "error",
-            code: "required",
-            diagnostics: message
-          }
-        ]
-      }
-    };
-  }
-}
-
 module.exports = () => ({
   /**
    *
@@ -127,9 +108,6 @@ module.exports = () => ({
             } else {
               resourceData.entry = resourceData.entry.concat(body.entry);
             }
-          } else {
-            resourceData = { ...body };
-            resourceData.entry = [];
           }
           let next = body.link && body.link.find(link => link.relation === 'next');
 
@@ -206,76 +184,6 @@ module.exports = () => ({
       }
       logger.info('Resource(s) data saved successfully');
       callback(err, body);
-    });
-  },
-
-  create(resource, callback) {
-    let err;
-    if ( resource === undefined ) {
-      err = new InvalidRequestError( "resource must be defined" );
-      err.response = { status: 400 };
-      return callback(400, err);
-    }
-    let url = URI(config.get('fhirServer:baseURL'));
-    if ( resource.resourceType !== "Bundle" ) {
-      url = url.segment(resource.resourceType);
-    } else {
-      if ( !( resource.type === "transaction" || resource.type === "batch" ) ) {
-        err = new InvalidRequestError( "Bundles must of type 'transaction' or 'batch'" );
-        err.response = { status: 400 };
-        return callback(400, err);
-      }
-    }
-    url = url.toString();
-    const options = {
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      withCredentials: true,
-      auth: {
-        username: config.get('fhirServer:username'),
-        password: config.get('fhirServer:password'),
-      },
-      json: resource,
-    };
-    request.post(options, (err, res, body) => {
-      let code;
-      if(res && res.statusCode) {
-        code = res.statusCode;
-      } else {
-        code = 500;
-      }
-      return callback(code, err, res, body);
-    });
-  },
-
-  '$meta-delete'({
-    resourceParameters,
-    resourceType,
-    resourceID
-  }) {
-    return new Promise((resolve) => {
-      const url = URI(config.get('fhirServer:baseURL'))
-        .segment(resourceType)
-        .segment(resourceID)
-        .segment('$meta-delete')
-        .toString();
-      const options = {
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true,
-        auth: {
-          username: config.get('fhirServer:username'),
-          password: config.get('fhirServer:password'),
-        },
-        json: resourceParameters,
-      };
-      request.post(options, () => {
-        resolve();
-      });
     });
   },
 
