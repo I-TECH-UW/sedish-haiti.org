@@ -3,10 +3,6 @@
 ## Synchronization of Patient Data
 This tutorial demonstrates the FHIR-enabled synhronization of patient data between iSantePlus instances. The demo involves communication between a Master Patient Index (MPI) service, a FHIR-based Shared Health Record service, and two instances of iSantePlus. 
 
-See the 
-
-**This approach uses:**
-
 ### Patient Sync
 
 **I) Create a Patient**
