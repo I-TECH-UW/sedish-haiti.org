@@ -1,34 +1,9 @@
 # Synchronization of Clinical Data 
 
-## Useful Links
+## Synchronization of Patient Data
+This tutorial demonstrates the FHIR-enabled synhronization of patient data between iSantePlus instances. The demo involves communication between a Master Patient Index (MPI) service, a FHIR-based Shared Health Record service, and two instances of iSantePlus. 
 
-### iSantePlus
-
-**iSantePlus Instance #1**  
-https://isanteplusdemo.com/openmrs
-
-**iSantePlus Instance #2**  
-http://52.37.13.123:8080/openmrs/
-
-**Login Info**
-- user: admin
-- password: Admin123
-
-### OpenHIM Console  
-http://18.158.139.243:3001/
-
-**Login Info**
-- user: root@openhim.org
-- password: Haiti1234
-
-### OpenCR Console
-http://18.158.139.243:3000/crux/#/Login
-
-**Login Info**
-- user: root@intrahealth.org
-- password: intrahealth
-
-## Streaming Pipeline: iSantePlus <=> SHR (HAPI FHIR Server)
+See the 
 
 **This approach uses:**
 
@@ -58,7 +33,35 @@ http://18.158.139.243:3000/crux/#/Login
 5. Click on the `View suggestions` button
 6. You should see your patient
 
-### Tools Used
+## Login Information
+
+#### iSantePlus
+
+**iSantePlus Instance #1**  
+https://isanteplusdemo.com/openmrs
+
+**iSantePlus Instance #2**  
+http://52.37.13.123:8080/openmrs/
+
+**Login Info**
+- user: admin
+- password: Admin123
+
+#### OpenHIM Console  
+http://18.158.139.243:3001/
+
+**Login Info**
+- user: root@openhim.org
+- password: Haiti1234
+
+#### OpenCR Console
+http://18.158.139.243:3000/crux/#/Login
+
+**Login Info**
+- user: root@intrahealth.org
+- password: intrahealth
+
+## Tools Used
 - https://openmrs.org/
 https://github.com/pmanko/openmrs-module-fhir2/tree/FM2-303-isanteplus-compatibility
 - https://github.com/pmanko/atomfeed/tree/db-url-port-fix
