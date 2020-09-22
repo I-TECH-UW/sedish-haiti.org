@@ -1,6 +1,7 @@
 # Ignore OpenMRS modules + platform
 openmrs
 openmrs/*
+docker/isanteplus/openmrs-runtime.properties
 
 # node
 node_modules
