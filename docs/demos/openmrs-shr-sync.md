@@ -29,6 +29,30 @@ This tutorial demonstrates the FHIR-enabled synhronization of patient data betwe
 5. Click on the `View suggestions` button
 6. You should see your patient
 
+**V) Create a bit of medical history**
+Log back into https://isanteplusdemo.com/openmrs and add a bit of medical history to the patient:
+
+1. Vital Signs
+
+2. Allergies
+    -
+3. Immunization
+
+4. Medications
+
+5. Laboratory Orders
+    
+**VI) View Medical History as CCD Document**
+1. Go back to http://52.37.13.123:8080/openmrs/
+
+2. Find your patient and navigate to their chart
+
+3. Click on `Registration Summary` in the right-hand `General Actions` sidebar.
+
+4. Look for the `Continuity of Care` section and click the `Import` button.
+
+5. Click on `Registration Summary` again, and then on the `View` button in the `Continuity of Care` section
+
 ## Login Information
 
 #### iSantePlus
@@ -65,4 +89,4 @@ https://github.com/pmanko/openmrs-module-fhir2/tree/FM2-303-isanteplus-compatibi
 - https://github.com/pmanko/openmrs-fhir-analytics/tree/isanteplus-local-sync
 - https://github.com/pmanko/openmrs-module-mpi-client/tree/openmrs-fhir-module
 - https://github.com/pmanko/openmrs-module-xds-sender/tree/1-fhir-shr
-- https://github.com/IsantePlus/openmrs-module-registrationcore
+- https://github.com/stansL/openmrs-module-registrationcore/tree/integrate_ocr_fhir_search-
