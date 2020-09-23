@@ -13,8 +13,22 @@ The communication between these systems utilizes the FHIR clinical data standard
 ### Import existing Patient
 For the first part of this tutorial, we will be using the patient `Rafael Lessai`. This patient was created in the iSantePlus instance available at www.isanteplusdemo.com/openmrs, but does not exist in the instance at http://52.37.13.123:8080/openmrs. 
 
-To start, we will import this patient in the second iSantePlus instance, add some additional 
+To start, we will import this patient in the second iSantePlus instance, review the Continuity of Care document (CCD) for the patient,
+add some additional clinical data, and see this information represented in the CCD of the original instance.
 
+**I) Review Patient data in isanteplusdemo.com**
+1. 
+
+**II) Import Patient in Another Location**
+1. Log into http://52.37.13.123:8080/openmrs/
+2. Click `Register a Patient`
+3. Begin typing in the names of the patient you created in step `I`
+4. You should see a pop-up show up at the top of the screen with existing patient suggestions. 
+5. Click on the `View suggestions` button
+6. You should see your patient
+
+
+### Create a new Patient
 
 **I) Create a Patient**
 1. Log into https://isanteplusdemo.com/openmrs
@@ -25,6 +39,8 @@ To start, we will import this patient in the second iSantePlus instance, add som
 **II) (Optional) View Patient in OpenCR**
 1. Log into http://18.158.139.243:3000/crux/#/Login
 2. Search for your created patient by `Surname` to find the entry.
+
+
 
 **III) (Optional) View Patient in SHR**
 1. Wait a minute or so, and navigate to http://18.158.139.243:8092/hapi-fhir-jpaserver
