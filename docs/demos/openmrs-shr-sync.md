@@ -13,7 +13,7 @@ The communication between these systems utilizes the FHIR clinical data standard
 ### Import existing Patient
 For the first part of this tutorial, we will be using the patient `Rafael Lessai`. This patient was created in the iSantePlus instance available at www.isanteplusdemo.com/openmrs, but does not exist in the instance at http://52.37.13.123:8080/openmrs. 
 
-To start, We will import this patient in the second iSantePlus instance, add some additional 
+To start, we will import this patient in the second iSantePlus instance, add some additional 
 
 
 **I) Create a Patient**
