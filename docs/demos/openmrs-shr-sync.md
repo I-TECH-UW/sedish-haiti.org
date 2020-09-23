@@ -1,9 +1,20 @@
 # Synchronization of Clinical Data 
 
 ## Synchronization of Patient Data
-This tutorial demonstrates the FHIR-enabled synhronization of patient data between iSantePlus instances. The demo involves communication between a Master Patient Index (MPI) service, a FHIR-based Shared Health Record service, and two instances of iSantePlus. 
+This tutorial demonstrates the FHIR-based synhronization of patient data between iSantePlus instances. 
 
-### Patient Sync
+The demonstrated communication workflow involves the following components:
+ - a **Master Patient Index (MPI)**
+ - a **Shared Health Record (SHR)**
+ - and two instances of **iSantePlus**
+
+The communication between these systems utilizes the FHIR clinical data standard for representing clinical data, and is orchestrated by the [OpenHIM](http://openhim.org/) middleware. 
+
+### Import existing Patient
+For the first part of this tutorial, we will be using the patient `Rafael Lessai`. This patient was created in the iSantePlus instance available at www.isanteplusdemo.com/openmrs, but does not exist in the instance at http://52.37.13.123:8080/openmrs. 
+
+To start, We will import this patient in the second iSantePlus instance, add some additional 
+
 
 **I) Create a Patient**
 1. Log into https://isanteplusdemo.com/openmrs
@@ -53,7 +64,10 @@ Log back into https://isanteplusdemo.com/openmrs and add a bit of medical histor
 
 5. Click on `Registration Summary` again, and then on the `View` button in the `Continuity of Care` section
 
-## Login Information
+
+## Appendix
+
+### Login Information
 
 #### iSantePlus
 
@@ -81,9 +95,9 @@ http://18.158.139.243:3000/crux/#/Login
 - user: root@intrahealth.org
 - password: intrahealth
 
-## Tools Used
+### Utilized Tools and Modules
 - https://openmrs.org/
-https://github.com/pmanko/openmrs-module-fhir2/tree/FM2-303-isanteplus-compatibility
+- https://github.com/pmanko/openmrs-module-fhir2/tree/FM2-303-isanteplus-compatibility
 - https://github.com/pmanko/atomfeed/tree/db-url-port-fix
 - https://github.com/pmanko/openmrs-module-atomfeed/tree/isanteplus-fixes
 - https://github.com/pmanko/openmrs-fhir-analytics/tree/isanteplus-local-sync
