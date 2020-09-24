@@ -66,55 +66,30 @@ add some additional clinical data, and see this information represented in the C
 1. Log into https://isanteplusdemo.com/openmrs
 2. Go to `Find Patient Record`
 
-**II) Import Patient in Another Location**
+**II) Import the Patient in Another Location**
 1. Log into http://52.37.13.123:8080/openmrs/
 2. Click `Register a Patient`
 3. Begin typing in the names of the patient you created in step `I`
-4. You should see a pop-up show up at the top of the screen with existing patient suggestions. 
-5. Click on the `View suggestions` button
-6. You should see your patient
+4. You should see a notification show up at the top of the screen with existing patient suggestions. 
+5. Click on the `Review Patient(s)` button and import your patient by clicking the `Import and Open` button.of the screen with existing patient suggestions. 
+6. You will end up on the imported patient's registration summary. 
 
-** Import the CCD in 52**
-
-** create visit, add allergy and lab order**
-
-go to isanteplusdemo (ccd not downloaded)
-
-** import ccd with updates **
-
-### Create a new Patient
-
-
-
-**III) (Optional) View Patient in SHR**
-1. Wait a minute or so, and navigate to http://18.158.139.243:8092/hapi-fhir-jpaserver
-2. Choose `Patient` from the left-hand `Resources` navigation.
-3. Check the `Reverse includes` checkbox on the bottom of the screen.
-4. Search by `name` OR by `_id` (using the noted uuid from above) 
-
-**IV) Import Patient in Another Location**
-1. Log into http://52.37.13.123:8080/openmrs/
-2. Click `Register a Patient`
-3. Begin typing in the names of the patient you created in step `I`
-4. You should see a pop-up show up at the top of the screen with existing patient suggestions. 
-5. Click on the `View suggestions` button
-6. You should see your patient
+**III) View CCD for imported patient**
+1. On the patient registration summary page, look for the `Continuity of Care` section. 
+2. Click on the `Import` button to import the patient's CCD from the Shared Health Record
+3. Go back to the registration summary page, and click `View`
+4. You should see the patient's CCD open in a new window. 
 
 **V) Create a bit of medical history**
-Log back into https://isanteplusdemo.com/openmrs and add a bit of medical history to the patient:
-
-1. Vital Signs
-
-2. Allergies
-    -
-3. Immunization
-
-4. Medications
-
-5. Laboratory Orders
+1. Go back to your patient's chart, and add to the medical history a bit:
+    a. Click on the `Edit` button in the `Allergies` section and add some allergy for the patient
+    b. Click on `Start Visit` to begin a visit for the patient
+    c. Under the `Forms` tab, click on the `Laboratory/Dispense` section and select `Analyse de Laboratoire`
+    d. Add some lab test requests.
+    e. Click on the `Visit` tab and click `End Visit`
     
-**VI) View Medical History as CCD Document**
-1. Go back to http://52.37.13.123:8080/openmrs/
+**VI) View the updated Medical History in the CCD Document**
+1. Go back to https://isanteplusdemo.com/openmrs/
 
 2. Find your patient and navigate to their chart
 
@@ -124,6 +99,7 @@ Log back into https://isanteplusdemo.com/openmrs and add a bit of medical histor
 
 5. Click on `Registration Summary` again, and then on the `View` button in the `Continuity of Care` section
 
+6. Notice the updated information in the CCD document. 
 
 ## Appendix
 
