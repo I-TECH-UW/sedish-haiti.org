@@ -12,7 +12,7 @@ The communication between these systems utilizes the FHIR clinical data standard
 
 
 ### Patient Creation and Import - The MPI Workflow
-**[Link to Video]()**
+**[Link to Video](https://youtu.be/WK5n3jDmkfk)**
 
 For the first part of this tutorial, we'll be using the MPI to synchronize patient registration data across two iSantePlus instances. 
 
@@ -57,6 +57,8 @@ For the first part of this tutorial, we'll be using the MPI to synchronize patie
 
 
 ### Viewing Continuity of Care Documents - the SHR workflow
+**[Link to Video](https://youtu.be/9S8CGI-5vl0)**
+
 For the second part of this tutorial, we will be using the patient `Rafael Lessai`. This patient was created in the iSantePlus instance available at www.isanteplusdemo.com/openmrs, but does not exist in the instance at http://52.37.13.123:8080/openmrs. 
 
 To start, we will import this patient in the second iSantePlus instance, review the Continuity of Care document (CCD) for the patient,
