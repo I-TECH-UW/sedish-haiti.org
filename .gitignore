@@ -11,6 +11,7 @@ node_modules
 
 # config files
 config_docker.json
+tmpConfig.json
 
 # ipynb
 *.ipynb_checkpoints

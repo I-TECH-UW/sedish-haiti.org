@@ -6,7 +6,7 @@ let transports = [ new winston.transports.Console() ]
 if ( process.env.NODE_ENV !== "test" ) {
   var transport = new winston.transports.DailyRotateFile({
     dirname: '/var/log',
-    filename: 'openclientregistry-%DATE%.log',
+    filename: 'shr-%DATE%.log',
     datePattern: 'YYYY-MM-DD-HH',
     zippedArchive: true,
     maxSize: '10m',
