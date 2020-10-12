@@ -40,3 +40,5 @@ ansible.p12
 # notebook checkpoints
 *.ipynb_checkpoints/
 /openmrs/
+
+~/*

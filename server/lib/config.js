@@ -8,6 +8,5 @@ if(env === 'test') {
 }
 nconf.argv()
   .env()
-  .file(`${__dirname}/../config/config_${env}.json`)
-  .file('decRules', decisionRulesFile);
+  .file(`${__dirname}/../config/config_shr_template.json`)
 module.exports = nconf;

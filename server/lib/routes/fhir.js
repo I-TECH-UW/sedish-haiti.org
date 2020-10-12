@@ -3,7 +3,6 @@ const router = express.Router();
 const URI = require('urijs');
 const async = require('async');
 const fhirWrapper = require('../fhir')();
-const matchMixin = require('../mixins/matchMixin');
 const logger = require('../winston');
 const config = require('../config');
 

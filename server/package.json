@@ -22,7 +22,7 @@
     "double-metaphone": "^1.0.5",
     "express": "^4.17.1",
     "fast-levenshtein": "^2.0.6",
-    "fhir": "^4.7.0",
+    "fhir": "^4.7.10",
     "formidable": "^1.2.1",
     "is-json": "^2.0.1",
     "jaro-winkler": "^0.2.8",
@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "acorn": ">=7.1.1",
-    "eslint": "^6.8.0",
+    "eslint": "^7.11.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.20.1",

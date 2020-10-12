@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const prerequisites = require('./prerequisites');
 const medUtils = require('openhim-mediator-utils');
+const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const fhirWrapper = require('./fhir')();
@@ -15,12 +16,12 @@ const mediatorConfig = require(`${__dirname}/../config/mediator`);
 
 const userRouter = require('./routes/user');
 const fhirRoutes = require('./routes/fhir');
-const matchRoutes = require('./routes/match');
 const configRoutes = require('./routes/config');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
 let authorized = false;
+
 /**
  * @returns {express.app}
  */
@@ -84,7 +85,6 @@ function appRoutes() {
 
   app.use('/user', userRouter);
   app.use('/fhir', fhirRoutes);
-  app.use('/match', matchRoutes);
   app.use('/config', configRoutes);
 
   return app;
