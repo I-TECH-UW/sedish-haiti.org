@@ -44,7 +44,7 @@ const updateConfigFile = (path, newValue, callback) => {
   const pathString = path.join(':');
   config.set(pathString, newValue);
   logger.info('Updating config file');
-  const configFile = `${__dirname}/../../config/config_${env}.json`;
+  const configFile = `${__dirname}/../../config/config_shr_template.json`;
   const configData = require(configFile);
   setNestedKey(configData, path, newValue, () => {
     fs.writeFile(configFile, JSON.stringify(configData, 0, 2), (err) => {

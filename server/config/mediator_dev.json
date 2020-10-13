@@ -1,5 +1,5 @@
 {
-  "urn": "urn:uuid:4bc42b2f-b5a8-473d-8207-5dd5c61f0c4a",
+  "urn": "urn:uuid:4bc42b2f-b5a8-473d-8207-5dd5c61f0c4b",
   "version": "0.0.1",
   "name": "Haiti SHR",
   "description": "Haiti Shared Health Record",
@@ -40,85 +40,24 @@
       }
   ],
   "defaultChannelConfig": [
-      {
-          "requestBody": true,
-          "responseBody": true,
-          "name": "Create/Update Resource",
-          "description": "Post a new resource into the SHR",
-          "urlPattern": "^/fhir/",
-          "autoRetryPeriodMinutes": 60,
-          "autoRetryEnabled": false,
-          "routes": [
-              {
-                  "type": "http",
-                  "status": "enabled",
-                  "forwardAuthHeader": false,
-                  "name": "Create/Update Resource",
-                  "secured": false,
-                  "host": "shr",
-                  "port": 8080,
-                  "path": "/",
-                  "pathTransform": "",
-                  "primary": true,
-                  "username": "",
-                  "password": ""
-              }
-          ],
-          "authType": "private",
-          "allow": [
-              "openmrs"
-          ],
-          "type": "http",
-          "methods": [
-              "POST"
-          ]
-      },
-      {
-        "name": "Get Resources",
-        "methods": [
-            "GET"
-        ],
-        "type": "http",
-        "allow": [
-            "openmrs"
-        ],
-        "authType": "private",
-        "status": "enabled",
-        "rewriteUrls": false,
-        "addAutoRewriteRules": true,
-        "autoRetryEnabled": false,
-        "autoRetryPeriodMinutes": 60,
-        "requestBody": true,
-        "responseBody": true,
-        "description": "Get resource from the SHR",
-        "urlPattern": "^/fhir/",
-        "routes": [
-            {
-                "type": "http",
-                "status": "enabled",
-                "forwardAuthHeader": false,
-                "name": "Get Resources",
-                "secured": false,
-                "host": "shr",
-                "port": 8080,
-                "path": "/",
-                "pathTransform": "",
-                "primary": true,
-                "username": "",
-                "password": ""
-            }
-        ]
-    },
     {
-      "name": "Get IPS",
       "methods": [
-          "GET"
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH"
       ],
       "type": "http",
       "allow": [
-          "openmrs"
+        "openmrs"
       ],
+      "whitelist": [],
       "authType": "private",
+      "matchContentTypes": [],
+      "properties": [],
+      "txViewAcl": [],
+      "txViewFullAcl": [],
+      "txRerunAcl": [],
       "status": "enabled",
       "rewriteUrls": false,
       "addAutoRewriteRules": true,
@@ -126,26 +65,96 @@
       "autoRetryPeriodMinutes": 60,
       "requestBody": true,
       "responseBody": true,
-      "description": "Get International Patient Summary Bundle from the SHR",
-      "urlPattern": "^/$ips",
+      "name": "HAPI FHIR Passthrough",
+      "description": "Post a new resource into the SHR",
+      "urlPattern": "^/fhir.*$",
       "routes": [
-          {
-              "type": "http",
-              "status": "enabled",
-              "forwardAuthHeader": false,
-              "name": "Get IPS",
-              "secured": false,
-              "host": "shr",
-              "port": 8080,
-              "path": "/$ips",
-              "pathTransform": "",
-              "primary": true,
-              "username": "",
-              "password": ""
-          }
-      ]
-  }
-  ],
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "Create/Update Resource",
+          "secured": false,
+          "host": "host.docker.internal",
+          "port": 3003,
+          "path": "",
+          "pathTransform": "",
+          "primary": true,
+          "username": "",
+          "password": ""
+        }
+      ],
+      "alerts": [],
+      "rewriteUrlsConfig": [],
+      "updatedBy": {
+        "id": "5f84d542efaf3c001240dd95",
+        "name": "Super User"
+      },
+      "matchContentJson": null,
+      "matchContentRegex": null,
+      "matchContentValue": null,
+      "matchContentXpath": null,
+      "pollingSchedule": null,
+      "tcpHost": null,
+      "tcpPort": null,
+      "priority": 1
+    },
+    {
+      "methods": [
+        "GET"
+      ],
+      "type": "http",
+      "allow": [
+        "openmrs"
+      ],
+      "whitelist": [],
+      "authType": "private",
+      "matchContentTypes": [],
+      "properties": [],
+      "txViewAcl": [],
+      "txViewFullAcl": [],
+      "txRerunAcl": [],
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "name": "Get IPS",
+      "requestBody": true,
+      "responseBody": true,
+      "description": "Get International Patient Summary Bundle from the SHR",
+      "urlPattern": "^/ips.*$",
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "Get IPS",
+          "secured": false,
+          "host": "host.docker.internal",
+          "port": 3003,
+          "path": "",
+          "pathTransform": "",
+          "primary": true,
+          "username": "",
+          "password": ""
+        }
+      ],
+      "alerts": [],
+      "rewriteUrlsConfig": [],
+      "updatedBy": {
+        "id": "5f84d542efaf3c001240dd95",
+        "name": "Super User"
+      },
+      "matchContentJson": null,
+      "matchContentRegex": null,
+      "matchContentValue": null,
+      "matchContentXpath": null,
+      "pollingSchedule": null,
+      "tcpHost": null,
+      "tcpPort": null,
+      "priority": 1
+    }],
   "endpoints": [
       {
           "name": "SHR Endpoint",

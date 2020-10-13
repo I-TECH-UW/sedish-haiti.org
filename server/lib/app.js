@@ -16,6 +16,7 @@ const mediatorConfig = require(`${__dirname}/../config/mediator`);
 
 const userRouter = require('./routes/user');
 const fhirRoutes = require('./routes/fhir');
+const ipsRoutes = require('./routes/ips');
 const configRoutes = require('./routes/config');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
@@ -27,12 +28,14 @@ let authorized = false;
  */
 function appRoutes() {
   const app = express();
-  app.set('trust proxy', true);
+  // app.set('trust proxy', true);
+
   app.use(bodyParser.json({
     limit: '10Mb',
     type: ['application/fhir+json', 'application/json+fhir', 'application/json']
   }));
-  app.use('/crux', express.static(`${__dirname}/../gui`));
+
+  // app.use('/crux', express.static(`${__dirname}/../gui`));
 
   const jwtValidator = function (req, res, next) {
     //if a certificate is available then redirect to certificate validation
@@ -81,11 +84,16 @@ function appRoutes() {
     }
   };
 
-  app.use(jwtValidator);
+  // app.use(jwtValidator);
 
-  app.use('/user', userRouter);
+  // app.use('/user', userRouter);
   app.use('/fhir', fhirRoutes);
-  app.use('/config', configRoutes);
+  app.use('/ips', ipsRoutes);
+  // app.use('/config', configRoutes);
+
+  app.get('/', (req, res) => {
+    return res.status(200).send(req.url);
+  });
 
   return app;
 }
@@ -129,7 +137,7 @@ function start(callback) {
 
       // Loads app config based on the required environment
       const env = process.env.NODE_ENV || 'development';
-      const configFile = require(`${__dirname}/../config/config_${env}.json`);
+      const configFile = require(`${__dirname}/../config/config_shr_template.json`);
 
       // Merges configs?
       const updatedConfig = Object.assign(configFile, newConfig);
