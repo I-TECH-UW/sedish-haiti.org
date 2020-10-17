@@ -124,10 +124,11 @@ export default {
       let params = { username: this.username, password: this.password };
       axios({
         method: "POST",
-        url: "/ocrux/authenticate",
+        url: "/user/authenticate",
         params
       })
         .then(authResp => {
+          this.countMatchIssues();
           this.getClients();
           this.$store.state.auth.token = authResp.data.token;
           this.$store.state.auth.username = this.username;
