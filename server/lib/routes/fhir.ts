@@ -1,16 +1,17 @@
-const express = require("express");
-const router = express.Router();
-const URI = require('urijs');
-const async = require('async');
+import express from "express";
+import URI from 'urijs';
+import async from 'async';
+import logger from '../winston';
+import config from '../config';
+
+export const router = express.Router();
 const fhirWrapper = require('../fhir')();
-const logger = require('../winston');
-const config = require('../config');
 
 router.get('/:resource/:id?', (req, res) => {  
   getResource({
     req,
     noCaching: true
-  }, (resourceData, statusCode) => {
+  }, (resourceData: any, statusCode: number) => {
     for (const index in resourceData.link) {
       if (!resourceData.link[index].url) {
         continue;
@@ -60,11 +61,11 @@ router.post('/', (req, res) => {
       if(resource.entry.length === 0) {
         return callback(null, {});
       }
-      fhirWrapper.create(resource, (code, err, response, body) => {
+      fhirWrapper.create(resource, (code: number, err: Error, response: Response, body: any) => {
         return callback(null, {code, err, response, body});
       });
     }
-  }, (err, results) => {
+  }, (err, results: any) => {
     let code = results.otherResources.code;
  
     if(!code) {
@@ -91,31 +92,33 @@ router.put('/:resourceType/:id', (req, res) => {
 function getResource({
   req,
   noCaching
-}, callback) {
+}:{req: any, noCaching: boolean }, callback: Function) {
   const resource = req.params.resource;
   const id = req.params.id;
-  let url = URI(config.get('fhirServer:baseURL'));
+
+  let uri = URI(config.get('fhirServer:baseURL'));
   logger.info('Received a request to get resource ' + resource + ' with id ' + id);
 
   if (resource) {
-    url = url.segment(resource);
+    uri = uri.segment(resource);
   }
   if (id) {
-    url = url.segment(id);
+    uri = uri.segment(id);
   }
   for (const param in req.query) {
-    url.addQuery(param, req.query[param]);
+    uri.addQuery(param, req.query[param]);
   }
-  url = url.toString();
+  let url: string = uri.toString();
+
   fhirWrapper.getResource({
     url,
     noCaching
-  }, (resourceData, statusCode) => {
+  }, (resourceData: any, statusCode: number) => {
     return callback(resourceData, statusCode);
   });
 }
 
-function saveResource(req, res) {
+function saveResource(req: any, res: any) {
   let resource = req.body;
   let resourceType = req.params.resourceType;
   let id = req.params.id;
@@ -125,9 +128,13 @@ function saveResource(req, res) {
 
   logger.info('Received a request to add resource type ' + resourceType);
 
-  fhirWrapper.create(resource, (code, err, response, body) => {
+  if(resourceType === 'Patient') {
+    
+  }
+
+  fhirWrapper.create(resource, (code: number, _err: any, _response: Response, body: any) => {
     return res.status(code).send(body);
   });
 }
 
-module.exports = router;
+export default router;

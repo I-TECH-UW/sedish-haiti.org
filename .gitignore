@@ -41,4 +41,6 @@ ansible.p12
 *.ipynb_checkpoints/
 /openmrs/
 
-~/*
+server/built
+server/log
+*.log
