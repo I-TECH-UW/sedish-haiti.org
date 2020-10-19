@@ -4,16 +4,11 @@ import prerequisites from './prerequisites';
 import medUtils from 'openhim-mediator-utils';
 import _ from 'lodash';
 import fs from 'fs';
+
 import logger from './winston';
 import config from './config';
-
-// Loads OpenHIM mediator config
-const mediatorConfig = require(`${__dirname}/../config/mediator`);
-
-import userRouter from './routes/user';
 import fhirRoutes from './routes/fhir';
 import ipsRoutes from './routes/ips';
-import configRoutes from './routes/config';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
@@ -24,22 +19,14 @@ let authorized = false;
  */
 function appRoutes() {
   const app = express();
-  // app.set('trust proxy', true);
 
   app.use(bodyParser.json({
     limit: '10Mb',
     type: ['application/fhir+json', 'application/json+fhir', 'application/json']
   }));
 
-  // app.use('/crux', express.static(`${__dirname}/../gui`));
-
-  // app.use(jwtValidator);
-
-  // app.use('/user', userRouter);
   app.use('/fhir', fhirRoutes);
   app.use('/ips', ipsRoutes);
-  // app.use('/config', configRoutes);
-
   app.get('/', (req: Request, res: Response) => {
     return res.status(200).send(req.url);
   });
@@ -69,6 +56,13 @@ function appRoutes() {
 
 export function start(callback: Function) {
   // Run as OpenHIM Mediator - We only need this approach
+
+  // Loads app config based on the required environment
+  const env = process.env.NODE_ENV || 'dev';
+  const configFile = require(`${__dirname}/../config/config_${env}_template`);
+  // Loads OpenHIM mediator config
+  const mediatorConfig = require(`${__dirname}/../config/mediator_${env}`);
+
   logger.info('Running client registry as a mediator');
   medUtils.registerMediator(config.get('mediator:api'), mediatorConfig, (err: Error) => {
     if (err) {
@@ -83,10 +77,6 @@ export function start(callback: Function) {
         logger.info(err.stack);
         process.exit(1);
       }
-
-      // Loads app config based on the required environment
-      // const env = process.env.NODE_ENV || 'development';
-      const configFile = require(`${__dirname}/../config/config_shr_template`);
 
       // Merges configs?
       const updatedConfig: JSON = Object.assign(configFile, newConfig);
@@ -128,10 +118,7 @@ export function start(callback: Function) {
       });
     });
   });
-  
 }
-
-// exports.start = start;
 
 if (!module.parent) {
   // if this script is run directly, start the server
