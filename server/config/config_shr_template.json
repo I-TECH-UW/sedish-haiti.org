@@ -4,14 +4,14 @@
     "tokenDuration": 5400
   },
   "app": {
-    "port": 3003,
+    "port": 3000,
     "installed": false
   },
   "mediator": {
     "api": {
       "username": "root@openhim.org",
       "password": "Haiti1234",
-      "apiURL": "https://localhost:9201",
+      "apiURL": "https://host.docker.internal:9201",
       "trustSelfSigned": true,
       "urn": ""
     }

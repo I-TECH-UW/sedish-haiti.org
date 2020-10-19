@@ -45,6 +45,16 @@ services:
   ###
   # SHR
   ###
+  shr:
+    container_name: shr
+    build:
+      context: server
+    ports:
+      - "${SHR_PORT}:3000"
+    restart: on-failure
+    environment:
+      - NODE_ENV=shr
+
   shr-fhir-server:
     image: "hapiproject/hapi:latest"
     container_name: shr-fhir-server
@@ -60,18 +70,18 @@ services:
   ###
   # OpenMRS
   ###
-  openmrs-server:
-    container_name: openmrs-server
-    hostname: openmrs-server
-    build: ./docker/openmrs-server
-    restart: unless-stopped
-    env_file:
-        - ./openmrs/2.3.0-refapp-2.10.0/openmrs-server.env
-    volumes:
-      - ./openmrs/2.3.0-refapp-2.10.0/distribution:/openmrs/distribution
-      - openmrs-data:/openmrs/data
-    ports:
-      - "${OPENMRS_PORT}:8080"
+  # openmrs-server:
+  #   container_name: openmrs-server
+  #   hostname: openmrs-server
+  #   build: ./docker/openmrs-server
+  #   restart: unless-stopped
+  #   env_file:
+  #       - ./openmrs/2.3.0-refapp-2.10.0/openmrs-server.env
+  #   volumes:
+  #     - ./openmrs/2.3.0-refapp-2.10.0/distribution:/openmrs/distribution
+  #     - openmrs-data:/openmrs/data
+  #   ports:
+  #     - "${OPENMRS_PORT}:8080"
 
   openmrs-hapi-server:
     image: "hapiproject/hapi:latest"

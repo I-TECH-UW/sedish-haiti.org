@@ -45,6 +45,18 @@ services:
   ###
   # SHR
   ###
+  shr:
+    container_name: shr
+    image: intrahealth/opencr
+    ports:
+      - "3000:3000"
+    depends_on:
+      - fhir
+      - es
+    restart: on-failure
+    environment:
+      - NODE_ENV=cicd
+
   shr-fhir-server:
     image: "hapiproject/hapi:latest"
     container_name: shr-fhir-server
