@@ -3,6 +3,7 @@ import express, {Request, Response} from "express";
 import logger from '../winston';
 import fhirClient from 'fhirclient';
 import { R4 } from '@ahryman40k/ts-fhir-types';
+import config from '../config';
 
 export const router = express.Router();
 
@@ -52,7 +53,7 @@ router.get('/:location?/:lastUpdated?', (req: Request, res: Response) => {
     // Create Client
     // TODO: parameterize url
     const client = fhirClient(req, res).client({
-        serverUrl: "http://18.158.139.243:8092/hapi-fhir-jpaserver/fhir"
+        serverUrl: config.get('fhirServer:baseURL')
     });
 
     /**
@@ -64,7 +65,6 @@ router.get('/:location?/:lastUpdated?', (req: Request, res: Response) => {
      * 5. Combine them into a single bundle w/ composition
      *
      */
-
 
     let patientP = client.request(`Patient?${query}`, {flat: true});
 

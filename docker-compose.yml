@@ -53,7 +53,7 @@ services:
       - "${SHR_PORT}:3000"
     restart: on-failure
     environment:
-      - NODE_ENV=shr
+      - NODE_ENV=docker
 
   shr-fhir-server:
     image: "hapiproject/hapi:latest"

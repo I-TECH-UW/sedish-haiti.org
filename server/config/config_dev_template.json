@@ -11,7 +11,7 @@
     "api": {
       "username": "root@openhim.org",
       "password": "Haiti1234",
-      "apiURL": "https://host.docker.internal:9201",
+      "apiURL": "https://localhost:9201",
       "trustSelfSigned": true,
       "urn": ""
     }
