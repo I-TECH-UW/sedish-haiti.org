@@ -227,6 +227,7 @@ module.exports = () => ({
         return callback(400, err);
       }
     }
+    url.segment(resource.id)
     url = url.toString();
     const options = {
       url,
@@ -240,7 +241,7 @@ module.exports = () => ({
       },
       json: resource,
     };
-    request.post(options, (err, res, body) => {
+    request.put(options, (err, res, body) => {
       let code;
       if(res && res.statusCode) {
         code = res.statusCode;
