@@ -19,7 +19,8 @@
   "fhirServer": {
     "username": "hapi",
     "password": "hapi",
-    "baseURL": "http://18.158.139.243:8080/hapi-fhir-jpaserver/fhir"
+    "baseURL": "http://18.158.139.243:8080/hapi-fhir-jpaserver/fhir",
+    "mpiUrl": "http://18.158.139.243:5001/SHR/fhir"
   },
 
   "structureDefinition": {

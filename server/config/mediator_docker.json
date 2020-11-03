@@ -78,7 +78,7 @@
           "host": "18.158.139.243",
           "port": 3003,
           "path": "",
-          "pathTransform": "",
+          "pathTransform": "s/SHR\\/fhir/fhir/g",
           "primary": true,
           "username": "",
           "password": ""
@@ -123,7 +123,7 @@
       "requestBody": true,
       "responseBody": true,
       "description": "Get International Patient Summary Bundle from the SHR",
-      "urlPattern": "^/SHR/ips.*$",
+      "urlPattern": "^/SHR/fhir/ips.*$",
       "routes": [
         {
           "type": "http",
@@ -134,7 +134,7 @@
           "host": "18.158.139.243",
           "port": 3003,
           "path": "",
-          "pathTransform": "",
+          "pathTransform": "s/SHR\\/fhir\\/ips/ips/g",
           "primary": true,
           "username": "",
           "password": ""
