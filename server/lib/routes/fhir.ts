@@ -1,4 +1,5 @@
-import express from "express";
+"use strict";
+import express, {Request, Response} from "express";
 import URI from 'urijs';
 import async from 'async';
 import logger from '../winston';
@@ -6,6 +7,10 @@ import config from '../config';
 
 export const router = express.Router();
 const fhirWrapper = require('../fhir')();
+
+router.get('/', (req: Request, res: Response) => {
+  return res.status(200).send(req.url);
+});
 
 router.get('/:resource/:id?', (req, res) => {  
   getResource({
@@ -47,15 +52,7 @@ router.post('/', (req, res) => {
       }
     });
   }
-
-  // let patients = [];
-  // for(let index in resource.entry) {
-  //   let entry = resource.entry[index];
-  //   if(entry.resource && entry.resource.resourceType === "Patient") {
-  //     patients.push(entry);
-  //     resource.entry.splice(index, 1);
-  //   }
-  // }
+  
   async.parallel({
     otherResources: (callback) => {
       if(resource.entry.length === 0) {

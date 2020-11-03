@@ -1,6 +1,5 @@
 import express, {Request, Response} from 'express';
 import bodyParser from 'body-parser';
-import prerequisites from './prerequisites';
 import medUtils from 'openhim-mediator-utils';
 import _ from 'lodash';
 import fs from 'fs';
@@ -25,8 +24,8 @@ function appRoutes() {
     type: ['application/fhir+json', 'application/json+fhir', 'application/json']
   }));
 
-  app.use('/fhir', fhirRoutes);
   app.use('/ips', ipsRoutes);
+  app.use('/fhir', fhirRoutes);
   app.get('/', (req: Request, res: Response) => {
     return res.status(200).send(req.url);
   });
@@ -71,10 +70,10 @@ export function start(callback: Function) {
       process.exit(1);
     }
     config.set('mediator:api:urn', mediatorConfig.urn);
-    medUtils.fetchConfig(config.get('mediator:api'), (err: Error, newConfig: JSON) => {
-      if (err) {
+    medUtils.fetchConfig(config.get('mediator:api'), (err2: Error, newConfig: JSON) => {
+      if (err2) {
         logger.info('Failed to fetch initial config');
-        logger.info(err.stack);
+        logger.info(err2.stack);
         process.exit(1);
       }
 
@@ -84,13 +83,6 @@ export function start(callback: Function) {
         config.set('mediator:api:urn', mediatorConfig.urn);
         logger.info('Received initial config:', newConfig);
         logger.info('Successfully registered mediator!');
-        
-        // Check prereqs (not needed for now)
-        prerequisites.init((err: Error) => {
-          if (err) {
-            process.exit();
-          }
-        });
 
         const app = appRoutes();
 
@@ -105,11 +97,6 @@ export function start(callback: Function) {
             logger.info('Received updated config:', newConfig);
             const updatedConfig = Object.assign(configFile, newConfig);
             reloadConfig(updatedConfig, () => {
-              prerequisites.init((err: Error) => {
-                if (err) {
-                  process.exit();
-                }
-              });
               config.set('mediator:api:urn', mediatorConfig.urn);
             });
           });
