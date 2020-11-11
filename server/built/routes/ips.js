@@ -49,9 +49,18 @@ exports.router.get('/Patient/:id/:lastUpdated?', (req, res) => __awaiter(void 0,
     const shrClient = fhirclient_1.default(req, res).client({ serverUrl: shrUrl, username: config_1.default.get('fhirServer:username'), password: config_1.default.get('fhirServer:password') });
     // Query MPI to get all patients
     // TODO: parameterize identifier specifics and account for diffent types of identifiers
-    let mpiPatients = yield mpiClient.request(`Patient?identifier=${system}|http://isanteplusdemo.com/ws/fhir2/pid/openmrsid/${patientId}&_include=Patient:link`, { flat: true });
-    let ipsBundle = yield ips_1.generateIpsbundle(mpiPatients, shrClient, lastUpdated, system);
-    res.status(200).send(ipsBundle);
+    let goldenRecordRes = yield mpiClient.request(`Patient?identifier=${system}|${patientId}&_include=Patient:link`, { flat: true });
+    let goldenRecord = goldenRecordRes.find((x) => (x.meta && x.meta.tag && x.meta.tag[0].code === "5c827da5-4858-4f3d-a50c-62ece001efea"));
+    //let mpiPatients = await mpiClient.request<R4.IPatient[]>(`Patient?_id=4b3ddbf1-087c-43fb-85d0-4b78cddc6045`, { flat: true });
+    if (goldenRecord) {
+        let cruid = goldenRecord.id;
+        let mpiPatients = yield mpiClient.request(`Patient?_id=${cruid}&_include=Patient:link`, { flat: true });
+        let ipsBundle = yield ips_1.generateIpsbundle(mpiPatients, shrClient, lastUpdated, system);
+        res.status(200).send(ipsBundle);
+    }
+    else {
+        res.sendStatus(500);
+    }
 }));
 exports.router.get('/:location?/:lastUpdated?', (req, res) => {
     const location = req.params.location;
