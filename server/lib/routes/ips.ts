@@ -50,13 +50,19 @@ router.get('/Patient/:id/:lastUpdated?', async (req: Request, res: Response) => 
 
   // Query MPI to get all patients
   // TODO: parameterize identifier specifics and account for diffent types of identifiers
-  let mpiPatients = await mpiClient.request<R4.IPatient[]>(`Patient?identifier=${system}|http://isanteplusdemo.com/ws/fhir2/pid/openmrsid/${patientId}&_include=Patient:link`, { flat: true });
+  let goldenRecordRes = await mpiClient.request<R4.IPatient[]>(`Patient?identifier=${system}|${patientId}&_include=Patient:link`, { flat: true });
+  let goldenRecord = goldenRecordRes.find((x) => (x.meta && x.meta.tag && x.meta.tag[0].code === "5c827da5-4858-4f3d-a50c-62ece001efea"));
 
-  let ipsBundle = await generateIpsbundle(mpiPatients, shrClient, lastUpdated, system);
-
-  res.status(200).send(ipsBundle);
-
+  if(goldenRecord) {
+    let cruid = goldenRecord.id;
+    let mpiPatients = await mpiClient.request<R4.IPatient[]>(`Patient?_id=${cruid}&_include=Patient:link`, { flat: true });
+    let ipsBundle = await generateIpsbundle(mpiPatients, shrClient, lastUpdated, system);
+    res.status(200).send(ipsBundle);
+  } else {
+    res.sendStatus(500);
+  }
 });
+
 router.get('/:location?/:lastUpdated?', (req: Request, res: Response) => {
   const location = req.params.location;
   const lastUpdated = req.params.lastUpdated;
