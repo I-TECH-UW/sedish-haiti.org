@@ -57,6 +57,7 @@ router.get('/Patient/:id/:lastUpdated?', async (req: Request, res: Response) => 
   res.status(200).send(ipsBundle);
 
 });
+
 router.get('/:location?/:lastUpdated?', (req: Request, res: Response) => {
   const location = req.params.location;
   const lastUpdated = req.params.lastUpdated;
