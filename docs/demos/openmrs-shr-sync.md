@@ -119,13 +119,6 @@ http://52.37.13.123:8080/openmrs/
 - user: admin
 - password: Admin123
 
-#### OpenHIM Console  
-http://18.158.139.243:3001/
-
-**Login Info**
-- user: root@openhim.org
-- password: Haiti1234
-
 #### OpenCR Console
 http://18.158.139.243:3000/crux/#/Login
 
