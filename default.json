@@ -2,7 +2,7 @@
 "version": "1.10.0",
 "minimumCoreVersion": "3.4.0",
 "protocol": "https",
-"host": "localhost",
+"host": "18.158.139.243",
 "port": 9201,
 "title": "OpenHIM Admin",
 "footerTitle": "OpenHIM Administration Console",
