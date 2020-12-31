@@ -37,7 +37,7 @@
     "request-promise-native": "^1.0.8",
     "slashes": "^1.0.5",
     "soundex-code": "^1.0.4",
-    "urijs": "^1.19.2",
+    "urijs": "^1.19.4",
     "uuid": "^3.3.3",
     "uuid4": "^1.1.4",
     "winston": "^3.2.1",
