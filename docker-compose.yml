@@ -2,7 +2,48 @@ version: '2.4'
 
 ## Port Assignments:
 ##  See .env file
+
+## Container debugging: 
+# 1. append the following lines to desired container 
+# 2. boot up the container using `docker-compose up -d`
+# 3 run `docker exec -it <container-name> bash` to start interactive shell
+# 
+#    tty: true
+#    stdin_open: true
+#    entrypoint: bash
+
+## Utility for booting up placeholder page:
+# `docker run --hostname openhim-placeholder --network shared-health-record_sedish --name openhim-placeholder -e MESSAGE=OPENHIM-PLACEHOLDER -e PORT=3000 -d docker.io/sroze/landing-page:latest`
+
 services:
+  static:
+    image: docker.io/sroze/landing-page:latest
+    container_name: homepage
+    hostname: homepage
+    environment: 
+      - MESSAGE=SEDISH-HAITI-DEFAULT
+    networks: 
+      - sedish
+
+  ###
+  # nginx reverse proxy
+  # TODO: set up to use non-root user. See https://www.rockyourcode.com/run-docker-nginx-as-non-root-user/
+  # TODO: Run letsencrypt as docker container: https://hub.docker.com/r/certbot/certbot/
+  ###
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    hostname: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org:/etc/letsencrypt
+      - ./nginx/data/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/data/www:/var/www
+    networks:
+      - sedish
+
   ###
   # OpenCR
   ###
@@ -143,14 +184,7 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
-  mongo-db:
-    container_name: mongo-db
-    image: mongo:4.0
-    ports:
-      - "27017:27017"
-    volumes:
-      - "mongo-data:/data/db"
-    restart: unless-stopped
+
 volumes:
   data01:
     driver: local
@@ -166,3 +200,5 @@ volumes:
     driver: local
   hapi-data:
     driver: local
+networks:
+  sedish:
