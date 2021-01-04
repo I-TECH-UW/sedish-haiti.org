@@ -1,6 +1,6 @@
 FROM nginx:stable 
  
-COPY ./nginx.conf /etc/nginx/nginx.conf 
+COPY ./data/nginx.conf /etc/nginx/nginx.conf 
  
 RUN useradd -u 1001 www 
  
