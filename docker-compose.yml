@@ -4,6 +4,22 @@ version: '2.4'
 ##  See .env file
 services:
   ###
+  # nginx reverse proxy
+  ###
+
+nginx:
+  build:
+    dockerfile: Dockerfile
+    context: ./nginx
+  ports:
+    - "80:8080"
+    - "443:4430"
+  volumes:
+    - /home/ubuntu/local/letsencrypt/live/sedish-haiti.org:/etc/letsencrypt
+    - /nginx/data:/etc/nginx/conf.d
+    - /data/www:/var/www
+
+  ###
   # OpenCR
   ###
   opencr:
@@ -143,14 +159,7 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
-  mongo-db:
-    container_name: mongo-db
-    image: mongo:4.0
-    ports:
-      - "27017:27017"
-    volumes:
-      - "mongo-data:/data/db"
-    restart: unless-stopped
+
 volumes:
   data01:
     driver: local
