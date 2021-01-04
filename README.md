@@ -1,4 +1,5 @@
-# Shared Health Record
+# sedish-haiti.org Demo Site
+
 Proof of Concept Environment Setup
 
 # Components
