@@ -1,4 +1,22 @@
 # Useful Links for Nginx/Certbot/AWS setup
+
+## Docker-compose configuration:
+
+```yaml
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    hostname: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org:/etc/letsencrypt
+      - ./nginx/data/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/data/www:/var/www
+    networks:
+      - sedish
+```
 **TODO: Cleanup links and write up setup steps**
 
 ## Main Resources
