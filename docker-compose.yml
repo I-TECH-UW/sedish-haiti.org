@@ -43,29 +43,43 @@ services:
       - ./docker/nginx/data/www:/var/www
     networks:
       - sedish
-
+    depends_on: 
+      - static
+      - openhim-console
+      - openhim-core
+      - opencr-fhir
+      - shr-fhir
+      - shr
+      - opencr
+      - isanteplus-demo
   ###
   # OpenCR
   ###
   opencr:
     container_name: opencr
+    hostname: opencr
     build: ./docker/opencr
     ports:
       - "${CR_PORT}:3000"
     depends_on:
-      - opencr-fhir-server
+      - opencr-fhir
       - opencr-es
     restart: on-failure
     environment:
       - NODE_ENV=docker
-  opencr-fhir-server:
+    networks:
+      - sedish
+  opencr-fhir:
     build: ./docker/opencr-hapi
-    container_name: hapi-fhir
+    container_name: opencr-fhir
+    hostname: opencr-fhir
     restart: unless-stopped
     ports:
       - "${CR_FHIR_PORT}:8080"
     cpus: .5
     mem_limit: 1GB
+    networks:
+      - sedish
   opencr-es:
     container_name: es
     image: intrahealth/elasticsearch:latest
@@ -82,23 +96,30 @@ services:
       - data01:/usr/share/elasticsearch/data
     ports:
       - "${CR_ES_PORT}:9200"
+    networks:
+      - sedish
 
   ###
   # SHR
   ###
   shr:
     container_name: shr
+    hostname: shr
     build:
-      context: server
+      context: shr
     ports:
       - "${SHR_PORT}:3000"
     restart: on-failure
     environment:
       - NODE_ENV=docker
-
-  shr-fhir-server:
+    depends_on: 
+      - shr-fhir
+    networks:
+      - sedish
+  shr-fhir:
     image: "hapiproject/hapi:latest"
-    container_name: shr-fhir-server
+    container_name: shr-fhir
+    hostname: shr-fhir
     restart: unless-stopped
     ports:
       - "${SHR_FHIR_PORT}:8080"
@@ -107,49 +128,37 @@ services:
       - ./docker/shr/hapi.properties:/conf/hapi/hapi.properties
     environment:
       JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
- 
+    networks:
+      - sedish
+  
   ###
-  # OpenMRS
+  # iSantePlus
   ###
-  openmrs-server:
-    container_name: openmrs-server
-    hostname: openmrs-server
+  isanteplus-demo:
+    container_name: isanteplus-demo
+    hostname: isanteplus-demo
     build: ./docker/openmrs-server
     restart: unless-stopped
     env_file:
-        - ./openmrs/2.3.0-refapp-2.10.0/openmrs-server.env
+        - ./openmrs/isanteplus_demo/openmrs-server.env
     volumes:
-      - ./openmrs/2.3.0-refapp-2.10.0/distribution:/openmrs/distribution
+      - ./openmrs/isanteplus_demo/distribution:/openmrs/distribution
       - openmrs-data:/openmrs/data
-    ports:
-      - "${OPENMRS_PORT}:8080"
+    networks:
+      - sedish
 
-  openmrs-hapi-server:
-    image: "hapiproject/hapi:latest"
-    container_name: openmrs-hapi-server
+  isanteplus-test:
+    container_name: isanteplus-test
+    hostname: isanteplus-test
+    build: ./docker/openmrs-server
     restart: unless-stopped
+    env_file:
+        - ./openmrs/isanteplus_demo/openmrs-server.env
     volumes:
-      - hapi-data:/data/hapi
-      - ./docker/hapi/hapi.properties:/conf/hapi/hapi.properties
-    environment:
-      JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
-    ports:
-      - "${OPENMRS_HAPI_PORT}:8080"
-  
-###
-# iSantePlus
-###
-  isanteplus:
-    build: ./docker/isanteplus
-    ports:
-      - "${ISANTEPLUS_PORT}:8080"
-    container_name: isanteplus
-    volumes:
-      - data03:/opt/isanteplus/data
-    hostname: isanteplus
-    restart: unless-stopped
-  
-
+      - ./openmrs/isanteplus_demo/distribution:/openmrs/distribution
+      - openmrs-data:/openmrs/data
+    networks:
+      - sedish
   ###
   # OpenHIM
   ###
@@ -158,32 +167,42 @@ services:
     image: jembi/openhim-core:latest
     restart: unless-stopped
     environment:
-      mongo_url: "mongodb://mongo-db/openhim-development"
-      mongo_atnaUrl: "mongodb://mongo-db/openhim-development"
+      mongo_url: "mongodb://${MONGO_USER}:${MONGO_PW}@openhim-db.chijnl5rwr2c.eu-central-1.docdb.amazonaws.com:27017/openhim?retryWrites=false"
+      mongo_atnaUrl: "mongodb://${MONGO_USER}:${MONGO_PW}@openhim-db.chijnl5rwr2c.eu-central-1.docdb.amazonaws.com:27017/openhim?retryWrites=false"
       NODE_ENV: "development"
     ports:
-      - "${OPENHIM_PORT}:8080"
-      - "5000:5000"
-      - "5001:5001"
+      - 8080:8080
+      - 5000:5000
+      - 5001:5001
+    volumes:
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/cert1.pem:/usr/src/app/resources/certs/default/cert.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey1.pem:/usr/src/app/resources/certs/default/key.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/cert1.pem:/etc/letsencrypt/live/openhim.jembi.org/cert.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey1.pem:/etc/letsencrypt/live/openhim.jembi.org/key.pem
     healthcheck:
-      test: "curl -sSk https://openhim-core:${OPENHIM_PORT}/heartbeat || exit 1"
+      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
       interval: 30s
       timeout: 30s
       retries: 3
+    networks:
+      - sedish
 
   openhim-console:
     container_name: openhim-console
     image: jembi/openhim-console:latest
     restart: unless-stopped
-    ports:
-      - "${OPENHIM_CONSOLE_PORT}:80"
     volumes:
-      - ./default.json:/usr/share/nginx/html/config/default.json
+      - ./configs/openhim-console/default.json:/usr/share/nginx/html/config/default.json
     healthcheck:
       test: "curl -sS http://openhim-console || exit 1"
       interval: 30s
       timeout: 30s
       retries: 3
+    networks:
+      - sedish
+    # tty: true
+    # stdin_open: true
+    # entrypoint: bash
 
 volumes:
   data01:

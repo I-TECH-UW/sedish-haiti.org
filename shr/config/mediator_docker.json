@@ -7,8 +7,8 @@
       "fhirServer": {
         "username": "shr",
         "password": "shr123",
-        "baseURL": "http://18.158.139.243:8080/hapi-fhir-jpaserver/fhir",
-        "mpiURL": "http://18.158.139.243:5001/fhir"
+        "baseURL": "https://shr-fhir.sedish-haiti.org/hapi-fhir-jpaserver/fhir",
+        "mpiURL": "https://sedish-haiti.org:5001/fhir"
       }
   },
   "configDefs": [
@@ -82,8 +82,8 @@
           "forwardAuthHeader": false,
           "name": "Create/Update Resource",
           "secured": false,
-          "host": "18.158.139.243",
-          "port": 3003,
+          "host": "shr.sedish-haiti.org",
+          "port": 80,
           "path": "",
           "pathTransform": "s/SHR\\/fhir/fhir/g",
           "primary": true,
@@ -138,8 +138,8 @@
           "forwardAuthHeader": false,
           "name": "Get IPS",
           "secured": false,
-          "host": "18.158.139.243",
-          "port": 3003,
+          "host": "shr.sedish-haiti.org",
+          "port": 80,
           "path": "",
           "pathTransform": "s/SHR\\/fhir\\/ips/ips/g",
           "primary": true,
@@ -165,9 +165,9 @@
   "endpoints": [
       {
           "name": "SHR Endpoint",
-          "host": "18.158.139.243",
+          "host": "shr.sedish-haiti.org",
           "path": "/",
-          "port": 3003,
+          "port": 80,
           "primary": true,
           "forwardAuthHeader": false,
           "status": "enabled",
