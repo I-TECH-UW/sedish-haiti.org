@@ -7,10 +7,10 @@
         "fhirServer": {
             "username": "hapi",
             "password": "hapi",
-            "baseURL": "http://18.158.139.243:8081/hapi-fhir-jpaserver/fhir"
+            "baseURL": "https://opencr-fhir.sedish-haiti.org/hapi-fhir-jpaserver/fhir"
         },
         "elastic": {
-            "server": "http://18.158.139.243:9200",
+            "server": "http://sedish-haiti.org:9200",
             "username": "",
             "password": "",
             "max_compilations_rate": "10000/1m",
@@ -140,8 +140,8 @@
                     "forwardAuthHeader": false,
                     "name": "Add Patient",
                     "secured": false,
-                    "host": "18.158.139.243",
-                    "port": 3000,
+                    "host": "opencr.sedish-haiti.org",
+                    "port": 80,
                     "path": "/Patient",
                     "pathTransform": "",
                     "primary": true,
@@ -207,8 +207,8 @@
                     "forwardAuthHeader": false,
                     "name": "Get Patients",
                     "secured": false,
-                    "host": "18.158.139.243",
-                    "port": 3000,
+                    "host": "opencr.sedish-haiti.org",
+                    "port": 80,
                     "path": "",
                     "pathTransform": "",
                     "primary": true,
@@ -222,9 +222,9 @@
     "endpoints": [
         {
             "name": "Activate Client Registry",
-            "host": "18.158.139.243",
+            "host": "opencr.sedish-haiti.org",
             "path": "/Patient",
-            "port": 3000,
+            "port": 80,
             "primary": true,
             "forwardAuthHeader": false,
             "status": "enabled",

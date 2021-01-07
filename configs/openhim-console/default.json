@@ -1,0 +1,14 @@
+{
+    "version": "1.13.2",
+    "minimumCoreVersion": "5.2.0",
+    "protocol": "https",
+    "host": "sedish-haiti.org",
+    "hostPath": "",
+    "port": 8080,
+    "title": "SEDISH Admin Console",
+    "footerTitle": "SEDISH OpenHIM Administration Console",
+    "footerPoweredBy": "<a href='http://openhim.org/' target='_blank'>Powered by OpenHIM</a>",
+    "loginBanner": "",
+    "mediatorLastHeartbeatWarningSeconds": 60,
+    "mediatorLastHeartbeatDangerSeconds": 120
+}

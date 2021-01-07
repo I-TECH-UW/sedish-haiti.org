@@ -10,8 +10,8 @@
   "mediator": {
     "api": {
       "username": "root@openhim.org",
-      "password": "Haiti1234",
-      "apiURL": "https://18.158.139.243:9201",
+      "password": "haitiopenhim",
+      "apiURL": "https://sedish-haiti.org:8080",
       "trustSelfSigned": true,
       "urn": ""
     }
@@ -19,8 +19,8 @@
   "fhirServer": {
     "username": "shr",
     "password": "shr123",
-    "mpiURL": "http://18.158.139.243:5001/fhir",
-    "baseURL": "http://18.158.139.243:8080/hapi-fhir-jpaserver/fhir"
+    "mpiURL": "https://sedish-haiti.org:5001/fhir",
+    "baseURL": "https://shr-fhir.sedish-haiti.org/hapi-fhir-jpaserver/fhir"
   },
 
   "structureDefinition": {
