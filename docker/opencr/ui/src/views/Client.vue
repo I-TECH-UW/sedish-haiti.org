@@ -69,8 +69,9 @@
                       {{ telecom.value }}
                     </v-list-item-content>
                   </v-list-item>
+                  
                   <v-list-item
-                    v-for="(id, l) in patient.identifier"
+                    v-for="(id, l) in patient.identifier[patient.identifier.length - 1]"
                     :key="`${l}-${id.system}`"
                   >
                     <v-list-item-content>{{ id.name }}:</v-list-item-content>
