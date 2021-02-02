@@ -21,7 +21,7 @@
       },
       "family": {
         "algorithm": "damerau-levenshtein",
-        "threshold": 3,
+        "threshold": 0.3,
         "fhirpath": "name.where(use='official').family",
         "espath": "family"
       },

@@ -113,18 +113,21 @@ add some additional clinical data, and see this information represented in the C
 https://isanteplusdemo.com/openmrs
 
 **iSantePlus Instance #2**  
-http://52.37.13.123:8080/openmrs/
+https://isanteplus-test.sedish-haiti.org/openmrs/
 
 **Login Info**
 - user: admin
 - password: Admin123
 
 #### OpenCR Console
-http://18.158.139.243:3000/crux/#/Login
+https://opencr.sedish-haiti.org/crux/#/Login
 
 **Login Info**
 - user: root@intrahealth.org
 - password: intrahealth
+
+#### OpenHIM
+https://openhim.sedish-haiti.org/
 
 ### Utilized Tools and Modules
 - https://openmrs.org/
