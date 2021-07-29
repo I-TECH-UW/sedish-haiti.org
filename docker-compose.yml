@@ -16,16 +16,6 @@ version: '2.4'
 # `docker run --hostname openhim-placeholder --network shared-health-record_sedish --name openhim-placeholder -e MESSAGE=OPENHIM-PLACEHOLDER -e PORT=3000 -d docker.io/sroze/landing-page:latest`
 
 services:
-  static:
-    image: docker.io/sroze/landing-page:latest
-    container_name: homepage
-    hostname: homepage
-    restart: unless-stopped
-    environment: 
-      - MESSAGE=SEDISH-HAITI-DEFAULT
-    networks: 
-      - sedish
-
   ###
   # nginx reverse proxy
   # TODO: set up to use non-root user. See https://www.rockyourcode.com/run-docker-nginx-as-non-root-user/
@@ -41,64 +31,41 @@ services:
       - "443:443"
     volumes:
       - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org:/etc/letsencrypt
-      - ./docker/nginx/data/nginx.conf:/etc/nginx/nginx.conf
+      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./docker/nginx/data/www:/var/www
     networks:
       - sedish
-    depends_on: 
-      - static
-      - openhim-console
-      - openhim-core
-      - opencr-fhir
-      - shr-fhir
-      - shr
-      # - opencr
-      - isanteplus-demo
-      - isanteplus-test
+
   ###
   # OpenCR
   ###
   opencr:
     container_name: opencr
     hostname: opencr
-    build: ./docker/opencr
-    # ports:
-    #   - "${CR_PORT}:3000"
-    # depends_on:
-    #   - opencr-fhir
-    #   - opencr-es
-    restart: on-failure
+    image: intrahealth/opencr:fdb3d44
+    restart: unless-stopped
     environment:
       - NODE_ENV=docker
+      - HAPI_FHIR_URL=http://opencr-fhir:8080/hapi-fhir-jpaserver/fhir/metadata
     networks:
       - sedish
-  opencr-fhir-new:
-    image: "hapiproject/hapi:latest"
-    container_name: opencr-fhir-new
-    hostname: opencr-fhir-new
-    # ports:
-    #   - "8090:8080"
-    # configs:
-    #   - source: ./configs/application.yaml
-    #     target: /data/hapi/application.yaml
     volumes:
-      - ./configs/application.yaml:/data/hapi/application.yaml
-    environment:
-      #SPRING_CONFIG_LOCATION: '/data/hapi/application.yaml'
-      SPRING_DATASOURCE_URL: 'jdbc:postgresql://shr-db.chijnl5rwr2c.eu-central-1.rds.amazonaws.com:5432/opencr'
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-      SPRING_DATASOURCE_USERNAME: opencr
-      SPRING_DATASOURCE_PASSWORD: opencr
-    networks:
-      - sedish
+      - ./configs/opencr/config_docker_template.json:/src/server/config/config_docker.json
+      - ./configs/opencr/mediator.json:/src/server/config/mediator.json
+      - ./configs/opencr/decisionRules.json:/src/server/config/decisionRules.json
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/src/server/serverCertificates/server_key.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/src/server/serverCertificates/server_cert.pem   
+  
   opencr-fhir:
-    build: ./docker/opencr-hapi
+    image: "hapiproject/hapi:latest"
     container_name: opencr-fhir
+    hostname: opencr-fhir
     restart: unless-stopped
-    ports:
-      - "${CR_FHIR_PORT}:8080"
-    cpus: .5
-    mem_limit: 1GB
+    volumes:
+      - cr-data:/data/hapi
+      - ./configs/opencr-hapi/hapi.properties:/conf/hapi/hapi.properties
+    environment:
+      JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
     networks:
       - sedish
   opencr-es:
@@ -110,12 +77,8 @@ services:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     volumes:
-      - data013:/usr/share/elasticsearch/data
+      - esdata:/usr/share/elasticsearch/data
     ports:
       - "${CR_ES_PORT}:9200"
     networks:
@@ -157,6 +120,14 @@ services:
   # iSantePlus
   ###
   isanteplus-demo:
+    # image: ghcr.io/isanteplus/isanteplus:latest
+    # restart: unless-stopped
+    # env_file:
+    #     - ./openmrs/isanteplus_demo/openmrs-server.env
+    # volumes:
+    #   - openmrs-data:/openmrs/data
+    # networks:
+    #   - sedish
     container_name: isanteplus-demo
     hostname: isanteplus-demo
     build: ./docker/openmrs-server
@@ -169,12 +140,13 @@ services:
     networks:
       - sedish
     ports:
-      - 8000:8000
+      - 8001:8000
+      - 8090:8080
 
   isanteplus-test:
     container_name: isanteplus-test
     hostname: isanteplus-test
-    build: ./docker/openmrs-server
+    build: ./docker/openmrs-server-2
     restart: unless-stopped
     env_file:
         - ./openmrs/isanteplus_test/openmrs-server.env
@@ -185,6 +157,7 @@ services:
       - sedish
     ports:
       - 8001:8000
+      - 8090:8080
   ###
   # OpenHIM
   ###
@@ -201,10 +174,10 @@ services:
       - 5000:5000
       - 5001:5001
     volumes:
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/cert1.pem:/usr/src/app/resources/certs/default/cert.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey1.pem:/usr/src/app/resources/certs/default/key.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/cert1.pem:/etc/letsencrypt/live/openhim.jembi.org/cert.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey1.pem:/etc/letsencrypt/live/openhim.jembi.org/key.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/usr/src/app/resources/certs/default/cert.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/usr/src/app/resources/certs/default/key.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/etc/letsencrypt/live/openhim.jembi.org/cert.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/etc/letsencrypt/live/openhim.jembi.org/key.pem
     healthcheck:
       test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
       interval: 30s
@@ -231,6 +204,8 @@ services:
     # entrypoint: bash
 
 volumes:
+  esdata:
+    driver: local
   data01:
     driver: local
   data02:
@@ -254,6 +229,8 @@ volumes:
   data013:
     driver: local    
   hapi-data:
+    driver: local
+  cr-data:
     driver: local
 networks:
   sedish:

@@ -11,7 +11,7 @@
     "api": {
       "username": "root@openhim.org",
       "password": "haitiopenhim",
-      "apiURL": "https://sedish-haiti.org:8080",
+      "apiURL": "https://core.sedish-haiti.org",
       "trustSelfSigned": true,
       "urn": ""
     }
