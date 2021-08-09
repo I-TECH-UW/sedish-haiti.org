@@ -90,17 +90,17 @@ services:
   shr:
     container_name: shr
     hostname: shr
-    build:
-      context: shr
+    image: ghcr.io/i-tech-uw/shared-health-record:v0.1.2
     ports:
       - "${SHR_PORT}:3000"
     restart: on-failure
     environment:
       - NODE_ENV=docker
-    depends_on: 
-      - shr-fhir
     networks:
       - sedish
+    volumes:
+      - ./configs/shr/config_docker_template.json:/app/config/config_docker.json
+      - ./configs/shr/mediator_docker.json:/app/config/mediator_docker.json
   shr-fhir:
     image: "hapiproject/hapi:latest"
     container_name: shr-fhir
@@ -156,8 +156,8 @@ services:
     networks:
       - sedish
     ports:
-      - 8001:8000
-      - 8090:8080
+      - 8002:8000
+      - 8091:8080
   ###
   # OpenHIM
   ###
