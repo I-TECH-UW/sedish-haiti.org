@@ -30,11 +30,24 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org:/etc/letsencrypt
+      - certs:/etc/letsencrypt
       - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./docker/nginx/data/www:/var/www
     networks:
       - sedish
+
+  certbot:
+    image: certbot/dns-route53
+    container_name: certbot
+    entrypoint: "certbot certonly -n --agree-tos --email pmanko@uw.edu -d sedish-haiti.org -d '*.sedish-haiti.org' --dns-route53 --preferred-challenges=dns"
+    environment:
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    volumes:
+    - certs:/etc/letsencrypt
+    - letsencrypt:/var/lib/letsencrypt
+    networks:
+    - sedish
 
   ###
   # OpenCR
@@ -70,6 +83,7 @@ services:
       - sedish
   opencr-es:
     container_name: es
+    hostname: es
     image: intrahealth/elasticsearch:latest
     restart: unless-stopped
     environment:
@@ -79,8 +93,6 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
       - esdata:/usr/share/elasticsearch/data
-    ports:
-      - "${CR_ES_PORT}:9200"
     networks:
       - sedish
 
@@ -91,9 +103,7 @@ services:
     container_name: shr
     hostname: shr
     image: ghcr.io/i-tech-uw/shared-health-record:v0.1.2
-    ports:
-      - "${SHR_PORT}:3000"
-    restart: on-failure
+    restart: unless-stopped
     environment:
       - NODE_ENV=docker
     networks:
@@ -106,8 +116,6 @@ services:
     container_name: shr-fhir
     hostname: shr-fhir
     restart: unless-stopped
-    ports:
-      - "${SHR_FHIR_PORT}:8080"
     volumes:
       - hapi-data:/data/hapi
       - ./docker/shr/hapi.properties:/conf/hapi/hapi.properties
@@ -231,6 +239,10 @@ volumes:
   hapi-data:
     driver: local
   cr-data:
+    driver: local
+  certs:
+    driver: local
+  letsencrypt: 
     driver: local
 networks:
   sedish:
