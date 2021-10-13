@@ -81,6 +81,7 @@ services:
       JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
     networks:
       - sedish
+  
   opencr-es:
     container_name: es
     hostname: es
@@ -111,6 +112,7 @@ services:
     volumes:
       - ./configs/shr/config_docker_template.json:/app/config/config_docker.json
       - ./configs/shr/mediator_docker.json:/app/config/mediator_docker.json
+  
   shr-fhir:
     image: "hapiproject/hapi:latest"
     container_name: shr-fhir
@@ -127,29 +129,31 @@ services:
   ###
   # iSantePlus
   ###
-  # isanteplus-demo:
-  #   # image: ghcr.io/isanteplus/isanteplus:latest
-  #   # restart: unless-stopped
-  #   # env_file:
-  #   #     - ./openmrs/isanteplus_demo/openmrs-server.env
-  #   # volumes:
-  #   #   - openmrs-data:/openmrs/data
-  #   # networks:
-  #   #   - sedish
-  #   container_name: isanteplus-demo
-  #   hostname: isanteplus-demo
-  #   build: ./docker/openmrs-server
-  #   restart: unless-stopped
-  #   env_file:
-  #       - ./openmrs/isanteplus_demo/openmrs-server.env
-  #   volumes:
-  #     - ./openmrs/isanteplus_demo/distribution:/openmrs/distribution
-  #     - openmrs-data:/openmrs/data
-  #   networks:
-  #     - sedish
-  #   ports:
-  #     - 8001:8000
-  #     - 8090:8080
+  isanteplus-demo:
+    container_name: isanteplus-demo
+    hostname: isanteplus-demo
+    image: ghcr.io/isanteplus/isanteplus:latest
+    restart: unless-stopped
+    env_file:
+        - ./openmrs/isanteplus_demo/openmrs-server.env
+    volumes:
+      - openmrs-data:/openmrs/data
+    networks:
+      - sedish
+    # container_name: isanteplus-demo
+    # hostname: isanteplus-demo
+    # build: ./docker/openmrs-server
+    # restart: unless-stopped
+    # env_file:
+    #     - ./openmrs/isanteplus_demo/openmrs-server.env
+    # volumes:
+    #   - ./openmrs/isanteplus_demo/distribution:/openmrs/distribution
+    #   - openmrs-data:/openmrs/data
+    # networks:
+    #   - sedish
+    # ports:
+    #   - 8001:8000
+    #   - 8090:8080
 
   isanteplus-test:
     container_name: isanteplus-test
