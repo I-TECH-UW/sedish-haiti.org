@@ -32,7 +32,7 @@ services:
     volumes:
       - certs:/etc/letsencrypt
       - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./docker/nginx/data/www:/var/www
+      - nginx-data:/var/www
     networks:
       - sedish
 
@@ -120,7 +120,7 @@ services:
     restart: unless-stopped
     volumes:
       - hapi-data:/data/hapi
-      - ./docker/shr/hapi.properties:/conf/hapi/hapi.properties
+      - ./configs/shr/hapi.properties:/conf/hapi/hapi.properties
     environment:
       JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
     networks:
@@ -140,20 +140,6 @@ services:
       - openmrs-data:/openmrs/data
     networks:
       - sedish
-    # container_name: isanteplus-demo
-    # hostname: isanteplus-demo
-    # build: ./docker/openmrs-server
-    # restart: unless-stopped
-    # env_file:
-    #     - ./openmrs/isanteplus_demo/openmrs-server.env
-    # volumes:
-    #   - ./openmrs/isanteplus_demo/distribution:/openmrs/distribution
-    #   - openmrs-data:/openmrs/data
-    # networks:
-    #   - sedish
-    # ports:
-    #   - 8001:8000
-    #   - 8090:8080
 
   isanteplus-test:
     container_name: isanteplus-test
@@ -247,6 +233,8 @@ volumes:
   certs:
     driver: local
   letsencrypt: 
+    driver: local
+  nginx-data: 
     driver: local
 networks:
   sedish:
