@@ -1,16 +1,16 @@
 {
     "urn": "urn:uuid:4bc42b2f-b5a8-473d-8207-5dd5c61f0c4a",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "name": "Client Registry",
     "description": "Haiti Client Registry",
     "config": {
         "fhirServer": {
             "username": "hapi",
             "password": "hapi",
-            "baseURL": "https://opencr-fhir.sedish-haiti.org/hapi-fhir-jpaserver/fhir"
+            "baseURL": "http://opencr-fhir/fhir"
         },
         "elastic": {
-            "server": "http://sedish-haiti.org:9200",
+            "server": "http://es:9200",
             "username": "",
             "password": "",
             "max_compilations_rate": "10000/1m",
@@ -111,9 +111,9 @@
         {
             "requestBody": true,
             "responseBody": true,
-            "name": "Add Patients",
-            "description": "Post a new patient into the client registry",
-            "urlPattern": "^/Patient$",
+            "name": "OpenCR Resource Endpoint",
+            "description": "Add or Get Resource in OpenCR",
+            "urlPattern": "^/CR/fhir$",
             "matchContentRegex": null,
             "matchContentXpath": null,
             "matchContentValue": null,
@@ -138,77 +138,10 @@
                     "type": "http",
                     "status": "enabled",
                     "forwardAuthHeader": false,
-                    "name": "Add Patient",
-                    "secured": false,
-                    "host": "opencr.sedish-haiti.org",
-                    "port": 80,
-                    "path": "/Patient",
-                    "pathTransform": "",
-                    "primary": true,
-                    "username": "",
-                    "password": ""
-                }
-            ],
-            "authType": "private",
-            "whitelist": [],
-            "allow": [
-                "openmrs"
-            ],
-            "type": "http",
-            "methods": [
-                "POST"
-            ],
-            "updatedBy": {
-                "id": "5d5d94607329d74724442f67",
-                "name": "Super User"
-            }
-        },
-        {
-            "methods": [
-                "GET"
-            ],
-            "type": "http",
-            "allow": [
-                "openmrs"
-            ],
-            "whitelist": [],
-            "authType": "private",
-            "matchContentTypes": [],
-            "properties": [],
-            "txViewAcl": [],
-            "txViewFullAcl": [],
-            "txRerunAcl": [],
-            "status": "enabled",
-            "rewriteUrls": false,
-            "addAutoRewriteRules": true,
-            "autoRetryEnabled": false,
-            "autoRetryPeriodMinutes": 60,
-            "updatedBy": {
-                "id": "5d5d94607329d74724442f67",
-                "name": "Super User"
-            },
-            "requestBody": true,
-            "responseBody": true,
-            "description": "Get patient from the client registry",
-            "urlPattern": "^/fhir/",
-            "matchContentRegex": null,
-            "matchContentXpath": null,
-            "matchContentValue": null,
-            "matchContentJson": null,
-            "pollingSchedule": null,
-            "tcpHost": null,
-            "tcpPort": null,
-            "rewriteUrlsConfig": [],
-            "alerts": [],
-            "routes": [
-                {
-                    "type": "http",
-                    "status": "enabled",
-                    "forwardAuthHeader": false,
-                    "name": "Get Patients",
-                    "secured": false,
-                    "host": "opencr.sedish-haiti.org",
-                    "port": 80,
+                    "name": "Add/Update/Get Resources",
+                    "secured": true,
+                    "host": "opencr",
+                    "port": 3000,
                     "path": "",
                     "pathTransform": "",
                     "primary": true,
@@ -216,22 +149,34 @@
                     "password": ""
                 }
             ],
-            "name": "Get Patients"
+            "authType": "private",
+            "whitelist": [],
+            "allow": [
+                "openmrs"
+            ],
+            "type": "http",
+            "methods": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE"
+            ],
+            "updatedBy": {
+                "id": "5d5d94607329d74724442f67",
+                "name": "Super User"
+            }
         }
     ],
     "endpoints": [
         {
             "name": "Activate Client Registry",
             "host": "opencr.sedish-haiti.org",
-            "path": "/Patient",
+            "path": "/fhir",
             "port": 80,
             "primary": true,
             "forwardAuthHeader": false,
             "status": "enabled",
             "type": "http"
         }
-    ],
-    "_uptime": 2201.945,
-    "_lastHeartbeat": "2017-12-15T03:47:03.365Z",
-    "_configModifiedTS": "2017-12-15T02:52:49.054Z"
+    ]
 }

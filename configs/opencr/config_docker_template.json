@@ -11,7 +11,7 @@
     "api": {
       "username": "root@openhim.org",
       "password": "haitiopenhim",
-      "apiURL": "https://sedish-haiti.org:8080",
+      "apiURL": "https://core.sedish-haiti.org",
       "trustSelfSigned": true,
       "urn": ""
     },
@@ -20,10 +20,10 @@
   "fhirServer": {
     "username": "hapi",
     "password": "hapi",
-    "baseURL": "https://opencr-fhir.sedish-haiti.org/hapi-fhir-jpaserver/fhir"
+    "baseURL": "http://opencr-fhir:8080/fhir"
   },
   "elastic": {
-    "server": "http://sedish-haiti.org:9200",
+    "server": "http://es:9200",
     "username": "",
     "password": "",
     "max_compilations_rate": "10000/1m",
@@ -73,7 +73,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2020-09-03T07:48:41"
+    "lastFHIR2ESSync": "2021-10-03T02:16:30"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"

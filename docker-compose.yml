@@ -16,15 +16,6 @@ version: '2.4'
 # `docker run --hostname openhim-placeholder --network shared-health-record_sedish --name openhim-placeholder -e MESSAGE=OPENHIM-PLACEHOLDER -e PORT=3000 -d docker.io/sroze/landing-page:latest`
 
 services:
-  static:
-    image: docker.io/sroze/landing-page:latest
-    container_name: homepage
-    hostname: homepage
-    environment: 
-      - MESSAGE=SEDISH-HAITI-DEFAULT
-    networks: 
-      - sedish
-
   ###
   # nginx reverse proxy
   # TODO: set up to use non-root user. See https://www.rockyourcode.com/run-docker-nginx-as-non-root-user/
@@ -34,68 +25,75 @@ services:
     image: nginx:latest
     container_name: nginx
     hostname: nginx
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org:/etc/letsencrypt
-      - ./docker/nginx/data/nginx.conf:/etc/nginx/nginx.conf
-      - ./docker/nginx/data/www:/var/www
+      - certs:/etc/letsencrypt
+      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - nginx-data:/var/www
     networks:
       - sedish
-    depends_on: 
-      - static
-      - openhim-console
-      - openhim-core
-      - opencr-fhir
-      - shr-fhir
-      - shr
-      - opencr
-      - isanteplus-demo
+
+  certbot:
+    image: certbot/dns-route53
+    container_name: certbot
+    entrypoint: "certbot certonly -n --agree-tos --email pmanko@uw.edu -d sedish-haiti.org -d '*.sedish-haiti.org' --dns-route53 --preferred-challenges=dns"
+    environment:
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    volumes:
+    - certs:/etc/letsencrypt
+    - letsencrypt:/var/lib/letsencrypt
+    networks:
+    - sedish
+
   ###
   # OpenCR
   ###
   opencr:
     container_name: opencr
     hostname: opencr
-    build: ./docker/opencr
-    ports:
-      - "${CR_PORT}:3000"
-    depends_on:
-      - opencr-fhir
-      - opencr-es
-    restart: on-failure
+    image: intrahealth/opencr:fdb3d44
+    restart: unless-stopped
     environment:
       - NODE_ENV=docker
+      - HAPI_FHIR_URL=http://opencr-fhir:8080/hapi-fhir-jpaserver/fhir/metadata
     networks:
       - sedish
+    volumes:
+      - ./configs/opencr/config_docker_template.json:/src/server/config/config_docker.json
+      - ./configs/opencr/mediator.json:/src/server/config/mediator.json
+      - ./configs/opencr/decisionRules.json:/src/server/config/decisionRules.json
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/src/server/serverCertificates/server_key.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/src/server/serverCertificates/server_cert.pem   
+  
   opencr-fhir:
-    build: ./docker/opencr-hapi
+    image: "hapiproject/hapi:latest"
     container_name: opencr-fhir
     hostname: opencr-fhir
     restart: unless-stopped
-    ports:
-      - "${CR_FHIR_PORT}:8080"
-    cpus: .5
-    mem_limit: 1GB
+    volumes:
+      - cr-data:/data/hapi
+      - ./configs/opencr-hapi/hapi.properties:/conf/hapi/hapi.properties
+    environment:
+      JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
     networks:
       - sedish
+  
   opencr-es:
     container_name: es
+    hostname: es
     image: intrahealth/elasticsearch:latest
+    restart: unless-stopped
     environment:
       - node.name=es01
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     volumes:
-      - data01:/usr/share/elasticsearch/data
-    ports:
-      - "${CR_ES_PORT}:9200"
+      - esdata:/usr/share/elasticsearch/data
     networks:
       - sedish
 
@@ -105,27 +103,24 @@ services:
   shr:
     container_name: shr
     hostname: shr
-    build:
-      context: shr
-    ports:
-      - "${SHR_PORT}:3000"
-    restart: on-failure
+    image: ghcr.io/i-tech-uw/shared-health-record:v0.1.2
+    restart: unless-stopped
     environment:
       - NODE_ENV=docker
-    depends_on: 
-      - shr-fhir
     networks:
       - sedish
+    volumes:
+      - ./configs/shr/config_docker_template.json:/app/config/config_docker.json
+      - ./configs/shr/mediator_docker.json:/app/config/mediator_docker.json
+  
   shr-fhir:
     image: "hapiproject/hapi:latest"
     container_name: shr-fhir
     hostname: shr-fhir
     restart: unless-stopped
-    ports:
-      - "${SHR_FHIR_PORT}:8080"
     volumes:
       - hapi-data:/data/hapi
-      - ./docker/shr/hapi.properties:/conf/hapi/hapi.properties
+      - ./configs/shr/hapi.properties:/conf/hapi/hapi.properties
     environment:
       JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
     networks:
@@ -137,12 +132,11 @@ services:
   isanteplus-demo:
     container_name: isanteplus-demo
     hostname: isanteplus-demo
-    build: ./docker/openmrs-server
+    image: ghcr.io/isanteplus/isanteplus:latest
     restart: unless-stopped
     env_file:
         - ./openmrs/isanteplus_demo/openmrs-server.env
     volumes:
-      - ./openmrs/isanteplus_demo/distribution:/openmrs/distribution
       - openmrs-data:/openmrs/data
     networks:
       - sedish
@@ -150,15 +144,18 @@ services:
   isanteplus-test:
     container_name: isanteplus-test
     hostname: isanteplus-test
-    build: ./docker/openmrs-server
+    build: ./docker/openmrs-server-2
     restart: unless-stopped
     env_file:
-        - ./openmrs/isanteplus_demo/openmrs-server.env
+        - ./openmrs/isanteplus_test/openmrs-server.env
     volumes:
-      - ./openmrs/isanteplus_demo/distribution:/openmrs/distribution
-      - openmrs-data:/openmrs/data
+      - ./openmrs/isanteplus_test/distribution:/openmrs/distribution
+      - openmrs-data2:/openmrs/data
     networks:
       - sedish
+    ports:
+      - 8002:8000
+      - 8091:8080
   ###
   # OpenHIM
   ###
@@ -175,10 +172,10 @@ services:
       - 5000:5000
       - 5001:5001
     volumes:
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/cert1.pem:/usr/src/app/resources/certs/default/cert.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey1.pem:/usr/src/app/resources/certs/default/key.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/cert1.pem:/etc/letsencrypt/live/openhim.jembi.org/cert.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey1.pem:/etc/letsencrypt/live/openhim.jembi.org/key.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/usr/src/app/resources/certs/default/cert.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/usr/src/app/resources/certs/default/key.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/etc/letsencrypt/live/openhim.jembi.org/cert.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/etc/letsencrypt/live/openhim.jembi.org/key.pem
     healthcheck:
       test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
       interval: 30s
@@ -205,6 +202,8 @@ services:
     # entrypoint: bash
 
 volumes:
+  esdata:
+    driver: local
   data01:
     driver: local
   data02:
@@ -213,11 +212,29 @@ volumes:
     driver: local
   openmrs-data:
     driver: local
+  openmrs-data2:
+    driver: local
   mongo-data:
     driver: local
   shr:
     driver: local
   hapi-data:
+    driver: local
+  data011:
+    driver: local
+  data012:
+    driver: local
+  data013:
+    driver: local    
+  hapi-data:
+    driver: local
+  cr-data:
+    driver: local
+  certs:
+    driver: local
+  letsencrypt: 
+    driver: local
+  nginx-data: 
     driver: local
 networks:
   sedish:

@@ -43,3 +43,5 @@ ansible.p12
 
 server/log
 *.log
+
+hapi.properties

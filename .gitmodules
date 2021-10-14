@@ -1,3 +1,0 @@
-[submodule "docker/opencr"]
-	path = docker/opencr
-	url = https://github.com/intrahealth/client-registry.git

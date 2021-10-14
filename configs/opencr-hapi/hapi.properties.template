@@ -1,0 +1,5 @@
+datasource.driver=org.postgresql.Driver
+datasource.url=
+hibernate.dialect=org.hibernate.dialect.PostgreSQL95Dialect
+datasource.username=
+datasource.password=
