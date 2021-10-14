@@ -45,3 +45,5 @@ server/log
 *.log
 
 hapi.properties
+configs/shr/.env
+configs/opencr-hapi/.env

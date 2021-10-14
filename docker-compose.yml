@@ -77,9 +77,8 @@ services:
     restart: unless-stopped
     volumes:
       - cr-data:/data/hapi
-      - ./configs/opencr-hapi/hapi.properties:/conf/hapi/hapi.properties
-    environment:
-      JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
+    env_file:
+      - configs/opencr-hapi/.env
     networks:
       - sedish
   
@@ -123,9 +122,8 @@ services:
     restart: unless-stopped
     volumes:
       - hapi-data:/data/hapi
-      - ./configs/shr/hapi.properties:/conf/hapi/hapi.properties
-    environment:
-      JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
+    env_file:
+      - configs/shr/.env
     networks:
       - sedish
   
