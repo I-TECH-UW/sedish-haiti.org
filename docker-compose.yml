@@ -55,11 +55,12 @@ services:
   opencr:
     container_name: opencr
     hostname: opencr
+    #image: intrahealth/opencr:latest
     image: intrahealth/opencr:fdb3d44
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
-      - HAPI_FHIR_URL=http://opencr-fhir:8080/hapi-fhir-jpaserver/fhir/metadata
+      - HAPI_FHIR_URL=http://opencr-fhir:8080/fhir/metadata
     networks:
       - sedish
     volumes:
@@ -87,6 +88,8 @@ services:
     hostname: es
     image: intrahealth/elasticsearch:latest
     restart: unless-stopped
+    ports:
+      - 9200
     environment:
       - node.name=es01
       - discovery.type=single-node
@@ -144,7 +147,7 @@ services:
   isanteplus-test:
     container_name: isanteplus-test
     hostname: isanteplus-test
-    build: ./docker/openmrs-server-2
+    build: ./docker/openmrs-server
     restart: unless-stopped
     env_file:
         - ./openmrs/isanteplus_test/openmrs-server.env
