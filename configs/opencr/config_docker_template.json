@@ -73,7 +73,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2021-10-03T02:16:30"
+    "lastFHIR2ESSync": "2021-10-14T18:31:24"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"

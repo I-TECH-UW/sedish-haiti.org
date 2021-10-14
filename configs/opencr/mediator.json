@@ -1,13 +1,11 @@
 {
     "urn": "urn:uuid:4bc42b2f-b5a8-473d-8207-5dd5c61f0c4a",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "name": "Client Registry",
     "description": "Haiti Client Registry",
     "config": {
         "fhirServer": {
-            "username": "hapi",
-            "password": "hapi",
-            "baseURL": "http://opencr-fhir/fhir"
+            "baseURL": "http://opencr-fhir:8080/fhir"
         },
         "elastic": {
             "server": "http://es:9200",
