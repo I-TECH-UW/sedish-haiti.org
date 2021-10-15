@@ -38,7 +38,7 @@ services:
   certbot:
     image: certbot/dns-route53
     container_name: certbot
-    entrypoint: "certbot certonly -n --agree-tos --email pmanko@uw.edu -d sedish-haiti.org -d '*.sedish-haiti.org' --dns-route53 --preferred-challenges=dns"
+    entrypoint: "certbot certonly -n --agree-tos --email pmanko@uw.edu -d '${DOMAIN}'' -d '*${DOMAIN}' --dns-route53 --preferred-challenges=dns"
     environment:
     - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
