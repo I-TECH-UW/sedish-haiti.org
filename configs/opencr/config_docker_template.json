@@ -10,9 +10,15 @@
   "mediator": {
     "api": {
       "username": "root@openhim.org",
+<<<<<<< HEAD:configs/opencr/config_docker_template.json
       "password": "haitiopenhim",
       "apiURL": "https://core.sedish-haiti.org",
       "trustSelfSigned": true,
+=======
+      "password": "haiti-sedish",
+      "apiURL": "https://core.isanteplus-pilot.org",
+      "trustSelfSigned": false,
+>>>>>>> a6750a1... iSantePlus Pilot Server Configuration:docker/opencr/server/config/config_docker_template.json
       "urn": ""
     },
     "register": true
@@ -20,10 +26,17 @@
   "fhirServer": {
     "username": "hapi",
     "password": "hapi",
+<<<<<<< HEAD:configs/opencr/config_docker_template.json
     "baseURL": "http://opencr-fhir:8080/fhir"
   },
   "elastic": {
     "server": "http://es:9200",
+=======
+    "baseURL": "http://opencr-fhir:8080/hapi-fhir-jpaserver/fhir"
+  },
+  "elastic": {
+    "server": "http://opencr-es:9200",
+>>>>>>> a6750a1... iSantePlus Pilot Server Configuration:docker/opencr/server/config/config_docker_template.json
     "username": "",
     "password": "",
     "max_compilations_rate": "10000/1m",
@@ -40,14 +53,6 @@
     "tool": "elasticsearch"
   },
   "clients": [
-    {
-      "id": "openmrs_user",
-      "displayName": "OpenMRS"
-    },
-    {
-      "id": "lims",
-      "displayName": "Lab Info Management System"
-    }
   ],
   "systems": {
     "CRBaseURI": "http://openclientregistry.org/fhir",

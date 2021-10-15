@@ -7,8 +7,8 @@
       "fhirServer": {
         "username": "shr",
         "password": "shr123",
-        "baseURL": "http://shr-fhir/fhir",
-        "mpiURL": "https://openhim.sedish-haiti.org/CR/fhir"
+        "baseURL": "http://shr-fhir:8080/fhir",
+        "mpiURL": "https://openhim.isanteplus-pilot.org/CR/fhir"
       }
   },
   "configDefs": [
@@ -82,8 +82,13 @@
           "forwardAuthHeader": false,
           "name": "Create/Update Resource",
           "secured": false,
+<<<<<<< HEAD:configs/shr/mediator_docker.json
           "host": "shr",
           "port": 3000,
+=======
+          "host": "shr-fhir",
+          "port": 8080,
+>>>>>>> a6750a1... iSantePlus Pilot Server Configuration:shr/config/mediator_docker.json
           "path": "",
           "pathTransform": "s/SHR\\/fhir/fhir/g",
           "primary": true,
@@ -138,8 +143,13 @@
           "forwardAuthHeader": false,
           "name": "Get IPS",
           "secured": false,
+<<<<<<< HEAD:configs/shr/mediator_docker.json
           "host": "shr",
           "port": 3000,
+=======
+          "host": "shr-fhir",
+          "port": 8080,
+>>>>>>> a6750a1... iSantePlus Pilot Server Configuration:shr/config/mediator_docker.json
           "path": "",
           "pathTransform": "s/SHR\\/fhir\\/ips/ips/g",
           "primary": true,
@@ -165,9 +175,15 @@
   "endpoints": [
       {
           "name": "SHR Endpoint",
+<<<<<<< HEAD:configs/shr/mediator_docker.json
           "host": "shr",
           "path": "/",
           "port": 3000,
+=======
+          "host": "shr-fhir",
+          "path": "/",
+          "port": 8080,
+>>>>>>> a6750a1... iSantePlus Pilot Server Configuration:shr/config/mediator_docker.json
           "primary": true,
           "forwardAuthHeader": false,
           "status": "enabled",

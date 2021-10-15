@@ -168,7 +168,7 @@
     "endpoints": [
         {
             "name": "Activate Client Registry",
-            "host": "opencr.sedish-haiti.org",
+            "host": "opencr.isanteplus-pilot.org",
             "path": "/fhir",
             "port": 80,
             "primary": true,

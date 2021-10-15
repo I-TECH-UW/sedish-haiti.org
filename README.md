@@ -63,3 +63,8 @@ Proof of Concept Environment Setup
 
 5. Clone local sync pipeline code
 
+
+
+#######
+openhim: http://18.214.76.90/#!/transactions
+opencr-fhir: 

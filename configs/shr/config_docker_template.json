@@ -11,7 +11,7 @@
     "api": {
       "username": "root@openhim.org",
       "password": "haitiopenhim",
-      "apiURL": "https://core.sedish-haiti.org",
+      "apiURL": "https://core.isanteplus-pilot.org",
       "trustSelfSigned": true,
       "urn": ""
     }
@@ -19,7 +19,7 @@
   "fhirServer": {
     "username": "shr",
     "password": "shr123",
-    "mpiURL": "https://sedish-haiti.org:5000/CR/fhir",
+    "mpiURL": "https://openhim.isanteplus-pilot.org/CR/fhir",
     "baseURL": "http://shr-fhir/fhir"
   },
 
@@ -28,13 +28,5 @@
     "reportRelationship": "patientreport"
   },
   "clients": [
-    {
-      "id": "openmrs_user",
-      "displayName": "OpenMRS"
-    },
-    {
-      "id": "lims",
-      "displayName": "Lab Info Management System"
-    }
   ]
 }
