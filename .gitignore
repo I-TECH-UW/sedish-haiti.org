@@ -3,8 +3,6 @@ openmrs
 openmrs/*
 docker/isanteplus/openmrs-runtime.properties
 
-/config/*
-
 # node
 node_modules
 

@@ -32,13 +32,15 @@ services:
       - certs:/etc/letsencrypt
       - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf
       - nginx-data:/var/www
+      - /home/ubuntu/nginx/.htpasswd:/etc/nginx/.htpasswd
+
     networks:
       - sedish
 
   certbot:
     image: certbot/dns-route53
     container_name: certbot
-    entrypoint: "certbot certonly -n --agree-tos --email pmanko@uw.edu -d '${DOMAIN}'' -d '*${DOMAIN}' --dns-route53 --preferred-challenges=dns"
+    entrypoint: "certbot certonly -n --agree-tos --email pmanko@uw.edu -d '${DOMAIN}' -d '*.${DOMAIN}' --dns-route53 --preferred-challenges=dns"
     environment:
     - AWS_ACCESS_KEY_ID
     - AWS_SECRET_ACCESS_KEY
@@ -63,15 +65,16 @@ services:
     networks:
       - sedish
     volumes:
-      - ./configs/opencr/config_docker_template.json:/src/server/config/config_docker.json
+      - ./configs/opencr/config_docker.json:/src/server/config/config_docker.json
       - ./configs/opencr/mediator.json:/src/server/config/mediator.json
       - ./configs/opencr/decisionRules.json:/src/server/config/decisionRules.json
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/src/server/serverCertificates/server_key.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/src/server/serverCertificates/server_cert.pem   
+      - /home/ubuntu/local/letsencrypt/live/isanteplus-pilot.org/privkey.pem:/src/server/serverCertificates/server_key.pem
+      - /home/ubuntu/local/letsencrypt/live/isanteplus-pilot.org/fullchain.pem:/src/server/serverCertificates/server_cert.pem   
   
   opencr-fhir:
-    image: "hapiproject/hapi:latest"
+    image: hapiproject/hapi:latest
     container_name: opencr-fhir
+    hostname: opencr-fhir
     restart: unless-stopped
     volumes:
       - cr-data:/data/hapi
@@ -85,8 +88,6 @@ services:
     hostname: es
     image: intrahealth/elasticsearch:latest
     restart: unless-stopped
-    ports:
-      - 9200
     environment:
       - node.name=es01
       - discovery.type=single-node
@@ -103,60 +104,56 @@ services:
   shr:
     container_name: shr
     hostname: shr
-    image: ghcr.io/i-tech-uw/shared-health-record:v0.1.2
+    image: ghcr.io/i-tech-uw/shared-health-record:latest
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
     networks:
       - sedish
     volumes:
-      - ./configs/shr/config_docker_template.json:/app/config/config_docker.json
+      - ./configs/shr/config_docker.json:/app/config/config_docker.json
       - ./configs/shr/mediator_docker.json:/app/config/mediator_docker.json
   
   shr-fhir:
-    image: "hapiproject/hapi:v5.0.0"
+    image: "hapiproject/hapi:latest"
     container_name: shr-fhir
     hostname: shr-fhir
     restart: unless-stopped
     volumes:
       - hapi-data:/data/hapi
     env_file:
-      - configs/shr/.env
+      - ./configs/shr/.env
     networks:
       - sedish
 
   ###
   # iSantePlus
   ###
-  isanteplus-demo:
-    container_name: isanteplus-demo
-    hostname: isanteplus-demo
-    image: ghcr.io/isanteplus/isanteplus:latest
+  isanteplus:
+    container_name: isanteplus
+    hostname: isanteplus
+    image: ghcr.io/isanteplus/docker-isanteplus-server:latest
     restart: unless-stopped
     env_file:
-        - ./openmrs/isanteplus/openmrs-server.env
+        - ./configs/openmrs/openmrs-server.env
     volumes:
       - openmrs-data:/openmrs/data
     networks:
       - sedish
-    ports:
-      - 8000:8000
 
   isanteplus-two:
     container_name: isanteplus-two
     hostname: isanteplus-two
-    build: ./docker/openmrs-server
+    image: ghcr.io/isanteplus/docker-isanteplus-server:latest
     restart: unless-stopped
     env_file:
-        - ./openmrs/isanteplus_test/openmrs-server.env
+        - ./configs/openmrs/openmrs-server-fsc.env
     volumes:
-      - ./openmrs/isanteplus_test/distribution:/openmrs/distribution
       - openmrs-data2:/openmrs/data
     networks:
       - sedish
-    ports:
-      - 8002:8000
-      - 8091:8080
+    # ports:
+    #     - 8001:8001
   ###
   # OpenHIM
   ###
@@ -173,11 +170,6 @@ services:
       - 8080:8080
       - 5000:5000
       - 5001:5001
-    # volumes:
-      # - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/usr/src/app/resources/certs/default/cert.pem
-      # - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/usr/src/app/resources/certs/default/key.pem
-      # - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/etc/letsencrypt/live/openhim.jembi.org/cert.pem
-      # - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/etc/letsencrypt/live/openhim.jembi.org/key.pem
     healthcheck:
       test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
       interval: 30s
@@ -185,16 +177,13 @@ services:
       retries: 3
     networks:
       - sedish
-    # volumes:
-    #   - ./config/openhim-core/production.json:/usr/src/app/config/production.json
-    #   - /etc/letsencrypt/archive/isanteplus-pilot.org:/etc/letsencrypt/isanteplus-pilot.org
 
   openhim-console:
     container_name: openhim-console
     image: jembi/openhim-console:latest
     restart: unless-stopped
     volumes:
-      - ./config/openhim-console/default.json:/usr/share/nginx/html/config/default.json
+      - ./configs/openhim-console/default.json:/usr/share/nginx/html/config/default.json
     healthcheck:
       test: "curl -sS http://openhim-console || exit 1"
       interval: 30s

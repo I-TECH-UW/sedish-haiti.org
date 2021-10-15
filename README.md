@@ -1,6 +1,4 @@
-# sedish-haiti.org Demo Site
-
-Proof of Concept Environment Setup
+# iSantePlus Pilot Site
 
 # Components
 

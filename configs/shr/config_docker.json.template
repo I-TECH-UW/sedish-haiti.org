@@ -20,7 +20,7 @@
     "username": "shr",
     "password": "shr123",
     "mpiURL": "https://openhim.isanteplus-pilot.org/CR/fhir",
-    "baseURL": "http://shr-fhir/fhir"
+    "baseURL": "http://shr-fhir:8080/fhir"
   },
 
   "structureDefinition": {

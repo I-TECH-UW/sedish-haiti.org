@@ -10,7 +10,7 @@
   "mediator": {
     "api": {
       "username": "root@openhim.org",
-      "password": "haiti-sedish",
+      "password": "",
       "apiURL": "https://core.isanteplus-pilot.org",
       "trustSelfSigned": false,
       "urn": ""
