@@ -48,3 +48,4 @@ hapi.properties
 configs/shr/.env
 configs/opencr-hapi/.env
 configs/opencr/config_ports.json
+configs/shr/config_ports.json

@@ -73,12 +73,19 @@ git clone https://github.com/I-TECH-UW/sedish-haiti.org.git
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d openhim-core openhim-console mongo-db opencr-es opencr-fhir shr-fhir nginx
 ```
+You should now be able to access the OpenHIM console at http://localhost. 
 
+Log in to the console, and set the admin password to `openhim` (for development) or the password of your choice.
+
+You can also set up Clients and Roles for the following possible systems:
+- postman for testing
+- each isanteplus instances
 #### Start up Mediators
-
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d shr opencr
 ```
+
+
 
 #### Start up iSantePlus
 ```sh
