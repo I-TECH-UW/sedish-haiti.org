@@ -2,114 +2,145 @@ version: '2.4'
 
 ## Port Assignments:
 ##  See .env file
+
+## Container debugging: 
+# 1. append the following lines to desired container 
+# 2. boot up the container using `docker-compose up -d`
+# 3 run `docker exec -it <container-name> bash` to start interactive shell
+# 
+#    tty: true
+#    stdin_open: true
+#    entrypoint: bash
+
+## Utility for booting up placeholder page:
+# `docker run --hostname openhim-placeholder --network shared-health-record_sedish --name openhim-placeholder -e MESSAGE=OPENHIM-PLACEHOLDER -e PORT=3000 -d docker.io/sroze/landing-page:latest`
+
 services:
+  ###
+  # nginx reverse proxy
+  # TODO: set up to use non-root user. See https://www.rockyourcode.com/run-docker-nginx-as-non-root-user/
+  # TODO: Run letsencrypt as docker container: https://hub.docker.com/r/certbot/certbot/
+  ###
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    hostname: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # OpenHIM Core API
+      - "5000:5000" # OpenHIM HTTPS
+      - "5001:5001" # OpenHIM HTTP
+      - "3000:3000" # OpenCR
+      - "8000:8000" # iSantePlus
+    volumes:
+      - ./configs/nginx/nginx.ports.conf:/etc/nginx/nginx.conf
+      - nginx-data:/var/www
+    networks:
+      - sedish
+
   ###
   # OpenCR
   ###
   opencr:
     container_name: opencr
-    build: ./docker/opencr
-    ports:
-      - "${CR_PORT}:3000"
-    depends_on:
-      - opencr-fhir-server
-      - opencr-es
-    restart: on-failure
+    hostname: opencr
+    #image: intrahealth/opencr:latest
+    image: intrahealth/opencr:fdb3d44
+    restart: unless-stopped
     environment:
       - NODE_ENV=docker
-  opencr-fhir-server:
-    build: ./docker/opencr-hapi
-    container_name: hapi-fhir
+      - HAPI_FHIR_URL=http://opencr-fhir:8080/fhir/metadata
+    networks:
+      - sedish
+    volumes:
+      - ./configs/opencr/config_ports.json:/src/server/config/config_docker.json
+      - ./configs/opencr/mediator_ports.json:/src/server/config/mediator.json
+      - ./configs/opencr/decisionRules.json:/src/server/config/decisionRules.json
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/src/server/serverCertificates/server_key.pem
+      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/src/server/serverCertificates/server_cert.pem   
+  
+  opencr-fhir:
+    image: "hapiproject/hapi:latest"
+    container_name: opencr-fhir
+    hostname: opencr-fhir
     restart: unless-stopped
-    ports:
-      - "${CR_FHIR_PORT}:8080"
-    cpus: .5
-    mem_limit: 1GB
+    volumes:
+      - cr-data:/data/hapi
+    networks:
+      - sedish
+  
   opencr-es:
     container_name: es
+    hostname: es
     image: intrahealth/elasticsearch:latest
+    restart: unless-stopped
     environment:
       - node.name=es01
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
     volumes:
-      - data01:/usr/share/elasticsearch/data
-    ports:
-      - "${CR_ES_PORT}:9200"
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+      - sedish
 
   ###
   # SHR
   ###
   shr:
     container_name: shr
-    image: intrahealth/opencr
-    ports:
-      - "3000:3000"
-    depends_on:
-      - fhir
-      - es
-    restart: on-failure
-    environment:
-      - NODE_ENV=cicd
-
-  shr-fhir-server:
-    image: "hapiproject/hapi:latest"
-    container_name: shr-fhir-server
+    hostname: shr
+    image: ghcr.io/i-tech-uw/shared-health-record:v0.1.2
     restart: unless-stopped
-    ports:
-      - "${SHR_FHIR_PORT}:8080"
-    volumes:
-      - hapi-data:/data/hapi
-      - ./docker/shr/hapi.properties:/conf/hapi/hapi.properties
     environment:
-      JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
- 
-  ###
-  # OpenMRS
-  ###
-  # openmrs-server:
-  #   container_name: openmrs-server
-  #   hostname: openmrs-server
-  #   build: ./docker/openmrs-server
-  #   restart: unless-stopped
-  #   env_file:
-  #       - ./openmrs/2.3.0-refapp-2.10.0/openmrs-server.env
-  #   volumes:
-  #     - ./openmrs/2.3.0-refapp-2.10.0/distribution:/openmrs/distribution
-  #     - openmrs-data:/openmrs/data
-  #   ports:
-  #     - "${OPENMRS_PORT}:8080"
-
-  openmrs-hapi-server:
+      - NODE_ENV=docker
+    networks:
+      - sedish
+    volumes:
+      - ./configs/shr/config_ports.json:/app/config/config_docker.json
+      - ./configs/shr/mediator_ports.json:/app/config/mediator_docker.json
+  
+  shr-fhir:
     image: "hapiproject/hapi:latest"
-    container_name: openmrs-hapi-server
+    container_name: shr-fhir
+    hostname: shr-fhir
     restart: unless-stopped
     volumes:
       - hapi-data:/data/hapi
-      - ./docker/hapi/hapi.properties:/conf/hapi/hapi.properties
-    environment:
-      JAVA_OPTS: '-Dhapi.properties=/conf/hapi/hapi.properties'
-    ports:
-      - "${OPENMRS_HAPI_PORT}:8080"
+    networks:
+      - sedish
   
-###
-# iSantePlus
-###
-  isanteplus:
-    build: ./docker/isanteplus
-    ports:
-      - "${ISANTEPLUS_PORT}:8080"
-    container_name: isanteplus
-    volumes:
-      - data03:/opt/isanteplus/data
-    hostname: isanteplus
+  ###
+  # iSantePlus
+  ###
+  isanteplus-demo:
+    container_name: isanteplus-demo
+    hostname: isanteplus-demo
+    image: ghcr.io/isanteplus/isanteplus:latest
     restart: unless-stopped
-  
+    env_file:
+        - ./configs/isanteplus/isanteplus.env
+    volumes:
+      - isanteplus-data:/openmrs/data
+    networks:
+      - sedish
+
+  isanteplus-mysql:
+    container_name: isanteplus-mysql
+    hostname: isanteplus-mysql
+    image: ghcr.io/isanteplus/docker-isanteplus-db:latest
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=openmrs
+      - MYSQL_ROOT_PASSWORD=debezium
+      - MYSQL_USER=mysqluser
+      - MYSQL_PASSWORD=mysqlpw
+      - MYSQL_ROOT_HOST=%    # Allow docker containers to connect to mysql
+    volumes:
+      - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf  # mysql config preconfigured to allow binlog/debezium
+      - isanteplus-mysql-data:/var/lib/mysql
 
   ###
   # OpenHIM
@@ -119,46 +150,43 @@ services:
     image: jembi/openhim-core:latest
     restart: unless-stopped
     environment:
-      mongo_url: "mongodb://mongo-db/openhim-development"
-      mongo_atnaUrl: "mongodb://mongo-db/openhim-development"
+      mongo_url: "mongodb://mongo-db/openhim"
+      mongo_atnaUrl: "mongodb://mongo-db/openhim"
       NODE_ENV: "development"
-    ports:
-      - "${OPENHIM_PORT}:8080"
-      - "5000:5000"
-      - "5001:5001"
     healthcheck:
-      test: "curl -sSk https://localhost:${OPENHIM_PORT}/heartbeat || exit 1"
+      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
       interval: 30s
       timeout: 30s
       retries: 3
+    networks:
+      - sedish
 
   openhim-console:
     container_name: openhim-console
     image: jembi/openhim-console:latest
     restart: unless-stopped
-    ports:
-      - "${OPENHIM_CONSOLE_PORT}:80"
     volumes:
-      - ./dev.json:/usr/share/nginx/html/config/default.json
+      - ./configs/openhim-console/ports.json:/usr/share/nginx/html/config/default.json
     healthcheck:
-      test: "curl -sS http://localhost:${OPENHIM_CONSOLE_PORT} || exit 1"
+      test: "curl -sS http://openhim-console || exit 1"
       interval: 30s
       timeout: 30s
       retries: 3
-  mongo-db:
-    container_name: mongo-db
-    image: mongo:4.0
-    volumes:
-      - "mongo-data:/data/db"
-    restart: unless-stopped
+    networks:
+      - sedish
+
 volumes:
+  esdata:
+    driver: local
   data01:
     driver: local
   data02:
     driver: local
   data03:
     driver: local
-  openmrs-data:
+  isanteplus-data:
+    driver: local
+  isanteplus-mysql-data:
     driver: local
   mongo-data:
     driver: local
@@ -166,3 +194,21 @@ volumes:
     driver: local
   hapi-data:
     driver: local
+  data011:
+    driver: local
+  data012:
+    driver: local
+  data013:
+    driver: local    
+  hapi-data:
+    driver: local
+  cr-data:
+    driver: local
+  certs:
+    driver: local
+  letsencrypt: 
+    driver: local
+  nginx-data: 
+    driver: local
+networks:
+  sedish:

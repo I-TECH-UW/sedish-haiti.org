@@ -10,22 +10,18 @@
   "mediator": {
     "api": {
       "username": "root@openhim.org",
-      "password": "haitiopenhim",
-      "apiURL": "https://core.sedish-haiti.org",
+      "password": "openhim",
+      "apiURL": "https://openhim-core:8080",
       "trustSelfSigned": true,
       "urn": ""
     },
     "register": true
   },
   "fhirServer": {
-    "username": "hapi",
-    "password": "hapi",
     "baseURL": "http://opencr-fhir:8080/fhir"
   },
   "elastic": {
     "server": "http://es:9200",
-    "username": "",
-    "password": "",
     "max_compilations_rate": "10000/1m",
     "index": "patients"
   },
@@ -39,16 +35,6 @@
   "matching": {
     "tool": "elasticsearch"
   },
-  "clients": [
-    {
-      "id": "openmrs_user",
-      "displayName": "OpenMRS"
-    },
-    {
-      "id": "lims",
-      "displayName": "Lab Info Management System"
-    }
-  ],
   "systems": {
     "CRBaseURI": "http://openclientregistry.org/fhir",
     "internalid": {
