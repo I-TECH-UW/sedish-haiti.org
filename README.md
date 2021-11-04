@@ -1,7 +1,6 @@
 # sedish-haiti.org Demo Site
 
-Proof of Concept Environment Setup
-
+Haiti HIE Architecture
 # Components
 
 ## OpenMRS EMR
@@ -53,13 +52,63 @@ Proof of Concept Environment Setup
 
 
 ## Installation
-1. Install Docker
+### 1. Install Docker
 
-2. Clone the repository
+Docker Engine:
+https://docs.docker.com/compose/install/
 
-3. Download https://www.dropbox.com/s/qp8zvaefuivqpcb/openmrs.zip?dl=1 and unzip into project directory
+Docker Compose:
+https://docs.docker.com/compose/install/
 
-4. Use docker-compose to build and start containers
+
+### 2. Clone the Sedish Repository
+
+```sh
+git clone https://github.com/I-TECH-UW/sedish-haiti.org.git
+```
+
+### 3.1 Port-based Setup
+
+#### Start up Core Containers
+```sh
+sudo docker-compose -f docker-compose.ports.yml up -d openhim-core openhim-console mongo-db opencr-es opencr-fhir shr-fhir nginx
+```
+
+#### Start up Mediators
+
+```sh
+sudo docker-compose -f docker-compose.ports.yml up -d shr opencr
+```
+
+#### Start up iSantePlus
+```sh
+sudo docker-compose -f docker-compose.ports.yml up -d isanteplus
+```
+
+#### Validate Setup
+Setup a Postman environment and run tests from this workspace: https://www.postman.com/itechuw/workspace/isanteplus-pilot
+
+OR
+
+Run the test script:
+
+
+
+### 3.2 Domain-based setup
+
+#### Generate and / or refresh certificates
+Modify the configurations in the `docker-compose.yml` file to match server settings.
+
+Then, run the following command:
+
+```sh
+sudo docker-compose up certbot
+```
+
+The certificates will be generated and provided to the other containers through a shared volume.
+### 3. Start up Core Containers
+
+. Use docker-compose to build and start containers
 
 5. Clone local sync pipeline code
 
