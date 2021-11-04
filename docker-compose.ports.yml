@@ -29,7 +29,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080" # OpenHIM Core API
+      # - "8080:8080" # OpenHIM Core API
       - "5000:5000" # OpenHIM HTTPS
       - "5001:5001" # OpenHIM HTTP
       - "3000:3000" # OpenCR
@@ -160,6 +160,8 @@ services:
       retries: 3
     networks:
       - sedish
+    ports:
+      - 8080:8080
 
   openhim-console:
     container_name: openhim-console
@@ -172,6 +174,24 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
+    networks:
+      - sedish
+  
+  mongo-db:
+    container_name: mongo-db
+    image: mongo:3.4
+    volumes:
+      - "mongo-data:/data/db"
+    restart: unless-stopped
+    networks:
+      - sedish
+
+  # Newman Tests
+  newman:
+    image: postman/newman
+    volumes:
+      - ./.postman:/.postman
+    #entrypoint: newman run $POSTMAN_COLLECTION -e /.postman/postman_env.ci.json --insecure --timeout-request 20000 --delay-request 500
     networks:
       - sedish
 
