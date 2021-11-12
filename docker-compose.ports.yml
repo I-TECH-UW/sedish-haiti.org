@@ -29,7 +29,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      # - "8080:8080" # OpenHIM Core API
+      - "8080:8080" # OpenHIM Core API
       - "5000:5000" # OpenHIM HTTPS
       - "5001:5001" # OpenHIM HTTP
       - "3000:3000" # OpenCR
@@ -160,8 +160,6 @@ services:
       retries: 3
     networks:
       - sedish
-    ports:
-      - 8080:8080
 
   openhim-console:
     container_name: openhim-console

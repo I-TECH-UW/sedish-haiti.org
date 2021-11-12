@@ -71,9 +71,11 @@ git clone https://github.com/I-TECH-UW/sedish-haiti.org.git
 
 #### Start up Core Containers
 ```sh
-sudo docker-compose -f docker-compose.ports.yml up -d openhim-core openhim-console mongo-db
+sudo docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db
 ```
 You should now be able to access the OpenHIM console at http://localhost. 
+
+Make sure that the console is pointint to the correct `openhim-core` container. You should be able to access that container using `<your-ip-address>:8080/heartbeat`. You can configure this connection in `configs/openhim-console/ports.json`. 
 
 Log in to the console, and set the admin password to `openhim` (for development) or the password of your choice.
 
@@ -81,7 +83,11 @@ You can also set up Clients and Roles for the following possible systems:
 - postman for testing
 - each isanteplus instance that will connect to the HIE
 
-#### Start up Core Containers
+*Note: any changes to the OpenHIM console container might not show up until you disable/clear the browser cache*
+#### Start up Support Containers
+```sh
+sudo docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es
+```
 
 #### Start up Mediators
 
