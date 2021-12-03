@@ -1,63 +1,35 @@
-# sedish-haiti.org Demo Site
+# SEDISH: The Haiti HIE 
 
-Haiti HIE Architecture
-# Components
+## Components
 
-## OpenMRS EMR
-### Host URLs
-- openmrs-server: http://localhost:8091/openmrs
-- openmrs-db: jdbc:mysql://localhost:3308/openmrs
-- fhir metadata: http://localhost:8091/openmrs/ws/fhir2/R4/metadata?_format=json
-
+### 1. iSantePlus EMR
 ### Links
-- https://github.com/pmanko/docker-openmrs-server
+https://github.com/IsantePlus/openmrs-distro-isanteplus
+https://github.com/IsantePlus/docker-isanteplus-server
 
-### Notes
-- Server container requires restart after initial setup for some reason. 
-- Ran into issues with DB character set (https://talk.openmrs.org/t/ui-framework-error-while-attempting-to-access-registration-app/8734/6).
-  Had to specify characterset and collation in docker setup.
-- To create demo patients, you can set the `OMRS_CONFIG_ADD_DEMO_DATA` variable in the `openmrs/refapp/openmrs-server.env` file
-  or set the `createDemoPatientsOnNextStartup` global property to the number of patients you want to create and restart the 
-  container.
+### 2. OpenCR
+https://github.com/intrahealth/client-registry
 
-### OpenCR
+### 3. OpenHIM
+http://openhim.org/docs/installation/docker
 
-### iSantePlus EMR
-- https://github.com/pmanko/isanteplus-docker/tree/shr
+### 4. HAPI JPA Server
+https://github.com/hapifhir/hapi-fhir-jpaserver-starter#deploy-with-docker-compose
+https://hapifhir.io/hapi-fhir/docs/server_jpa/get_started.html
 
-
-### Local HAPI JPA Server
-- https://hub.docker.com/r/bhits/hapi-fhir-jpaserver/
-
-#### Notes
-- Ran into issues with setting up Postgres due to DDL error for some table creation - the 
-  generated DLL included "blob". WOndering if we can use this script which uses `oid`. Reverting to mysql f
-  for now. (solved: dialect set twice ::sigh:: ) 
-
-### OpenHIM
-- http://openhim.org/docs/installation/docker
-
-### SHR HAPI JPA Server
-- https://hub.docker.com/_/postgres
-- https://github.com/hapifhir/hapi-fhir-jpaserver-starter#deploy-with-docker-compose
-
-## Flink & Pipeline
-
-### Host URLs
-- flink console: https://localhost:3002
-
-- https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/docker.html
-- https://github.com/pmanko/beam-local-sync
-
+### 5. Shared Health Record
+https://github.com/i-tech-uw/shared-health-record
 
 
 ## Installation
 ### 1. Install Docker
 
-Docker Engine:
+**Docker Engine:**
+
 https://docs.docker.com/compose/install/
 
-Docker Compose:
+**Docker Compose:**
+
 https://docs.docker.com/compose/install/
 
 
@@ -67,61 +39,81 @@ https://docs.docker.com/compose/install/
 git clone https://github.com/I-TECH-UW/sedish-haiti.org.git
 ```
 
-### 3.1 Port-based Setup
+### 3. Port-based Setup
 
 
-#### Pull all containers
+**a) Pull all containers**
+
 ```sh
 sudo docker-compose -f docker-compose.ports.yml pull
 ```
-#### Start up Core Containers
+**b) Start up Core Containers**
+
 ```sh
-sudo docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db
+sudo docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db kafka zookeeper
 ```
-You should now be able to access the OpenHIM console at http://localhost. 
+
+**c) Access the OpenHIM Console**
+You should now be able to access the OpenHIM console at https://localhost, or whatever IP address the server is running on. The OpenHIM console runs on ports 80 and 443. 
 
 Make sure that the console is pointint to the correct `openhim-core` container. You should be able to access that container using `<your-ip-address>:8080/heartbeat`. You can configure this connection in `configs/openhim-console/ports.json`. 
 
-Log in to the console, and set the admin password to `openhim` (for development) or the password of your choice.
+**d) Set up admin password, roles, and clients**
+Log in to the console, and set the admin password to `openhim` (for development), or the password of your choice.
 
-You can also set up Clients and Roles for the following possible systems:
+You can also set up Clients and Roles for the following systems:
 - postman for testing
 - each isanteplus instance that will connect to the HIE
+- the Shared Health Record
 
-*Note: any changes to the OpenHIM console container might not show up until you disable/clear the browser cache*
-#### Start up Support Containers
+*Note: any changes to the OpenHIM console container might not show up until you disable/clear the browser cache. You can also disable the cache by opening Chrome dev tools with F12 and selecting the `disable cache` checkbox*
+
+**e) Start up Support Containers**
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es
 ```
 
-#### Configure the Mediators
-
+**f) Configure Mediators**
+Open, examine, and edit the following files as needed, to update the IP address for OpenHIM and set the right passwords:
+  - `./configs/opencr/config_ports.json`
+  - `./configs/shr/config_ports.json`
 #### Start up Mediators
 
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d shr opencr
 ```
-
-
-
 #### Start up iSantePlus
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d isanteplus
 ```
 
-#### Validate Setup
+## 4. Testing and Validation
 Setup a Postman environment and run tests from this workspace: https://www.postman.com/itechuw/workspace/isanteplus-pilot
 
-OR
-
-Run the test script:
+*Work in Progress*
 
 
+### Domain-based setup
+Follow section 3.2, but use the main `docker-compose.yml` file, so without the `-f` flag. Also, set up certificate generation like so:
+#### SSL Certificate Generation & Refresh 
+Modify the configuration for the `certbot` entry in the `docker-compose.yml` file to match server settings. See the [Certbot Docs](https://certbot.eff.org/) for more information.
 
-### 3.2 Domain-based setup
+Here are example settings for the AWS setup:
 
-#### Generate and / or refresh certificates
-Modify the configurations in the `docker-compose.yml` file to match server settings.
+```yaml
+  certbot:
+    image: certbot/dns-route53
+    container_name: certbot
+    entrypoint: "certbot certonly -n --agree-tos --email <your-email> -d <your-domain> -d '*.<your-domain>' --dns-route53 --preferred-challenges=dns"
+    environment:
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    volumes:
+    - certs:/etc/letsencrypt
+    - letsencrypt:/var/lib/letsencrypt
+    networks:
+    - sedish
+```
 
 Then, run the following command:
 
@@ -130,9 +122,5 @@ sudo docker-compose up certbot
 ```
 
 The certificates will be generated and provided to the other containers through a shared volume.
-### 3. Start up Core Containers
 
-. Use docker-compose to build and start containers
-
-5. Clone local sync pipeline code
 

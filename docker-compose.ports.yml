@@ -19,7 +19,6 @@ services:
   ###
   # nginx reverse proxy
   # TODO: set up to use non-root user. See https://www.rockyourcode.com/run-docker-nginx-as-non-root-user/
-  # TODO: Run letsencrypt as docker container: https://hub.docker.com/r/certbot/certbot/
   ###
   nginx:
     image: nginx:latest
@@ -53,8 +52,7 @@ services:
   opencr:
     container_name: opencr
     hostname: opencr
-    #image: intrahealth/opencr:latest
-    image: intrahealth/opencr:fdb3d44
+    image: intrahealth/opencr:latest
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
@@ -65,9 +63,7 @@ services:
       - ./configs/opencr/config_ports.json:/src/server/config/config_docker.json
       - ./configs/opencr/mediator_ports.json:/src/server/config/mediator.json
       - ./configs/opencr/decisionRules.json:/src/server/config/decisionRules.json
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/src/server/serverCertificates/server_key.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/src/server/serverCertificates/server_cert.pem   
-  
+
   opencr-fhir:
     image: "hapiproject/hapi:latest"
     container_name: opencr-fhir
@@ -99,7 +95,7 @@ services:
   shr:
     container_name: shr
     hostname: shr
-    image: ghcr.io/i-tech-uw/shared-health-record:v0.1.2
+    image: ghcr.io/i-tech-uw/shared-health-record:v0.4.0
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
@@ -119,13 +115,41 @@ services:
     networks:
       - sedish
   
+  ####
+  # Kafka
+  ###
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    hostname: zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+    - sedish
+  kafka:
+    image: 'bitnami/kafka:latest'
+    hostname: kafka
+    container_name: kafka
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+    volumes:
+      - kafka-data:/bitnami/kafka
+    depends_on:
+      - zookeeper
+    networks:
+    - sedish
+    
   ###
   # iSantePlus
   ###
   isanteplus-demo:
     container_name: isanteplus-demo
     hostname: isanteplus-demo
-    image: ghcr.io/isanteplus/isanteplus:latest
+    image: ghcr.io/isanteplus/docker-isanteplus-server:latest
     restart: unless-stopped
     env_file:
         - ./configs/isanteplus/isanteplus.env
@@ -161,10 +185,10 @@ services:
       mongo_atnaUrl: "mongodb://mongo-db/openhim"
       NODE_ENV: "development"
     healthcheck:
-      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
+      test: "curl -sSk https://localhost:8080/heartbeat || exit 1"
+      interval: 2m
+      timeout: 1m
+      retries: 5
     networks:
       - sedish
 
@@ -203,12 +227,6 @@ services:
 volumes:
   esdata:
     driver: local
-  data01:
-    driver: local
-  data02:
-    driver: local
-  data03:
-    driver: local
   isanteplus-data:
     driver: local
   isanteplus-mysql-data:
@@ -218,15 +236,7 @@ volumes:
   shr:
     driver: local
   hapi-data:
-    driver: local
-  data011:
-    driver: local
-  data012:
-    driver: local
-  data013:
-    driver: local    
-  hapi-data:
-    driver: local
+    driver: local  
   cr-data:
     driver: local
   certs:
@@ -234,6 +244,8 @@ volumes:
   letsencrypt: 
     driver: local
   nginx-data: 
+    driver: local
+  kafka-data:
     driver: local
 networks:
   sedish:
