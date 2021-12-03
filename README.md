@@ -93,7 +93,7 @@ Setup a Postman environment and run tests from this workspace: https://www.postm
 *Work in Progress*
 
 
-### Domain-based setup
+## 5. Domain-based setup
 Follow section 3.2, but use the main `docker-compose.yml` file, so without the `-f` flag. Also, set up certificate generation like so:
 #### SSL Certificate Generation & Refresh 
 Modify the configuration for the `certbot` entry in the `docker-compose.yml` file to match server settings. See the [Certbot Docs](https://certbot.eff.org/) for more information.
