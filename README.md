@@ -69,6 +69,11 @@ git clone https://github.com/I-TECH-UW/sedish-haiti.org.git
 
 ### 3.1 Port-based Setup
 
+
+#### Pull all containers
+```sh
+sudo docker-compose -f docker-compose.ports.yml pull
+```
 #### Start up Core Containers
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db
@@ -88,6 +93,8 @@ You can also set up Clients and Roles for the following possible systems:
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es
 ```
+
+#### Configure the Mediators
 
 #### Start up Mediators
 

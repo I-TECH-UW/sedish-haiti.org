@@ -37,8 +37,15 @@ services:
     volumes:
       - ./configs/nginx/nginx.ports.conf:/etc/nginx/nginx.conf
       - nginx-data:/var/www
+      - ./configs/nginx/healthcheck.sh:/healthcheck.sh
     networks:
       - sedish
+    healthcheck:
+      test: ["CMD-SHELL", "/healthcheck.sh"]
+      interval: 10s
+      timeout: 1m
+      retries: 100
+      start_period: 3m
 
   ###
   # OpenCR
