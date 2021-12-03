@@ -42,23 +42,23 @@ git clone https://github.com/I-TECH-UW/sedish-haiti.org.git
 ### 3. Port-based Setup
 
 
-**a) Pull all containers**
+**a) Pull all containers**  
 
 ```sh
 sudo docker-compose -f docker-compose.ports.yml pull
 ```
-**b) Start up Core Containers**
+**b) Start up Core Containers**  
 
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db kafka zookeeper
 ```
 
-**c) Access the OpenHIM Console**
+**c) Access the OpenHIM Console**  
 You should now be able to access the OpenHIM console at https://localhost, or whatever IP address the server is running on. The OpenHIM console runs on ports 80 and 443. 
 
 Make sure that the console is pointint to the correct `openhim-core` container. You should be able to access that container using `<your-ip-address>:8080/heartbeat`. You can configure this connection in `configs/openhim-console/ports.json`. 
 
-**d) Set up admin password, roles, and clients**
+**d) Set up admin password, roles, and clients**   
 Log in to the console, and set the admin password to `openhim` (for development), or the password of your choice.
 
 You can also set up Clients and Roles for the following systems:
@@ -68,16 +68,16 @@ You can also set up Clients and Roles for the following systems:
 
 *Note: any changes to the OpenHIM console container might not show up until you disable/clear the browser cache. You can also disable the cache by opening Chrome dev tools with F12 and selecting the `disable cache` checkbox*
 
-**e) Start up Support Containers**
+**e) Start up Support Containers**  
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es
 ```
 
-**f) Configure Mediators**
+**f) Configure Mediators**  
 Open, examine, and edit the following files as needed, to update the IP address for OpenHIM and set the right passwords:
   - `./configs/opencr/config_ports.json`
   - `./configs/shr/config_ports.json`
-#### Start up Mediators
+#### Start up Mediators  
 
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d shr opencr
