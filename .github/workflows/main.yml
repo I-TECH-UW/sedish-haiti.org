@@ -10,7 +10,7 @@ on:
     types: [published]
   workflow_dispatch:
 jobs:
-  build-test:
+  CI:
     timeout-minutes: 10
     runs-on: ubuntu-latest
 
@@ -20,7 +20,7 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-        
+
       - name: Pull containers
         run: docker-compose -f docker-compose.ports.yml pull
       
@@ -28,6 +28,9 @@ jobs:
         uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
 
+      - name: generate certs
+        run: docker-compose -f docker-compose.ports.yml up -d certgen
+        
       - name: Start core containers
         run: docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db openhim-config
 

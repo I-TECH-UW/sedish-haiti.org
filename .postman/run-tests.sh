@@ -1,5 +1,7 @@
 #!/bin/bash
 
+docker-compose -f docker-compose.ports.yml up certgen
+
 docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db openhim-config
 sleep 10
 docker-compose -f docker-compose.ports.yml logs openhim-config
