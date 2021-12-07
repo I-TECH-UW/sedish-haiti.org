@@ -223,11 +223,11 @@ services:
       - sedish
   openhim-config:
     container_name: openhim-config
-    image: ghcr.io/i-tech-uw/openhim-config:main
+    image: ghcr.io/i-tech-uw/openhim-config:v0.0.0
     volumes:
       - ./configs/openhim-core/initial-config.json:/app/test-openhim-config.json
     networks:
-      - hie
+      - sedish
     environment:
       - INITIAL_PW=openhim-password
       - ADMIN_PW=$ADMIN_PW

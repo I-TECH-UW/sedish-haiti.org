@@ -63,10 +63,14 @@ First, make sure to choose and set a desired admin PW for OpenHIM that you'll us
 
 You can set this Password with the "ADMIN_PW" env setting. 
 
+```sh
+sudo docker-compose -f docker-compose.ports.yml up openhim-config
+```
+
 **d) Access the OpenHIM Console**  
 You should now be able to access the OpenHIM console at https://localhost, or whatever IP address the server is running on. The OpenHIM console runs on ports 80 and 443. 
 
-*Note: If you are using Chrome and get a certificate error, you can type `thisisnotsafe` after clicking anywhere on the page to be able to proceed.*
+*Note: If you are using Chrome and get a certificate error, you can type `thisisunsafe` after clicking anywhere on the page to be able to proceed.*
 
 Make sure that the console is pointint to the correct `openhim-core` container. You should be able to access that container using `<your-ip-address>:8080/heartbeat`. You can configure this connection in `configs/openhim-console/ports.json`. 
 
