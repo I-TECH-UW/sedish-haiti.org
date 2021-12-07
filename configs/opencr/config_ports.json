@@ -13,17 +13,21 @@
       "password": "openhim",
       "apiURL": "https://openhim-core:8080",
       "trustSelfSigned": true,
-      "urn": ""
+      "urn": "urn:mediator:haiti_clientregistry"
     },
     "register": true
   },
   "fhirServer": {
+    "username": "hapi",
+    "password": "hapi",
     "baseURL": "http://opencr-fhir:8080/fhir"
   },
   "elastic": {
     "server": "http://es:9200",
     "max_compilations_rate": "10000/1m",
-    "index": "patients"
+    "index": "patients",
+    "username": "",
+    "password": ""
   },
   "codes": {
     "goldenRecord": "5c827da5-4858-4f3d-a50c-62ece001efea"
