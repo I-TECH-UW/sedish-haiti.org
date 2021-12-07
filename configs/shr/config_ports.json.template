@@ -1,40 +1,25 @@
 {
-  "auth": {
-    "secret": "3084e343-71bc-4247-86e4-ea210af89c28",
-    "tokenDuration": 5400
-  },
   "app": {
-    "port": 3000,
-    "installed": false
+    "port": 3000
   },
   "mediator": {
     "api": {
       "username": "root@openhim.org",
-      "password": "haitiopenhim",
-      "apiURL": "https://core.sedish-haiti.org",
+      "password": "openhim",
+      "apiURL": "https://openhim-core:8080",
       "trustSelfSigned": true,
-      "urn": ""
+      "urn": "urn:mediator:haiti_sharedhealthrecord"
+    },
+    "client": {
+      "id": "shr-client",
+      "password": "shr-client"
     }
   },
   "fhirServer": {
-    "username": "shr",
-    "password": "shr123",
-    "mpiURL": "https://sedish-haiti.org:5000/CR/fhir",
-    "baseURL": "http://shr-fhir/fhir"
+    "mpiURL": "https://openhim-core:5000/CR/fhir",
+    "baseURL": "http://shr-fhir:8080/fhir"
   },
-
-  "structureDefinition": {
-    "uri": "http://openclientregistry.org/fhir",
-    "reportRelationship": "patientreport"
-  },
-  "clients": [
-    {
-      "id": "openmrs_user",
-      "displayName": "OpenMRS"
-    },
-    {
-      "id": "lims",
-      "displayName": "Lab Info Management System"
-    }
-  ]
+  "taskRunner": {
+    "brokers" : ["kafka:9092"]
+  }
 }

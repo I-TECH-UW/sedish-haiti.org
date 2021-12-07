@@ -1,4 +1,4 @@
-version: '2.4'
+version: '3.8'
 
 ## Port Assignments:
 ##  See .env file
@@ -66,6 +66,7 @@ services:
   # OpenCR
   ###
   opencr:
+    platform: linux/amd64
     container_name: opencr
     hostname: opencr
     image: intrahealth/opencr:latest
@@ -246,7 +247,7 @@ services:
     image: postman/newman
     volumes:
       - ./.postman:/.postman
-    #entrypoint: newman run $POSTMAN_COLLECTION -e /.postman/postman_env.ci.json --insecure --timeout-request 20000 --delay-request 500
+    entrypoint: newman run $POSTMAN_COLLECTION -e /.postman/postman_env.ci.json --insecure --timeout-request 20000 --delay-request 500
     networks:
       - sedish
 

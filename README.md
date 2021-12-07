@@ -55,7 +55,7 @@ sudo docker-compose -f docker-compose.ports.yml up certgen
 ```
 
 ```sh
-sudo docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db kafka zookeeper
+sudo docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db
 ```
 
 **c) Load Default OpenHIM Config**
@@ -86,7 +86,7 @@ You can also set up Clients and Roles for the following systems:
 
 **f) Start up Support Containers**  
 ```sh
-sudo docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es
+sudo docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper
 ```
 
 **g) Configure Mediators**  

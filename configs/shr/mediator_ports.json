@@ -5,8 +5,6 @@
   "description": "Haiti Shared Health Record",
   "config": {
       "fhirServer": {
-        "username": "shr",
-        "password": "shr123",
         "baseURL": "http://shr-fhir:8080/fhir",
         "mpiURL": "https://openhim-core:5000/CR/fhir"
       }

@@ -1,0 +1,76 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+jobs:
+  build-test:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Pull containers
+        run: docker-compose -f docker-compose.ports.yml pull
+
+      - name: Start core containers
+        run: docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db openhim-config
+
+      - name: Sleep for 10 seconds
+        run: sleep 10
+        shell: bash
+
+      - name: Display docker logs for openhim config
+        run: docker-compose -f docker-compose.ports.yml logs openhim-config
+
+      - name: Start up support containers
+        run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper
+
+      - name: Sleep for 30 seconds
+        run: sleep 30
+        shell: bash
+
+      - name: Start up mediators
+        run: docker-compose -f docker-compose.ports.yml up -d shr opencr
+
+      - name: Sleep for 30 seconds
+        run: sleep 30
+        shell: bash
+
+      - name: Display docker logs for SHR & OpenCR
+        run: docker-compose -f docker-compose.ports.yml logs shr opencr
+
+      - name: Display container status
+        run: docker-compose -f docker-compose.ports.yml ps
+
+      - name: Run General Tests (https://www.postman.com/workspace/Haiti-SEDISH~4ada6d5c-42b6-483b-84e6-e2b5e08e1123/collection/1525496-6f854cdb-67cd-447e-950a-25cdf2d85186)
+        env:
+          POSTMAN_COLLECTION: https://www.getpostman.com/collections/46fd37386092a9f460e4
+        run: docker-compose --profile test -f docker-compose.ci.yml up --exit-code-from newman newman
+
+      - name: Run CR Tests (https://www.postman.com/workspace/Haiti-SEDISH~4ada6d5c-42b6-483b-84e6-e2b5e08e1123/collection/1525496-943a668e-664f-44a3-86b5-a4d4bc14c0e9)
+        env:
+          POSTMAN_COLLECTION: https://www.getpostman.com/collections/4d682cbb222bb538d365
+        run: docker-compose --profile test -f docker-compose.ci.yml up --exit-code-from newman newman
+
+      - name: Run Laboratory Tests (https://www.postman.com/workspace/Haiti-SEDISH~4ada6d5c-42b6-483b-84e6-e2b5e08e1123/collection/1525496-f269b96a-22e3-4a1f-8333-04d2cd01c1aa)
+        env:
+          POSTMAN_COLLECTION: https://www.getpostman.com/collections/4f2328a2ce056ff876e4
+        run: docker-compose --profile test -f docker-compose.ci.yml up --exit-code-from newman newman
+
+      - name: Run Continuum of Care Tests (https://www.postman.com/workspace/Haiti-SEDISH~4ada6d5c-42b6-483b-84e6-e2b5e08e1123/collection/1525496-6514deeb-c038-49fd-b510-c55b3dc20bad)
+        env:
+          POSTMAN_COLLECTION: https://www.getpostman.com/collections/0d397620f00804b00d75
+        run: docker-compose --profile test -f docker-compose.ci.yml up --exit-code-from newman newman
+
+      - name: Stop containers
+        if: always()
+        run: docker-compose --profile test -f docker-compose.ci.yml down
