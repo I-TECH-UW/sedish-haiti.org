@@ -44,9 +44,12 @@ jobs:
       - name: Start up support containers
         run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper
 
-      - name: Sleep for 30 seconds
-        run: sleep 30
+      - name: Sleep for 90 seconds
+        run: sleep 90
         shell: bash
+
+      - name: Display docker logs for SHR & OpenCR
+        run: docker-compose -f docker-compose.ports.yml logs shr-fhir opencr-fhir
 
       - name: Start up mediators
         run: docker-compose -f docker-compose.ports.yml up -d shr opencr
