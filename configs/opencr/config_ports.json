@@ -36,8 +36,27 @@
     "uri": "http://openclientregistry.org/fhir",
     "reportRelationship": "patientreport"
   },
+  "clients": [
+    {
+      "id": "openmrs",
+      "displayName": "OpenMRS"
+    },
+    {
+      "id": "dhis2",
+      "displayName": "DHIS2"
+    },
+    {
+      "id": "lims",
+      "displayName": "Lab Info Management System"
+    },
+    {
+      "id": "cr",
+      "displayName": "Client Registry"
+    }
+  ],
   "matching": {
-    "tool": "elasticsearch"
+    "tool": "elasticsearch",
+    "autoMatchPatientWithHumanAdjudTag": false
   },
   "systems": {
     "CRBaseURI": "http://openclientregistry.org/fhir",
