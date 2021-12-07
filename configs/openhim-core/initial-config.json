@@ -65,6 +65,16 @@
     }
   ],
   "Clients": [
+    {
+      "roles": [
+        "test"
+      ],
+      "clientID": "postman",
+      "name": "postman",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "ad7aff63dc3b5c4f347e35d111f0166a",
+      "passwordHash": "ef907ec096cb64b9a194d3c17aa19df4dff6538305443395089bb694b6e2913197dd8feb527e254dea75af0eccd10d503cb521468e476c8c9fbdabf65ca53c14"
+    }
   ],
   "Channels": [
     {
