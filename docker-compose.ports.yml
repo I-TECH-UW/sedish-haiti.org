@@ -7,7 +7,7 @@ version: '2.4'
 # 1. append the following lines to desired container 
 # 2. boot up the container using `docker-compose up -d`
 # 3 run `docker exec -it <container-name> bash` to start interactive shell
-# 
+#
 #    tty: true
 #    stdin_open: true
 #    entrypoint: bash
@@ -37,15 +37,31 @@ services:
       - ./configs/nginx/nginx.ports.conf:/etc/nginx/nginx.conf
       - nginx-data:/var/www
       - ./configs/nginx/healthcheck.sh:/healthcheck.sh
+      - certs:/etc/ssl/
     networks:
       - sedish
     healthcheck:
-      test: ["CMD-SHELL", "/healthcheck.sh"]
+      test: [ "CMD-SHELL", "/healthcheck.sh" ]
       interval: 10s
       timeout: 1m
       retries: 100
       start_period: 3m
-
+  certgen:
+    image: magnitus/certificate-generator:latest
+    environment:
+      COUNTRY: US
+      STATE: WA
+      CITY: SEATTLE
+      ORGANIZATION: I-TECH-UW
+      DEPARTMENT: DIGI
+      EMAIL: cert@sedish-heaiti.org
+      DOMAINS: dev.mydomain.com;test.mydomain.com;localhost
+      CERTIFICATE_DURATION: 11095
+      OUTPUT_CERTIFICATE_INFO: "true"
+      KEY_FILE: "ports.key"
+      CERTIFICATE_FILE: "ports.crt"
+    volumes:
+      - certs:/opt/output
   ###
   # OpenCR
   ###
@@ -73,7 +89,7 @@ services:
       - cr-data:/data/hapi
     networks:
       - sedish
-  
+
   opencr-es:
     container_name: es
     hostname: es
@@ -104,7 +120,7 @@ services:
     volumes:
       - ./configs/shr/config_ports.json:/app/config/config_docker.json
       - ./configs/shr/mediator_ports.json:/app/config/mediator_docker.json
-  
+
   shr-fhir:
     image: "hapiproject/hapi:latest"
     container_name: shr-fhir
@@ -114,7 +130,7 @@ services:
       - hapi-data:/data/hapi
     networks:
       - sedish
-  
+
   ####
   # Kafka
   ###
@@ -124,7 +140,7 @@ services:
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
-    - sedish
+      - sedish
   kafka:
     image: 'bitnami/kafka:latest'
     hostname: kafka
@@ -141,8 +157,8 @@ services:
     depends_on:
       - zookeeper
     networks:
-    - sedish
-    
+      - sedish
+
   ###
   # iSantePlus
   ###
@@ -152,7 +168,7 @@ services:
     image: ghcr.io/isanteplus/docker-isanteplus-server:latest
     restart: unless-stopped
     env_file:
-        - ./configs/isanteplus/isanteplus.env
+      - ./configs/isanteplus/isanteplus.env
     volumes:
       - isanteplus-data:/openmrs/data
     networks:
@@ -168,9 +184,9 @@ services:
       - MYSQL_ROOT_PASSWORD=debezium
       - MYSQL_USER=mysqluser
       - MYSQL_PASSWORD=mysqlpw
-      - MYSQL_ROOT_HOST=%    # Allow docker containers to connect to mysql
+      - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
-      - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf  # mysql config preconfigured to allow binlog/debezium
+      - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
       - isanteplus-mysql-data:/var/lib/mysql
 
   ###
@@ -205,7 +221,17 @@ services:
       retries: 3
     networks:
       - sedish
-  
+  openhim-config:
+    container_name: openhim-config
+    image: ghcr.io/i-tech-uw/openhim-config:main
+    volumes:
+      - ./configs/openhim-core/initial-config.json:/app/test-openhim-config.json
+    networks:
+      - hie
+    environment:
+      - INITIAL_PW=openhim-password
+      - ADMIN_PW=$ADMIN_PW
+      - API_URL=https://openhim-core:8080
   mongo-db:
     container_name: mongo-db
     image: mongo:3.4
@@ -236,16 +262,16 @@ volumes:
   shr:
     driver: local
   hapi-data:
-    driver: local  
+    driver: local
   cr-data:
     driver: local
   certs:
     driver: local
-  letsencrypt: 
+  letsencrypt:
     driver: local
-  nginx-data: 
+  nginx-data:
     driver: local
   kafka-data:
     driver: local
 networks:
-  sedish:
+  sedish: null
