@@ -275,4 +275,4 @@ volumes:
   kafka-data:
     driver: local
 networks:
-  sedish: null
+  sedish:
