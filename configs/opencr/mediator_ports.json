@@ -1,10 +1,12 @@
 {
-    "urn": "urn:uuid:4bc42b2f-b5a8-473d-8207-5dd5c61f0c4a",
-    "version": "1.0.3",
+    "urn": "urn:mediator:haiti_clientregistry",
+    "version": "1.1.0",
     "name": "Client Registry",
     "description": "Haiti Client Registry",
     "config": {
         "fhirServer": {
+            "username": "hapi",
+            "password": "hapi",
             "baseURL": "http://opencr-fhir:8080/fhir"
         },
         "elastic": {
@@ -44,7 +46,7 @@
                     "param": "password"
                 }
             ],
-            "values": ["","",""]
+            "values": []
         },
         {
             "param": "elastic",
@@ -83,7 +85,7 @@
                     "param": "index"
                 }
             ],
-            "values": ["","","","",""]
+            "values": []
         },
         {
             "param": "matching",
@@ -109,9 +111,9 @@
         {
             "requestBody": true,
             "responseBody": true,
-            "name": "OpenCR Resource Endpoint",
-            "description": "Add or Get Resource in OpenCR",
-            "urlPattern": "^/CR/fhir.*$",
+            "name": "Add or Get Resource Data From/To openCR",
+            "description": "Add or Get Resource Data From/To openCR",
+            "urlPattern": "/CR/fhir",
             "matchContentRegex": null,
             "matchContentXpath": null,
             "matchContentValue": null,
@@ -136,7 +138,7 @@
                     "type": "http",
                     "status": "enabled",
                     "forwardAuthHeader": false,
-                    "name": "Add/Update/Get Resources",
+                    "name": "Add/Get Resources",
                     "secured": false,
                     "host": "opencr",
                     "port": 3000,
@@ -149,9 +151,6 @@
             ],
             "authType": "private",
             "whitelist": [],
-            "allow": [
-                "openmrs"
-            ],
             "type": "http",
             "methods": [
                 "GET",

@@ -2,13 +2,21 @@
 
 docker-compose -f docker-compose.ports.yml up certgen
 
-docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db openhim-config
+docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db
+
 sleep 10
+
+docker-compose -f docker-compose.ports.yml up openhim-config
 docker-compose -f docker-compose.ports.yml logs openhim-config
+
 docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper
+
 sleep 30
+
 docker-compose -f docker-compose.ports.yml up -d shr opencr
+
 sleep 30
+
 docker-compose -f docker-compose.ports.yml logs shr opencr
 
 collections=(

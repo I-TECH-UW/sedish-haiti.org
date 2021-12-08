@@ -20,7 +20,6 @@ https://hapifhir.io/hapi-fhir/docs/server_jpa/get_started.html
 ### 5. Shared Health Record
 https://github.com/i-tech-uw/shared-health-record
 
-
 ## Installation
 ### 1. Install Docker
 

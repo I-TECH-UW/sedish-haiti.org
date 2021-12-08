@@ -24,10 +24,10 @@
   },
   "elastic": {
     "server": "http://es:9200",
-    "max_compilations_rate": "10000/1m",
-    "index": "patients",
     "username": "",
-    "password": ""
+    "password": "",
+    "max_compilations_rate": "10000/1m",
+    "index": "patients"
   },
   "codes": {
     "goldenRecord": "5c827da5-4858-4f3d-a50c-62ece001efea"
@@ -55,8 +55,7 @@
     }
   ],
   "matching": {
-    "tool": "elasticsearch",
-    "autoMatchPatientWithHumanAdjudTag": false
+    "tool": "elasticsearch"
   },
   "systems": {
     "CRBaseURI": "http://openclientregistry.org/fhir",
@@ -82,7 +81,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2021-10-14T18:31:24"
+    "lastFHIR2ESSync": "2021-12-08T03:43:54"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"
