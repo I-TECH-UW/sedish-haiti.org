@@ -10,10 +10,10 @@
   "mediator": {
     "api": {
       "username": "root@openhim.org",
-      "password": "haitiopenhim",
-      "apiURL": "https://core.sedish-haiti.org",
+      "password": "openhim",
+      "apiURL": "https://openhim-core:8080",
       "trustSelfSigned": true,
-      "urn": ""
+      "urn": "urn:mediator:haiti_clientregistry"
     },
     "register": true
   },
@@ -36,19 +36,27 @@
     "uri": "http://openclientregistry.org/fhir",
     "reportRelationship": "patientreport"
   },
-  "matching": {
-    "tool": "elasticsearch"
-  },
   "clients": [
     {
-      "id": "openmrs_user",
+      "id": "openmrs",
       "displayName": "OpenMRS"
+    },
+    {
+      "id": "dhis2",
+      "displayName": "DHIS2"
     },
     {
       "id": "lims",
       "displayName": "Lab Info Management System"
+    },
+    {
+      "id": "cr",
+      "displayName": "Client Registry"
     }
   ],
+  "matching": {
+    "tool": "elasticsearch"
+  },
   "systems": {
     "CRBaseURI": "http://openclientregistry.org/fhir",
     "internalid": {
@@ -73,7 +81,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2021-10-14T18:31:24"
+    "lastFHIR2ESSync": "2021-12-08T04:54:09"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"

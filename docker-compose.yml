@@ -19,7 +19,6 @@ services:
   ###
   # nginx reverse proxy
   # TODO: set up to use non-root user. See https://www.rockyourcode.com/run-docker-nginx-as-non-root-user/
-  # TODO: Run letsencrypt as docker container: https://hub.docker.com/r/certbot/certbot/
   ###
   nginx:
     image: nginx:latest
@@ -55,8 +54,7 @@ services:
   opencr:
     container_name: opencr
     hostname: opencr
-    #image: intrahealth/opencr:latest
-    image: intrahealth/opencr:fdb3d44
+    image: intrahealth/opencr:latest
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
@@ -67,9 +65,6 @@ services:
       - ./configs/opencr/config_docker_template.json:/src/server/config/config_docker.json
       - ./configs/opencr/mediator.json:/src/server/config/mediator.json
       - ./configs/opencr/decisionRules.json:/src/server/config/decisionRules.json
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/src/server/serverCertificates/server_key.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/src/server/serverCertificates/server_cert.pem   
-  
   opencr-fhir:
     image: "hapiproject/hapi:latest"
     container_name: opencr-fhir

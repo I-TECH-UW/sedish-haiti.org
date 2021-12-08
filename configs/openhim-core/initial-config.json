@@ -1,0 +1,234 @@
+{
+  "Users": [
+    {
+      "groups": [
+        "admin"
+      ],
+      "firstname": "Super",
+      "surname": "User",
+      "email": "root@openhim.org",
+      "passwordAlgorithm": "sha512",
+      "passwordHash": "3ffa5a209fad0151388a1fc0eb2d93cfb95648c38a79ee19b8c19811ee9256a49dfc929afd1f81f35533553044d2fc19921939f9b53ef5024f9ae0486aecca05",
+      "passwordSalt": "b9bce89f512c986981512a91a9eeb5ef",
+      "expiry": null,
+      "locked": false,
+      "tokenType": null,
+      "token": null
+    }
+  ],
+  "Clients": [
+    {
+      "roles": [
+        "testing"
+      ],
+      "clientID": "postman",
+      "name": "postman",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "abf377048344f01c31aad81dca89b7e1",
+      "passwordHash": "6e9de40590aae84ba19384eaab5bb6c3c43b3577fdf9c97217b3c1e52cccd2819dcbdb097a2ac8ba63dedc0c8604dedd42e44b3725f24d7371450ce17d89de46"
+    },
+    {
+      "roles": [
+        "emr"
+      ],
+      "clientID": "isanteplus-demo",
+      "name": "isanteplus-demo",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "aab9f6187c1af81b1e5c2d7c13e73df2",
+      "passwordHash": "19e6ebce33412c769068ffd429116e79ef991961b94c00cb63660d6d0bce3c8b9a641c639823299932705f29800a7d08f8e459c79867c9de4210a21adb4ff718"
+    },
+    {
+      "roles": [
+        "mediator"
+      ],
+      "clientID": "shr",
+      "name": "shr",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "569762b1be521ecde76266c49ab0641a",
+      "passwordHash": "ee1799f8c9a50849213810c9986d292eac51c2ed7d7d6baf7288f9d42c6c2939e9e0addbc7111f53a497d8db738a375148e96bdc446a595223f1cfa4910e1b0f"
+    },
+    {
+      "roles": [
+        "emr"
+      ],
+      "clientID": "isanteplus",
+      "name": "isanteplus",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "198a0f8b3efc68237911dc4b3b877a6b",
+      "passwordHash": "aff7de981ecf1af8a41a0a17718d613dc19728c5fc201fdede8eee49e34708e31dd19da974f32063145f982a54e0134c8070b4dc7eb9928733d3cd9d5037ed6d"
+    }
+  ],
+  "Channels": [
+    {
+      "methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PUT"
+      ],
+      "type": "http",
+      "allow": [
+        "testing",
+        "emr",
+        "lis",
+        "mediator"
+      ],
+      "whitelist": [],
+      "authType": "private",
+      "matchContentTypes": [],
+      "properties": [],
+      "txViewAcl": [],
+      "txViewFullAcl": [],
+      "txRerunAcl": [],
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "requestBody": true,
+      "responseBody": true,
+      "name": "Add or Get Resource Data From/To openCR",
+      "description": "Add or Get Resource Data From/To openCR",
+      "urlPattern": "/CR/fhir",
+      "matchContentRegex": null,
+      "matchContentXpath": null,
+      "matchContentValue": null,
+      "matchContentJson": null,
+      "pollingSchedule": null,
+      "tcpHost": null,
+      "tcpPort": null,
+      "rewriteUrlsConfig": [],
+      "alerts": [],
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "Add/Get Resources",
+          "secured": false,
+          "host": "opencr",
+          "port": 3000,
+          "path": "",
+          "pathTransform": "s/CR\\/fhir/fhir/g",
+          "primary": true,
+          "username": "",
+          "password": ""
+        }
+      ],
+      "updatedBy": {
+        "id": "61b027f30c02be0014fdae47",
+        "name": "Super User"
+      },
+      "priority": 1
+    },
+    {
+      "methods": [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH"
+      ],
+      "type": "http",
+      "allow": [
+        "testing",
+        "emr",
+        "lis",
+        "mediator"
+      ],
+      "whitelist": [],
+      "authType": "private",
+      "matchContentTypes": [],
+      "properties": [],
+      "txViewAcl": [],
+      "txViewFullAcl": [],
+      "txRerunAcl": [],
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "requestBody": true,
+      "responseBody": true,
+      "name": "SHR - FHIR Passthrough",
+      "description": "Get or Post a new FHIR Resource to the SHR",
+      "urlPattern": "^/SHR/fhir.*$",
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "SHR - Get/Create/Update Resource",
+          "secured": false,
+          "host": "shr",
+          "port": 3000,
+          "path": "",
+          "pathTransform": "s/SHR\\/fhir/fhir/g",
+          "primary": true,
+          "username": "",
+          "password": ""
+        }
+      ],
+      "priority": 1,
+      "alerts": [],
+      "rewriteUrlsConfig": [],
+      "updatedBy": {
+        "id": "61b027f30c02be0014fdae47",
+        "name": "Super User"
+      }
+    },
+    {
+      "methods": [
+        "GET",
+        "POST",
+        "PUT"
+      ],
+      "type": "http",
+      "allow": [
+        "testing",
+        "emr",
+        "lis",
+        "mediator"
+      ],
+      "whitelist": [],
+      "authType": "private",
+      "matchContentTypes": [],
+      "properties": [],
+      "txViewAcl": [],
+      "txViewFullAcl": [],
+      "txRerunAcl": [],
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "name": "SHR - Get/Update IPS",
+      "requestBody": true,
+      "responseBody": true,
+      "description": "Get or Update the Internaional Patient Summary Bundle from the SHR",
+      "urlPattern": "^/SHR/fhir/ips.*$",
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "SHR - Get IPS",
+          "secured": false,
+          "host": "shr",
+          "port": 3000,
+          "path": "",
+          "pathTransform": "s/SHR\\/fhir\\/ips/ips/g",
+          "primary": true,
+          "username": "",
+          "password": ""
+        }
+      ],
+      "alerts": [],
+      "rewriteUrlsConfig": [],
+      "priority": 2,
+      "updatedBy": {
+        "id": "61b027f30c02be0014fdae47",
+        "name": "Super User"
+      }
+    }
+  ]
+}
