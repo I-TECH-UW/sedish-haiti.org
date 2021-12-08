@@ -7,7 +7,6 @@ docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-cons
 sleep 10
 
 docker-compose -f docker-compose.ports.yml up openhim-config
-docker-compose -f docker-compose.ports.yml logs openhim-config
 
 docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper
 
