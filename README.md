@@ -1,5 +1,5 @@
 # SEDISH: The Haiti HIE 
-
+[![CI](https://github.com/I-TECH-UW/sedish-haiti.org/actions/workflows/main.yml/badge.svg)](https://github.com/I-TECH-UW/sedish-haiti.org/actions/workflows/main.yml)
 ## Components
 
 ### 1. iSantePlus EMR
