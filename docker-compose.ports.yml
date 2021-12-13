@@ -1,10 +1,10 @@
-version: '3.8'
+version: "3.8"
 
 ## Port Assignments:
 ##  See .env file
 
-## Container debugging: 
-# 1. append the following lines to desired container 
+## Container debugging:
+# 1. append the following lines to desired container
 # 2. boot up the container using `docker-compose up -d`
 # 3 run `docker exec -it <container-name> bash` to start interactive shell
 #
@@ -26,8 +26,8 @@ services:
     hostname: nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80" # OpenHIM Console
+      - "443:443" # OpenHIM Console
       - "8080:8080" # OpenHIM Core API
       - "5000:5000" # OpenHIM HTTPS
       - "5001:5001" # OpenHIM HTTP
@@ -41,7 +41,7 @@ services:
     networks:
       - sedish
     healthcheck:
-      test: [ "CMD-SHELL", "/healthcheck.sh" ]
+      test: ["CMD-SHELL", "/healthcheck.sh"]
       interval: 10s
       timeout: 1m
       retries: 100
@@ -112,7 +112,7 @@ services:
   shr:
     container_name: shr
     hostname: shr
-    image: ghcr.io/i-tech-uw/shared-health-record:v0.4.0
+    image: ghcr.io/i-tech-uw/shared-health-record:v0.4.3
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
@@ -136,14 +136,14 @@ services:
   # Kafka
   ###
   zookeeper:
-    image: 'bitnami/zookeeper:latest'
+    image: "bitnami/zookeeper:latest"
     hostname: zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
       - sedish
   kafka:
-    image: 'bitnami/kafka:latest'
+    image: "bitnami/kafka:latest"
     hostname: kafka
     container_name: kafka
     environment:
@@ -163,9 +163,9 @@ services:
   ###
   # iSantePlus
   ###
-  isanteplus-demo:
-    container_name: isanteplus-demo
-    hostname: isanteplus-demo
+  isanteplus:
+    container_name: isanteplus
+    hostname: isanteplus
     image: ghcr.io/isanteplus/docker-isanteplus-server:latest
     restart: unless-stopped
     env_file:
@@ -174,10 +174,35 @@ services:
       - isanteplus-data:/openmrs/data
     networks:
       - sedish
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
 
   isanteplus-mysql:
+    image: ghcr.io/isanteplus/docker-isanteplus-db:latest
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
+    restart: unless-stopped
     container_name: isanteplus-mysql
     hostname: isanteplus-mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: "exit 0"
+    environment:
+      - MYSQL_DATABASE=openmrs
+      - MYSQL_ROOT_PASSWORD=debezium
+      - MYSQL_USER=mysqluser
+      - MYSQL_PASSWORD=mysqlpw
+      - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
+    volumes:
+      - ./resources/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
+      - isanteplus-db-data:/var/lib/mysql
+    networks:
+      - sedish
+  isanteplus-mysql-orig:
+    container_name: isanteplus-mysql-orig
+    hostname: isanteplus-mysql-orig
     image: ghcr.io/isanteplus/docker-isanteplus-db:latest
     restart: unless-stopped
     environment:
@@ -187,8 +212,13 @@ services:
       - MYSQL_PASSWORD=mysqlpw
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
-      - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
-      - isanteplus-mysql-data:/var/lib/mysql
+      #- ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
+      - isanteplus-db-data2:/var/lib/mysql
+    networks:
+      - sedish
+    ports:
+      - "3307:3306"
+    command: mysqld --sql_mode=""
 
   ###
   # OpenHIM
@@ -224,7 +254,7 @@ services:
       - sedish
   openhim-config:
     container_name: openhim-config
-    image: ghcr.io/i-tech-uw/openhim-config:v0.0.0  
+    image: ghcr.io/i-tech-uw/openhim-config:v0.0.0
     volumes:
       - ./configs/openhim-core/initial-config.json:/app/test-openhim-config.json
     networks:
@@ -256,7 +286,9 @@ volumes:
     driver: local
   isanteplus-data:
     driver: local
-  isanteplus-mysql-data:
+  isanteplus-db-data:
+    driver: local
+  isanteplus-db-data2:
     driver: local
   mongo-data:
     driver: local
