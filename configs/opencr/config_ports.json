@@ -64,16 +64,17 @@
         "http://health.go.ug/cr/internalid",
         "http://clientregistry.org/openmrs",
         "urn:ietf:rfc:3986",
-        "LOCAL"
+        "LOCAL",
+        "http://isanteplus.org/openmrs/fhir2/6-code-st"
       ],
       "displayName": "Internal ID"
     },
     "nationalid": {
-      "uri": "http://health.go.ug/cr/natioanlid",
+      "uri": "http://isanteplus.org/openmrs/fhir2/5-code-national",
       "displayName": "National ID"
     },
     "artnumber": {
-      "uri": "http://health.go.ug/cr/artnumber",
+      "uri": "http://isanteplus.org/openmrs/fhir2/5-code-national",
       "displayName": "ART Number"
     },
     "brokenMatch": {
@@ -81,7 +82,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2021-12-08T04:54:09"
+    "lastFHIR2ESSync": "2021-12-17T16:28:20"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"

@@ -99,7 +99,11 @@ sudo docker-compose -f docker-compose.ports.yml up -d shr opencr
 ```
 #### Start up iSantePlus
 ```sh
-sudo docker-compose -f docker-compose.ports.yml up -d isanteplus
+sudo docker-compose -f docker-compose.ports.yml up -d isanteplus-mysql isanteplus
+```
+#### Start up SHR Streaming Pipeline
+```sh
+sudo docker-compose -f docker-compose.ports.yml up -d streaming-pipeline
 ```
 
 ## 4. Testing and Validation

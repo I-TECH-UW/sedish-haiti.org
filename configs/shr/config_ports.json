@@ -11,8 +11,8 @@
       "urn": "urn:mediator:haiti_sharedhealthrecord"
     },
     "client": {
-      "id": "shr-client",
-      "password": "shr-client"
+      "id": "openshr",
+      "password": "openshr"
     }
   },
   "fhirServer": {
