@@ -44,8 +44,8 @@ jobs:
       - name: Start up support containers
         run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql 
 
-      - name: Sleep for 150 seconds
-        run: sleep 150
+      - name: Sleep for 300 seconds
+        run: sleep 300
         shell: bash
 
       - name: Display docker logs for SHR & OpenCR
@@ -79,15 +79,15 @@ jobs:
         env:
           POSTMAN_COLLECTION: https://www.getpostman.com/collections/4d682cbb222bb538d365
         run: docker-compose --profile test -f docker-compose.ports.yml up --exit-code-from newman newman
+      
+      - name: Display docker logs for OpenCR
+        if: always()
+        run: docker logs -n 100 opencr
+        
+      - name: Display docker logs for SHR
+        if: always()
+        run: docker logs -n 100 shr
 
       - name: Stop containers
         if: always()
         run: docker-compose -f docker-compose.ports.yml down -v
-      
-      - name: Display docker logs for OpenCR
-        if: always()
-        run: docker-compose -f docker-compose.ports.yml logs opencr
-        
-      - name: Display docker logs for SHR
-        if: always()
-        run: docker-compose -f docker-compose.ports.yml logs shr

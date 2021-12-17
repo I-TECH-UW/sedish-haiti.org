@@ -169,14 +169,16 @@ services:
     restart: unless-stopped
     env_file:
       - ./configs/isanteplus/isanteplus.env
-    volumes:
-      - isanteplus-data:/openmrs/data
+    # volumes:
+    #   - isanteplus-data:/openmrs/data
     networks:
       - sedish
     logging:
       driver: "json-file"
       options:
         max-size: "1m"
+    ports:
+    - 1044:1044
 
   isanteplus-mysql:
     image: ghcr.io/isanteplus/docker-isanteplus-db:latest
