@@ -52,7 +52,7 @@ jobs:
         run: docker-compose -f docker-compose.ports.yml logs shr-fhir opencr-fhir
 
       - name: Start up mediators
-        run: docker-compose -f docker-compose.ports.yml up -d shr opencr
+        run: docker-compose -f docker-compose.ports.yml up -d shr opencr streaming-pipeline
 
       - name: Sleep for 30 seconds
         run: sleep 30
