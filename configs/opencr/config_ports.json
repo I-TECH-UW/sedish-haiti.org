@@ -65,7 +65,7 @@
         "http://clientregistry.org/openmrs",
         "urn:ietf:rfc:3986",
         "LOCAL",
-        "http://isanteplus.org/openmrs/fhir2/6-code-st"
+        "http://isanteplus.org/openmrs/fhir2/3-isanteplus-id"
       ],
       "displayName": "Internal ID"
     },
@@ -82,7 +82,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2021-12-17T16:28:20"
+    "lastFHIR2ESSync": "2021-12-17T22:15:02"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"
