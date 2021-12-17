@@ -19,43 +19,43 @@
   "Clients": [
     {
       "roles": [
-        "testing"
-      ],
-      "clientID": "postman",
-      "name": "postman",
-      "passwordAlgorithm": "sha512",
-      "passwordSalt": "abf377048344f01c31aad81dca89b7e1",
-      "passwordHash": "6e9de40590aae84ba19384eaab5bb6c3c43b3577fdf9c97217b3c1e52cccd2819dcbdb097a2ac8ba63dedc0c8604dedd42e44b3725f24d7371450ce17d89de46"
-    },
-    {
-      "roles": [
-        "emr"
-      ],
-      "clientID": "isanteplus-demo",
-      "name": "isanteplus-demo",
-      "passwordAlgorithm": "sha512",
-      "passwordSalt": "aab9f6187c1af81b1e5c2d7c13e73df2",
-      "passwordHash": "19e6ebce33412c769068ffd429116e79ef991961b94c00cb63660d6d0bce3c8b9a641c639823299932705f29800a7d08f8e459c79867c9de4210a21adb4ff718"
-    },
-    {
-      "roles": [
-        "mediator"
-      ],
-      "clientID": "shr",
-      "name": "shr",
-      "passwordAlgorithm": "sha512",
-      "passwordSalt": "569762b1be521ecde76266c49ab0641a",
-      "passwordHash": "ee1799f8c9a50849213810c9986d292eac51c2ed7d7d6baf7288f9d42c6c2939e9e0addbc7111f53a497d8db738a375148e96bdc446a595223f1cfa4910e1b0f"
-    },
-    {
-      "roles": [
         "emr"
       ],
       "clientID": "isanteplus",
-      "name": "isanteplus",
+      "name": "iSantePlus Demo",
       "passwordAlgorithm": "sha512",
-      "passwordSalt": "198a0f8b3efc68237911dc4b3b877a6b",
-      "passwordHash": "aff7de981ecf1af8a41a0a17718d613dc19728c5fc201fdede8eee49e34708e31dd19da974f32063145f982a54e0134c8070b4dc7eb9928733d3cd9d5037ed6d"
+      "passwordSalt": "a31ca7a31c216138910953ae75530635",
+      "passwordHash": "b03433407c82dcf33300ec1ec36dfbd4caf6c8851c5b4ba6444c219b72934507fa075f51a0d4c2495ec00e24be2100145b975e39811cd476b96599b7028af609"
+    },
+    {
+      "roles": [
+        "test"
+      ],
+      "clientID": "postman",
+      "name": "Postman",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "c7cf4c96589213e9e014db2d9ce1633e",
+      "passwordHash": "7954b7a5b10ee9d28ebe287e92a2ff2cf76b953cd42be37a713711dbf294df2081816616f6ab6771f7f7e3313f2a8d605adfaadf408265fb56371b80c24729ae"
+    },
+    {
+      "roles": [
+        "shr"
+      ],
+      "clientID": "openshr",
+      "name": "OpenSHR",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "4173d0a1bba4e2fcdc3bd0cc7aa60a96",
+      "passwordHash": "a5b09684e7f2e9356912b725f3d739dd102049f7fdec94ab8170d24c0d11e612c6da303c263bce7446a8673aa79d927e7bc17d47522ea7fabd57dda63ad557f0"
+    },
+    {
+      "roles": [
+        "pipeline"
+      ],
+      "clientID": "shr-pipeline",
+      "name": "shr-pipeline",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "e538f4a341915058a00dd342b362349c",
+      "passwordHash": "0e2160d1a6be5bccd28181d0301a72e16d65424e86ee4a07a5227519423e8c3c5316e5feb459977d535a112c3a97c77fd466b835d2354ef9b6275822b2b279e8"
     }
   ],
   "Channels": [
@@ -68,10 +68,9 @@
       ],
       "type": "http",
       "allow": [
-        "testing",
+        "shr",
         "emr",
-        "lis",
-        "mediator"
+        "test"
       ],
       "whitelist": [],
       "authType": "private",
@@ -115,10 +114,7 @@
           "password": ""
         }
       ],
-      "updatedBy": {
-        "id": "61b027f30c02be0014fdae47",
-        "name": "Super User"
-      },
+
       "priority": 1
     },
     {
@@ -130,10 +126,8 @@
       ],
       "type": "http",
       "allow": [
-        "testing",
         "emr",
-        "lis",
-        "mediator"
+        "test"
       ],
       "whitelist": [],
       "authType": "private",
@@ -170,11 +164,7 @@
       ],
       "priority": 1,
       "alerts": [],
-      "rewriteUrlsConfig": [],
-      "updatedBy": {
-        "id": "61b027f30c02be0014fdae47",
-        "name": "Super User"
-      }
+      "rewriteUrlsConfig": []
     },
     {
       "methods": [
@@ -184,10 +174,8 @@
       ],
       "type": "http",
       "allow": [
-        "testing",
         "emr",
-        "lis",
-        "mediator"
+        "test"
       ],
       "whitelist": [],
       "authType": "private",
@@ -224,11 +212,7 @@
       ],
       "alerts": [],
       "rewriteUrlsConfig": [],
-      "priority": 2,
-      "updatedBy": {
-        "id": "61b027f30c02be0014fdae47",
-        "name": "Super User"
-      }
+      "priority": 2
     }
   ]
 }
