@@ -60,7 +60,7 @@ jobs:
 
       - name: Display docker logs for OpenCR
         run: docker-compose -f docker-compose.ports.yml logs opencr
-        
+
       - name: Display docker logs for SHR
         run: docker-compose -f docker-compose.ports.yml logs shr
 
@@ -83,3 +83,11 @@ jobs:
       - name: Stop containers
         if: always()
         run: docker-compose -f docker-compose.ports.yml down -v
+      
+      - name: Display docker logs for OpenCR
+        if: always()
+        run: docker-compose -f docker-compose.ports.yml logs opencr
+        
+      - name: Display docker logs for SHR
+        if: always()
+        run: docker-compose -f docker-compose.ports.yml logs shr
