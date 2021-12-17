@@ -44,8 +44,8 @@ jobs:
       - name: Start up support containers
         run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql 
 
-      - name: Sleep for 300 seconds
-        run: sleep 300
+      - name: Sleep for 500 seconds
+        run: sleep 500
         shell: bash
 
       - name: Display docker logs for SHR & OpenCR
@@ -65,7 +65,7 @@ jobs:
         run: docker-compose -f docker-compose.ports.yml logs shr
 
       - name: Display docker logs for isanteplus
-        run: docker-compose -f docker-compose.ports.yml logs isanteplus
+        run: docker logs -n 400 isanteplus
       
       - name: Display container status
         run: docker-compose -f docker-compose.ports.yml ps
