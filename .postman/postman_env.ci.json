@@ -21,6 +21,11 @@
 			"key": "openhim-console-url",
 			"value": "http://openhim-console",
 			"enabled": true
+		},
+		{
+			"key": "isanteplus-url",
+			"value": "http://isanteplus:8080",
+			"enabled": true
 		}
 	],
 	"_postman_variable_scope": "environment",
