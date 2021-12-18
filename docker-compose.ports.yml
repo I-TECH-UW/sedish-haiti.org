@@ -165,18 +165,18 @@ services:
   isanteplus:
     container_name: isanteplus
     hostname: isanteplus
-    image: ghcr.io/isanteplus/docker-isanteplus-server:pr-8
+    image: ghcr.io/isanteplus/docker-isanteplus-server:main
     restart: unless-stopped
     env_file:
       - ./configs/isanteplus/isanteplus.env
-    # volumes:
-    #   - isanteplus-data:/openmrs/data
+    volumes:
+      - isanteplus-server-data:/openmrs/data
     networks:
       - sedish
     logging:
       driver: "json-file"
       options:
-        max-size: "1m"
+        max-size: "10m"
     ports:
     - 1044:1044
 
@@ -310,11 +310,9 @@ services:
 volumes:
   esdata:
     driver: local
-  isanteplus-data:
+  isanteplus-server-data:
     driver: local
   isanteplus-db-data:
-    driver: local
-  isanteplus-db-data2:
     driver: local
   mongo-data:
     driver: local
