@@ -177,8 +177,6 @@ services:
       driver: "json-file"
       options:
         max-size: "10m"
-    ports:
-    - 1044:1044
 
   isanteplus-mysql:
     image: ghcr.io/isanteplus/docker-isanteplus-db:v3.0.1
