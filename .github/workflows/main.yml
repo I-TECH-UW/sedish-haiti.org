@@ -64,6 +64,9 @@ jobs:
       - name: Display docker logs for SHR
         run: docker-compose -f docker-compose.ports.yml logs shr
 
+      - name: Display docker logs for isanteplus mysql
+        run: docker logs -n 500 isanteplus-mysql
+
       - name: Display docker logs for isanteplus
         run: docker logs -n 400 isanteplus
       
@@ -92,7 +95,11 @@ jobs:
       - name: Display docker logs for SHR
         if: always()
         run: docker logs -n 100 shr
-
+      
+      - name: Display docker logs for isanteplus
+        if: always()
+        run: docker logs -n 100 isanteplus
+      
       - name: Stop containers
         if: always()
         run: docker-compose -f docker-compose.ports.yml down -v
