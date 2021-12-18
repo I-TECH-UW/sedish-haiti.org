@@ -165,7 +165,7 @@ services:
   isanteplus:
     container_name: isanteplus
     hostname: isanteplus
-    image: ghcr.io/isanteplus/docker-isanteplus-server:main
+    image: ghcr.io/isanteplus/docker-isanteplus-server:pr-8
     restart: unless-stopped
     env_file:
       - ./configs/isanteplus/isanteplus.env
