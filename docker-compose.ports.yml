@@ -169,8 +169,8 @@ services:
     restart: unless-stopped
     env_file:
       - ./configs/isanteplus/isanteplus.env
-    volumes:
-      - isanteplus-server-data:/openmrs/data
+    # volumes:
+    #   - isanteplus-data:/openmrs/data
     networks:
       - sedish
     logging:
@@ -196,7 +196,7 @@ services:
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
       - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
-      - isanteplus-db-data:/var/lib/mysql
+      - isanteplus-db-data-alt:/var/lib/mysql
     networks:
     - sedish
 
@@ -308,9 +308,11 @@ services:
 volumes:
   esdata:
     driver: local
-  isanteplus-server-data:
+  isanteplus-data:
     driver: local
   isanteplus-db-data:
+    driver: local
+  isanteplus-db-data-alt:
     driver: local
   mongo-data:
     driver: local
