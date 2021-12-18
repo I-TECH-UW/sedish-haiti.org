@@ -1,6 +1,6 @@
 {
   "urn": "urn:mediator:haiti_sharedhealthrecord",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "name": "Haiti SHR",
   "description": "Haiti Shared Health Record",
   "defaultChannelConfig": [

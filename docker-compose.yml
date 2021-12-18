@@ -62,7 +62,7 @@ services:
     networks:
       - sedish
     volumes:
-      - ./configs/opencr/config_docker_template.json:/src/server/config/config_docker.json
+      - ./configs/opencr/config_docker.json:/src/server/config/config_docker.json
       - ./configs/opencr/mediator.json:/src/server/config/mediator.json
       - ./configs/opencr/decisionRules.json:/src/server/config/decisionRules.json
   opencr-fhir:
@@ -72,8 +72,6 @@ services:
     restart: unless-stopped
     volumes:
       - cr-data:/data/hapi
-    env_file:
-      - configs/opencr-hapi/.env
     networks:
       - sedish
   
@@ -82,8 +80,6 @@ services:
     hostname: es
     image: intrahealth/elasticsearch:latest
     restart: unless-stopped
-    ports:
-      - 9200
     environment:
       - node.name=es01
       - discovery.type=single-node
@@ -100,14 +96,14 @@ services:
   shr:
     container_name: shr
     hostname: shr
-    image: ghcr.io/i-tech-uw/shared-health-record:v0.1.2
+    image: ghcr.io/i-tech-uw/shared-health-record:v0.4.3
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
     networks:
       - sedish
     volumes:
-      - ./configs/shr/config_docker_template.json:/app/config/config_docker.json
+      - ./configs/shr/config_docker.json:/app/config/config_docker.json
       - ./configs/shr/mediator_docker.json:/app/config/mediator_docker.json
   
   shr-fhir:
@@ -121,37 +117,55 @@ services:
       - configs/shr/.env
     networks:
       - sedish
+
+  ####
+  # Kafka
+  ###
+  zookeeper:
+    image: "bitnami/zookeeper:latest"
+    hostname: zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - sedish
+  kafka:
+    image: "bitnami/kafka:latest"
+    hostname: kafka
+    container_name: kafka
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+    volumes:
+      - kafka-data1:/bitnami/kafka
+    depends_on:
+      - zookeeper
+    networks:
+      - sedish
   
   ###
   # iSantePlus
   ###
-  isanteplus-demo:
-    container_name: isanteplus-demo
-    hostname: isanteplus-demo
-    image: ghcr.io/isanteplus/isanteplus:latest
+  isanteplus:
+    container_name: isanteplus
+    hostname: isanteplus
+    image: ghcr.io/isanteplus/docker-isanteplus-server:pr-8
     restart: unless-stopped
     env_file:
-        - ./openmrs/isanteplus_demo/openmrs-server.env
+      - ./configs/isanteplus/isanteplus.env
     volumes:
-      - openmrs-data:/openmrs/data
+      - isanteplus-data:/openmrs/data
     networks:
       - sedish
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
 
-  isanteplus-test:
-    container_name: isanteplus-test
-    hostname: isanteplus-test
-    build: ./docker/openmrs-server
-    restart: unless-stopped
-    env_file:
-        - ./openmrs/isanteplus_test/openmrs-server.env
-    volumes:
-      - ./openmrs/isanteplus_test/distribution:/openmrs/distribution
-      - openmrs-data2:/openmrs/data
-    networks:
-      - sedish
-    ports:
-      - 8002:8000
-      - 8091:8080
+  
   ###
   # OpenHIM
   ###
@@ -173,10 +187,10 @@ services:
       - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/etc/letsencrypt/live/openhim.jembi.org/cert.pem
       - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/etc/letsencrypt/live/openhim.jembi.org/key.pem
     healthcheck:
-      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
+      test: "curl -sSk https://localhost:8080/heartbeat || exit 1"
+      interval: 2m
+      timeout: 1m
+      retries: 5
     networks:
       - sedish
 
@@ -193,35 +207,57 @@ services:
       retries: 3
     networks:
       - sedish
-    # tty: true
-    # stdin_open: true
-    # entrypoint: bash
-
+  openhim-config:
+    container_name: openhim-config
+    image: ghcr.io/i-tech-uw/openhim-config:v0.0.0
+    volumes:
+      - ./configs/openhim-core/initial-config.json:/app/test-openhim-config.json
+    networks:
+      - sedish
+    environment:
+      - INITIAL_PW=openhim-password
+      - ADMIN_PW=$ADMIN_PW
+      - API_URL=https://openhim-core:8080
+        ## SHR Resource Stream
+  streaming-pipeline: 
+    image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-binlog:latest
+    container_name: streaming-pipeline
+    network_mode: host
+    healthcheck:
+      test: "exit 0"
+    volumes:
+      - ./configs/streaming-pipeline/config.json:/deployments/config.json
+      # data is the directory which you want to persist the generated parquet files
+      # - ../data:/tmp
+    environment:
+      - OPENMRS_URL=http://isanteplus:8080/openmrs
+      - OPENMRS_USERNAME=admin
+      - OPENMRS_PASSWORD=Admin123
+      - SINK_URL=openhim-core:5001
+      - SINK_USERNAME=shr-pipeline
+      - SINK_PASSWORD=shr-pipeline
+      - JDBC_FETCH_SIZE=10000
+      - JDBC_MAX_POOL_SIZE=50
+      - JDBC_INITIAL_POOL_SIZE=10
+      - JDBC_DRIVER_CLASS=com.mysql.cj.jdbc.Driver
+      # the 2 variable below should be same as volume mappings above
+      # - PARQUET_PATH=/tmp/
+      - FHIR_DEBEZIUM_CONFIG_PATH=/deployments/config.json
+    networks:
+      - sedish
 volumes:
   esdata:
     driver: local
-  data01:
+  isanteplus-data:
     driver: local
-  data02:
+  isanteplus-db-data:
     driver: local
-  data03:
-    driver: local
-  openmrs-data:
-    driver: local
-  openmrs-data2:
+  isanteplus-db-data2:
     driver: local
   mongo-data:
     driver: local
   shr:
     driver: local
-  hapi-data:
-    driver: local
-  data011:
-    driver: local
-  data012:
-    driver: local
-  data013:
-    driver: local    
   hapi-data:
     driver: local
   cr-data:
@@ -231,6 +267,8 @@ volumes:
   letsencrypt: 
     driver: local
   nginx-data: 
+    driver: local
+  kafka-data1:
     driver: local
 networks:
   sedish:
