@@ -68,7 +68,7 @@ jobs:
         run: docker logs -n 500 isanteplus-mysql
 
       - name: Display docker logs for isanteplus
-        run: docker logs -n 400 isanteplus
+        run: docker logs isanteplus
       
       - name: Display container status
         run: docker-compose -f docker-compose.ports.yml ps
