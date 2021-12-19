@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 jobs:
   CI:
-    timeout-minutes: 30
+    timeout-minutes: 40
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,8 +43,8 @@ jobs:
       - name: Start up support containers
         run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql 
 
-      - name: Sleep for 600 seconds
-        run: sleep 600
+      - name: Sleep for 1000 seconds
+        run: sleep 1000
         shell: bash
 
       - name: Display docker logs for SHR & OpenCR
