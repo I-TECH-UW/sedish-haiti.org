@@ -165,12 +165,12 @@ services:
   isanteplus:
     container_name: isanteplus
     hostname: isanteplus
-    image: ghcr.io/isanteplus/docker-isanteplus-server:pr-8
+    image: ghcr.io/isanteplus/docker-isanteplus-server:main
     restart: unless-stopped
     env_file:
       - ./configs/isanteplus/isanteplus.env
-    # volumes:
-    #   - isanteplus-data:/openmrs/data
+    volumes:
+      - isanteplus-data:/openmrs/data
     networks:
       - sedish
     logging:
@@ -179,7 +179,7 @@ services:
         max-size: "10m"
 
   isanteplus-mysql:
-    image: ghcr.io/isanteplus/docker-isanteplus-db:v3.0.1
+    image: ghcr.io/isanteplus/docker-isanteplus-db:main
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
     restart: unless-stopped
     container_name: isanteplus-mysql
@@ -195,8 +195,8 @@ services:
       - MYSQL_PASSWORD=mysqlpw
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
-      - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
-#       - isanteplus-db-data-alt:/var/lib/mysql
+      #- ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
+      - isanteplus-db-data-alt:/var/lib/mysql
     networks:
     - sedish
 
