@@ -196,7 +196,7 @@ services:
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
       - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
-      - isanteplus-db-data-alt:/var/lib/mysql
+#       - isanteplus-db-data-alt:/var/lib/mysql
     networks:
     - sedish
 
