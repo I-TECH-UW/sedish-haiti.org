@@ -184,8 +184,6 @@ services:
     restart: unless-stopped
     container_name: isanteplus-mysql
     hostname: isanteplus-mysql
-    ports:
-      - "3306:3306"
     healthcheck:
       test: "exit 0"
     environment:
@@ -195,7 +193,7 @@ services:
       - MYSQL_PASSWORD=mysqlpw
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
-      #- ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
+      - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
       - isanteplus-db-data-alt:/var/lib/mysql
     networks:
     - sedish
