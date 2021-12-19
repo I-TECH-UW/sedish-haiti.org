@@ -12,7 +12,7 @@ on:
 jobs:
   CI:
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: macos-11
 
     steps:
       - name: Checkout
