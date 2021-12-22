@@ -1,4 +1,4 @@
-version: '2.4'
+version: '3.9'
 
 ## Port Assignments:
 ##  See .env file
@@ -21,6 +21,7 @@ services:
   # TODO: set up to use non-root user. See https://www.rockyourcode.com/run-docker-nginx-as-non-root-user/
   ###
   nginx:
+    profiles: ['main']
     image: nginx:latest
     container_name: nginx
     hostname: nginx
@@ -36,6 +37,7 @@ services:
       - sedish
 
   certbot:
+    profiles: ['main']
     image: certbot/dns-route53
     container_name: certbot
     entrypoint: "certbot certonly -n --agree-tos --email pmanko@uw.edu -d sedish-haiti.org -d '*.sedish-haiti.org' --dns-route53 --preferred-challenges=dns"
@@ -52,6 +54,7 @@ services:
   # OpenCR
   ###
   opencr:
+    profiles: ['main']
     container_name: opencr
     hostname: opencr
     image: intrahealth/opencr:latest
@@ -62,20 +65,25 @@ services:
     networks:
       - sedish
     volumes:
-      - ./configs/opencr/config_docker.json:/src/server/config/config_docker.json
+      - ./configs/opencr/config.json:/src/server/config/config_docker.json
       - ./configs/opencr/mediator.json:/src/server/config/mediator.json
       - ./configs/opencr/decisionRules.json:/src/server/config/decisionRules.json
+  
   opencr-fhir:
+    profiles: ['main']
     image: "hapiproject/hapi:latest"
     container_name: opencr-fhir
     hostname: opencr-fhir
     restart: unless-stopped
+    env_file:
+      - configs/opencr/.env
     volumes:
       - cr-data:/data/hapi
     networks:
       - sedish
   
   opencr-es:
+    profiles: ['main']
     container_name: es
     hostname: es
     image: intrahealth/elasticsearch:latest
@@ -94,6 +102,7 @@ services:
   # SHR
   ###
   shr:
+    profiles: ['main']
     container_name: shr
     hostname: shr
     image: ghcr.io/i-tech-uw/shared-health-record:v0.4.3
@@ -103,10 +112,11 @@ services:
     networks:
       - sedish
     volumes:
-      - ./configs/shr/config_docker.json:/app/config/config_docker.json
-      - ./configs/shr/mediator_docker.json:/app/config/mediator_docker.json
+      - ./configs/shr/config.json:/app/config/config_docker.json
+      - ./configs/shr/mediator.json:/app/config/mediator_docker.json
   
   shr-fhir:
+    profiles: ['main']
     image: "hapiproject/hapi:latest"
     container_name: shr-fhir
     hostname: shr-fhir
@@ -117,11 +127,15 @@ services:
       - configs/shr/.env
     networks:
       - sedish
+    # tty: true
+    # stdin_open: true
+    # entrypoint: bash
 
   ####
   # Kafka
   ###
   zookeeper:
+    profiles: ['main']
     image: "bitnami/zookeeper:latest"
     hostname: zookeeper
     environment:
@@ -129,6 +143,7 @@ services:
     networks:
       - sedish
   kafka:
+    profiles: ['main']
     image: "bitnami/kafka:latest"
     hostname: kafka
     container_name: kafka
@@ -150,9 +165,10 @@ services:
   # iSantePlus
   ###
   isanteplus:
+    profiles: ['main']
     container_name: isanteplus
     hostname: isanteplus
-    image: ghcr.io/isanteplus/docker-isanteplus-server:pr-8
+    image: ghcr.io/isanteplus/docker-isanteplus-server:main
     restart: unless-stopped
     env_file:
       - ./configs/isanteplus/isanteplus.env
@@ -163,29 +179,41 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "1m"
+        max-size: "10m"
 
+  isanteplus-mysql:
+    profiles: ['main']
+    image: ghcr.io/isanteplus/docker-isanteplus-db:main
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
+    restart: unless-stopped
+    container_name: isanteplus-mysql
+    hostname: isanteplus-mysql
+    healthcheck:
+      test: "exit 0"
+    environment:
+      - MYSQL_DATABASE=openmrs
+      - MYSQL_ROOT_PASSWORD=debezium
+      - MYSQL_USER=mysqluser
+      - MYSQL_PASSWORD=mysqlpw
+      - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
+    volumes:
+      - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
+      - isanteplus-db-data:/var/lib/mysql
+    networks:
+    - sedish
   
   ###
   # OpenHIM
   ###
   openhim-core:
+    profiles: ['main']
     container_name: openhim-core
     image: jembi/openhim-core:latest
     restart: unless-stopped
     environment:
-      mongo_url: "mongodb://${MONGO_USER}:${MONGO_PW}@openhim-db.chijnl5rwr2c.eu-central-1.docdb.amazonaws.com:27017/openhim?retryWrites=false"
-      mongo_atnaUrl: "mongodb://${MONGO_USER}:${MONGO_PW}@openhim-db.chijnl5rwr2c.eu-central-1.docdb.amazonaws.com:27017/openhim?retryWrites=false"
+      mongo_url: "mongodb://mongo-db/openhim"
+      mongo_atnaUrl: "mongodb://mongo-db/openhim"
       NODE_ENV: "development"
-    ports:
-      - 8080:8080
-      - 5000:5000
-      - 5001:5001
-    volumes:
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/usr/src/app/resources/certs/default/cert.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/usr/src/app/resources/certs/default/key.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/fullchain3.pem:/etc/letsencrypt/live/openhim.jembi.org/cert.pem
-      - /home/ubuntu/local/letsencrypt/archive/sedish-haiti.org/privkey3.pem:/etc/letsencrypt/live/openhim.jembi.org/key.pem
     healthcheck:
       test: "curl -sSk https://localhost:8080/heartbeat || exit 1"
       interval: 2m
@@ -195,6 +223,7 @@ services:
       - sedish
 
   openhim-console:
+    profiles: ['main']
     container_name: openhim-console
     image: jembi/openhim-console:latest
     restart: unless-stopped
@@ -207,7 +236,19 @@ services:
       retries: 3
     networks:
       - sedish
+
+  mongo-db:
+    profiles: ['main']
+    container_name: mongo-db
+    image: mongo:3.4
+    volumes:
+      - "mongo-data:/data/db"
+    restart: unless-stopped
+    networks:
+      - sedish
+
   openhim-config:
+    profiles: ['main']
     container_name: openhim-config
     image: ghcr.io/i-tech-uw/openhim-config:v0.0.0
     volumes:
@@ -218,41 +259,65 @@ services:
       - INITIAL_PW=openhim-password
       - ADMIN_PW=$ADMIN_PW
       - API_URL=https://openhim-core:8080
-        ## SHR Resource Stream
-  streaming-pipeline: 
-    image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-binlog:latest
-    container_name: streaming-pipeline
-    network_mode: host
-    healthcheck:
-      test: "exit 0"
+  
+  # ## SHR Resource Stream
+  # streaming-pipeline: 
+  #   image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-binlog:latest
+  #   container_name: streaming-pipeline
+  #   healthcheck:
+  #     test: "exit 0"
+  #   volumes:
+  #     - ./configs/streaming-pipeline/config.json:/deployments/config.json
+  #     # data is the directory which you want to persist the generated parquet files
+  #     # - ../data:/tmp
+  #   environment:
+  #     - OPENMRS_URL=http://isanteplus:8080/openmrs
+  #     - OPENMRS_USERNAME=admin
+  #     - OPENMRS_PASSWORD=Admin123
+  #     - SINK_URL=openhim-core:5001
+  #     - SINK_USERNAME=shr-pipeline
+  #     - SINK_PASSWORD=shr-pipeline
+  #     - JDBC_FETCH_SIZE=10000
+  #     - JDBC_MAX_POOL_SIZE=50
+  #     - JDBC_INITIAL_POOL_SIZE=10
+  #     - JDBC_DRIVER_CLASS=com.mysql.cj.jdbc.Driver
+  #     # the 2 variable below should be same as volume mappings above
+  #     # - PARQUET_PATH=/tmp/
+  #     - FHIR_DEBEZIUM_CONFIG_PATH=/deployments/config.json
+  #   networks:
+  #     - sedish
+  # streaming-atomfeed:
+  #   container_name: streaming-atomfeed
+  #   image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-atomfeed:latest
+  #   healthcheck:
+  #     test: "exit 0"
+  #   environment:
+  #     - SOURCE_URL=https://isanteplus-cdb.isanteplus-pilot.org/openmrs
+  #     - SOURCE_FEED_ENDPOINT=/ws/atomfeed
+  #     - SOURCE_FHIR_ENDPOINT=/ws/fhir2/R4
+  #     - SOURCE_PW=${OMRS_PW}
+  #     - SOURCE_USERNAME=admin
+  #     - SINK_USERNAME=shr-pipeline
+  #     - SINK_PASSWORD=${PIPELINE_PW}
+  #     - SINK_URL=https://isanteplus-pilot.org:5000/SHR/fhir
+  #   restart: unless-stopped
+  #   networks:
+  #     - sedish
+  # Newman Tests
+  newman:
+    image: postman/newman
     volumes:
-      - ./configs/streaming-pipeline/config.json:/deployments/config.json
-      # data is the directory which you want to persist the generated parquet files
-      # - ../data:/tmp
-    environment:
-      - OPENMRS_URL=http://isanteplus:8080/openmrs
-      - OPENMRS_USERNAME=admin
-      - OPENMRS_PASSWORD=Admin123
-      - SINK_URL=openhim-core:5001
-      - SINK_USERNAME=shr-pipeline
-      - SINK_PASSWORD=shr-pipeline
-      - JDBC_FETCH_SIZE=10000
-      - JDBC_MAX_POOL_SIZE=50
-      - JDBC_INITIAL_POOL_SIZE=10
-      - JDBC_DRIVER_CLASS=com.mysql.cj.jdbc.Driver
-      # the 2 variable below should be same as volume mappings above
-      # - PARQUET_PATH=/tmp/
-      - FHIR_DEBEZIUM_CONFIG_PATH=/deployments/config.json
+      - ./.postman:/.postman
+    entrypoint: newman run $POSTMAN_COLLECTION -e /.postman/postman_env.ci.json --insecure --timeout-request 20000 --delay-request 500
     networks:
       - sedish
+
 volumes:
   esdata:
     driver: local
   isanteplus-data:
     driver: local
   isanteplus-db-data:
-    driver: local
-  isanteplus-db-data2:
     driver: local
   mongo-data:
     driver: local

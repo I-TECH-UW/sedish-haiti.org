@@ -1,10 +1,12 @@
 {
-    "urn": "urn:uuid:4bc42b2f-b5a8-473d-8207-5dd5c61f0c4a",
-    "version": "1.0.3",
+    "urn": "urn:mediator:haiti_clientregistry",
+    "version": "1.1.2",
     "name": "Client Registry",
     "description": "Haiti Client Registry",
     "config": {
         "fhirServer": {
+            "username": "hapi",
+            "password": "hapi",
             "baseURL": "http://opencr-fhir:8080/fhir"
         },
         "elastic": {
@@ -44,7 +46,7 @@
                     "param": "password"
                 }
             ],
-            "values": ["","",""]
+            "values": []
         },
         {
             "param": "elastic",
@@ -83,7 +85,7 @@
                     "param": "index"
                 }
             ],
-            "values": ["","","","",""]
+            "values": []
         },
         {
             "param": "matching",
@@ -110,7 +112,7 @@
             "requestBody": true,
             "responseBody": true,
             "name": "OpenCR Resource Endpoint",
-            "description": "Add or Get Resource in OpenCR",
+            "description": "Add or Get Resource Data From/To openCR",
             "urlPattern": "^/CR/fhir$",
             "matchContentRegex": null,
             "matchContentXpath": null,
@@ -136,12 +138,12 @@
                     "type": "http",
                     "status": "enabled",
                     "forwardAuthHeader": false,
-                    "name": "Add/Update/Get Resources",
-                    "secured": true,
+                    "name": "Add/Get Resources",
+                    "secured": false,
                     "host": "opencr",
                     "port": 3000,
                     "path": "",
-                    "pathTransform": "",
+                    "pathTransform": "s/CR\\/fhir/fhir/g",
                     "primary": true,
                     "username": "",
                     "password": ""
@@ -149,9 +151,6 @@
             ],
             "authType": "private",
             "whitelist": [],
-            "allow": [
-                "openmrs"
-            ],
             "type": "http",
             "methods": [
                 "GET",
@@ -168,9 +167,9 @@
     "endpoints": [
         {
             "name": "Activate Client Registry",
-            "host": "opencr.sedish-haiti.org",
-            "path": "/fhir",
-            "port": 80,
+            "host": "opencr",
+            "path": "/",
+            "port": 3000,
             "primary": true,
             "forwardAuthHeader": false,
             "status": "enabled",
