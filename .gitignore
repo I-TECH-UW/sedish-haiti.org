@@ -49,3 +49,5 @@ hapi.properties
 configs/shr/.env
 configs/opencr-hapi/.env
 configs/opencr/.env
+
+configs/streaming-pipeline/data*

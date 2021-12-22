@@ -286,23 +286,7 @@ services:
       - FHIR_DEBEZIUM_CONFIG_PATH=/deployments/config.json
     networks:
       - sedish
-  # streaming-atomfeed:
-  #   container_name: streaming-atomfeed
-  #   image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-atomfeed:latest
-  #   healthcheck:
-  #     test: "exit 0"
-  #   environment:
-  #     - SOURCE_URL=https://isanteplus-cdb.isanteplus-pilot.org/openmrs
-  #     - SOURCE_FEED_ENDPOINT=/ws/atomfeed
-  #     - SOURCE_FHIR_ENDPOINT=/ws/fhir2/R4
-  #     - SOURCE_PW=${OMRS_PW}
-  #     - SOURCE_USERNAME=admin
-  #     - SINK_USERNAME=shr-pipeline
-  #     - SINK_PASSWORD=${PIPELINE_PW}
-  #     - SINK_URL=https://isanteplus-pilot.org:5000/SHR/fhir
-  #   restart: unless-stopped
-  #   networks:
-  #     - sedish
+  
   # Newman Tests
   newman:
     image: postman/newman

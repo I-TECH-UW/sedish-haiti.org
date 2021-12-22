@@ -259,12 +259,12 @@ services:
     volumes:
       - ./configs/streaming-pipeline/config.json:/deployments/config.json
       # data is the directory which you want to persist the generated parquet files
-      # - ../data:/tmp
+      # - ./configs/streaming-pipeline/data:/tmp
     environment:
       - OPENMRS_URL=http://isanteplus:8080/openmrs
       - OPENMRS_USERNAME=admin
       - OPENMRS_PASSWORD=Admin123
-      - SINK_URL=openhim-core:5001
+      - SINK_URL=http://openhim-core:5001/SHR/fhir
       - SINK_USERNAME=shr-pipeline
       - SINK_PASSWORD=shr-pipeline
       - JDBC_FETCH_SIZE=10000
@@ -272,26 +272,8 @@ services:
       - JDBC_INITIAL_POOL_SIZE=10
       - JDBC_DRIVER_CLASS=com.mysql.cj.jdbc.Driver
       # the 2 variable below should be same as volume mappings above
-      # - PARQUET_PATH=/tmp/
+      - PARQUET_PATH=
       - FHIR_DEBEZIUM_CONFIG_PATH=/deployments/config.json
-    networks:
-      - sedish
-  streaming-atomfeed:
-    container_name: streaming-atomfeed
-    hostname: streaming-atomfeed
-    image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-atomfeed:latest
-    healthcheck:
-      test: "exit 0"
-    environment:
-      - SOURCE_URL=https://isanteplus-cdb.isanteplus-pilot.org/openmrs
-      - SOURCE_FEED_ENDPOINT=/ws/atomfeed
-      - SOURCE_FHIR_ENDPOINT=/ws/fhir2/R4
-      - SOURCE_PW=${OMRS_PW}
-      - SOURCE_USERNAME=admin
-      - SINK_USERNAME=shr-pipeline
-      - SINK_PASSWORD=${PIPELINE_PW}
-      - SINK_URL=https://isanteplus-pilot.org:5000/SHR/fhir
-    restart: unless-stopped
     networks:
       - sedish
   # Newman Tests
