@@ -36,6 +36,24 @@
     "uri": "http://openclientregistry.org/fhir",
     "reportRelationship": "patientreport"
   },
+  "clients": [
+    {
+      "id": "openmrs",
+      "displayName": "OpenMRS"
+    },
+    {
+      "id": "dhis2",
+      "displayName": "DHIS2"
+    },
+    {
+      "id": "lims",
+      "displayName": "Lab Info Management System"
+    },
+    {
+      "id": "cr",
+      "displayName": "Client Registry"
+    }
+  ],
   "matching": {
     "tool": "elasticsearch"
   },
@@ -64,7 +82,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2021-12-22T22:02:56"
+    "lastFHIR2ESSync": "2021-12-22T22:32:42"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"

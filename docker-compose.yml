@@ -260,32 +260,32 @@ services:
       - ADMIN_PW=$ADMIN_PW
       - API_URL=https://openhim-core:8080
   
-  # ## SHR Resource Stream
-  # streaming-pipeline: 
-  #   image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-binlog:latest
-  #   container_name: streaming-pipeline
-  #   healthcheck:
-  #     test: "exit 0"
-  #   volumes:
-  #     - ./configs/streaming-pipeline/config.json:/deployments/config.json
-  #     # data is the directory which you want to persist the generated parquet files
-  #     # - ../data:/tmp
-  #   environment:
-  #     - OPENMRS_URL=http://isanteplus:8080/openmrs
-  #     - OPENMRS_USERNAME=admin
-  #     - OPENMRS_PASSWORD=Admin123
-  #     - SINK_URL=openhim-core:5001
-  #     - SINK_USERNAME=shr-pipeline
-  #     - SINK_PASSWORD=shr-pipeline
-  #     - JDBC_FETCH_SIZE=10000
-  #     - JDBC_MAX_POOL_SIZE=50
-  #     - JDBC_INITIAL_POOL_SIZE=10
-  #     - JDBC_DRIVER_CLASS=com.mysql.cj.jdbc.Driver
-  #     # the 2 variable below should be same as volume mappings above
-  #     # - PARQUET_PATH=/tmp/
-  #     - FHIR_DEBEZIUM_CONFIG_PATH=/deployments/config.json
-  #   networks:
-  #     - sedish
+  ## SHR Resource Stream
+  streaming-pipeline: 
+    image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-binlog:latest
+    container_name: streaming-pipeline
+    healthcheck:
+      test: "exit 0"
+    volumes:
+      - ./configs/streaming-pipeline/config.json:/deployments/config.json
+      # data is the directory which you want to persist the generated parquet files
+      # - ./configs/streaming-pipeline/data:/tmp
+    environment:
+      - OPENMRS_URL=http://isanteplus:8080/openmrs
+      - OPENMRS_USERNAME=admin
+      - OPENMRS_PASSWORD=Admin123
+      - SINK_URL=http://openhim-core:5001/SHR/fhir
+      - SINK_USERNAME=shr-pipeline
+      - SINK_PASSWORD=shr-pipeline
+      - JDBC_FETCH_SIZE=10000
+      - JDBC_MAX_POOL_SIZE=50
+      - JDBC_INITIAL_POOL_SIZE=10
+      - JDBC_DRIVER_CLASS=com.mysql.cj.jdbc.Driver
+      # the 2 variable below should be same as volume mappings above
+      - PARQUET_PATH=
+      - FHIR_DEBEZIUM_CONFIG_PATH=/deployments/config.json
+    networks:
+      - sedish
   # streaming-atomfeed:
   #   container_name: streaming-atomfeed
   #   image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-atomfeed:latest
