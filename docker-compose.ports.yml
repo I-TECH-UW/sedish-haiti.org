@@ -128,9 +128,11 @@ services:
     restart: unless-stopped
     volumes:
       - hapi-data:/data/hapi
+      - ./configs/shr/application.yml:/data/hapi/application.yaml
     networks:
       - sedish
-
+    environment:
+      SPRING_CONFIG_LOCATION: 'file:///data/hapi/application.yaml'
   ####
   # Kafka
   ###

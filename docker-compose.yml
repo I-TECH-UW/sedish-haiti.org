@@ -123,13 +123,11 @@ services:
     restart: unless-stopped
     volumes:
       - hapi-data:/data/hapi
-    env_file:
-      - configs/shr/.env
+      - ./configs/shr/application.yml:/data/hapi/application.yaml
     networks:
       - sedish
-    # tty: true
-    # stdin_open: true
-    # entrypoint: bash
+    env_file:
+      - configs/shr/.env
 
   ####
   # Kafka
