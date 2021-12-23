@@ -44,7 +44,7 @@ jobs:
         run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql 
 
       - name: Sleep for 1000 seconds
-        run: sleep 1000
+        run: sleep 1200
         shell: bash
 
       - name: Display docker logs for SHR & OpenCR
@@ -54,7 +54,7 @@ jobs:
         run: docker-compose -f docker-compose.ports.yml up -d shr opencr streaming-pipeline
 
       - name: Sleep for 30 seconds
-        run: sleep 30
+        run: sleep 60
         shell: bash
 
       - name: Display docker logs for OpenCR
