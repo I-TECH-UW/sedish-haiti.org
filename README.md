@@ -107,10 +107,7 @@ sudo docker-compose -f docker-compose.ports.yml up -d streaming-pipeline
 ```
 
 ## 4. Testing and Validation
-Setup a Postman environment and run tests from this workspace: https://www.postman.com/itechuw/workspace/isanteplus-pilot
-
-*Work in Progress*
-
+Setup a Postman environment and run tests from this workspace: https://www.postman.com/itechuw/workspace/haiti-sedish
 
 ## 5. Domain-based setup
 Follow section 3.2, but use the main `docker-compose.yml` file, so without the `-f` flag. Also, set up certificate generation like so:

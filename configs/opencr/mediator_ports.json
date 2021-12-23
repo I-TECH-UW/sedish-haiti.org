@@ -1,6 +1,6 @@
 {
     "urn": "urn:mediator:haiti_clientregistry",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "name": "Client Registry",
     "description": "Haiti Client Registry",
     "config": {
@@ -111,9 +111,9 @@
         {
             "requestBody": true,
             "responseBody": true,
-            "name": "Add or Get Resource Data From/To openCR",
+            "name": "OpenCR Resource Endpoint",
             "description": "Add or Get Resource Data From/To openCR",
-            "urlPattern": "/CR/fhir",
+            "urlPattern": "^/CR/fhir$",
             "matchContentRegex": null,
             "matchContentXpath": null,
             "matchContentValue": null,

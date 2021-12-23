@@ -127,7 +127,8 @@
       "type": "http",
       "allow": [
         "emr",
-        "test"
+        "test",
+        "pipeline"
       ],
       "whitelist": [],
       "authType": "private",
