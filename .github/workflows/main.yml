@@ -41,7 +41,7 @@ jobs:
         run: docker-compose -f docker-compose.ports.yml logs openhim-config
 
       - name: Start up support containers
-        run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql 
+        run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql chrome 
 
       - name: Sleep for 1000 seconds
         run: sleep 1200
@@ -71,6 +71,9 @@ jobs:
       
       - name: Display container status
         run: docker-compose -f docker-compose.ports.yml ps
+
+      - name: Run iSantePlus QA Framework (https://github.com/IsantePlus/isanteplus-qaframework)
+        run: docker-compose up qa
 
       - name: Run General Tests (https://www.postman.com/itechuw/workspace/haiti-sedish/collection/1525496-943a668e-664f-44a3-86b5-a4d4bc14c0e9)
         env:

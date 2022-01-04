@@ -181,7 +181,7 @@ services:
         max-size: "10m"
 
   isanteplus-mysql:
-    image: ghcr.io/isanteplus/docker-isanteplus-db:main
+    image: ghcr.io/isanteplus/docker-isanteplus-db:${ISANTEPLUS_DB_VERSION}
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
     restart: unless-stopped
     container_name: isanteplus-mysql
@@ -278,6 +278,7 @@ services:
       - FHIR_DEBEZIUM_CONFIG_PATH=/deployments/config.json
     networks:
       - sedish
+  
   # Newman Tests
   newman:
     image: postman/newman
@@ -286,7 +287,23 @@ services:
     entrypoint: newman run $POSTMAN_COLLECTION -e /.postman/postman_env.ci.json --insecure --timeout-request 20000 --delay-request 1000
     networks:
       - sedish
-
+  
+  # QA Framework
+  qa:
+    image: ghcr.io/isanteplus/isanteplus-qaframework:pr-60
+    container_name: qa
+    environment:
+      - ISANTEPLUS_URL=http://isanteplus:8080/openmrs
+      - ISANTEPLUS_USER=admin
+      - ISANTEPLUS_PW=Admin123
+    networks:
+      - sedish
+  chrome:
+    image: selenium/standalone-chrome
+    hostname: chrome
+    container_name: chrome
+    networks:
+    - sedish
 volumes:
   esdata:
     driver: local
