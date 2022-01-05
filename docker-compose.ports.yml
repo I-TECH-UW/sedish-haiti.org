@@ -290,7 +290,7 @@ services:
   
   # QA Framework
   qa:
-    image: ghcr.io/isanteplus/isanteplus-qaframework:pr-60
+    image: ghcr.io/isanteplus/isanteplus-qaframework:${ISANTEPLUS_QA_VERSION}
     container_name: qa
     environment:
       - ISANTEPLUS_URL=http://isanteplus:8080/openmrs
