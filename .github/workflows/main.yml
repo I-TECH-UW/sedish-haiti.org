@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 jobs:
   CI:
-    timeout-minutes: 40
+    timeout-minutes: 70
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
