@@ -65,16 +65,19 @@
         "http://clientregistry.org/openmrs",
         "urn:ietf:rfc:3986",
         "LOCAL",
-        "http://isanteplus.org/openmrs/fhir2/3-isanteplus-id"
+        "http://isanteplus.org/openmrs/fhir2/3-isanteplus-id",
+        "http://isanteplusdemo.com/openmrs/fhir2/3-isanteplus-id"
       ],
       "displayName": "Internal ID"
     },
     "nationalid": {
       "uri": "http://isanteplus.org/openmrs/fhir2/5-code-national",
+      "uri": "http://isanteplusdemo.com/openmrs/fhir2/5-code-national",
       "displayName": "National ID"
     },
     "artnumber": {
-      "uri": "http://isanteplus.org/openmrs/fhir2/5-code-national",
+      "uri": "http://isanteplus.org/openmrs/fhir2/6-code-st",
+      "uri": "http://isanteplusdemo.com/openmrs/fhir2/6-code-st",
       "displayName": "ART Number"
     },
     "brokenMatch": {
@@ -82,7 +85,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2022-01-05T06:17:17"
+    "lastFHIR2ESSync": "2022-01-07T23:20:59"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"

@@ -78,7 +78,7 @@ services:
     env_file:
       - configs/opencr/.env
     volumes:
-      - cr-data:/data/hapi
+      - /data/hapi
     networks:
       - sedish
   
@@ -94,7 +94,7 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
-      - esdata:/usr/share/elasticsearch/data
+      - es-data:/usr/share/elasticsearch/data
     networks:
       - sedish
 
@@ -172,12 +172,13 @@ services:
       - ./configs/isanteplus/isanteplus.env
     volumes:
       - isanteplus-data:/openmrs/data
+      - ./configs/isanteplus/custom_modules:/custom_modules
     networks:
       - sedish
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
+        max-size: "10m"      
 
   isanteplus-mysql:
     profiles: ['main']
@@ -196,10 +197,10 @@ services:
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
       - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
-      - isanteplus-db-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     networks:
-    - sedish
-  
+      - sedish
+
   ###
   # OpenHIM
   ###
@@ -313,11 +314,11 @@ services:
       - sedish
 
 volumes:
-  esdata:
+  es-data:
     driver: local
   isanteplus-data:
     driver: local
-  isanteplus-db-data:
+  mysql-data:
     driver: local
   mongo-data:
     driver: local
@@ -325,7 +326,7 @@ volumes:
     driver: local
   hapi-data:
     driver: local
-  cr-data:
+  opencr-data:
     driver: local
   certs:
     driver: local
