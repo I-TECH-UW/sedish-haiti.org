@@ -71,13 +71,17 @@
       "displayName": "Internal ID"
     },
     "nationalid": {
-      "uri": "http://isanteplus.org/openmrs/fhir2/5-code-national",
-      "uri": "http://isanteplusdemo.com/openmrs/fhir2/5-code-national",
+      "uri": [
+        "http://isanteplus.org/openmrs/fhir2/5-code-national",
+        "http://isanteplusdemo.com/openmrs/fhir2/5-code-national"
+      ],
       "displayName": "National ID"
     },
     "artnumber": {
-      "uri": "http://isanteplus.org/openmrs/fhir2/6-code-st",
-      "uri": "http://isanteplusdemo.com/openmrs/fhir2/6-code-st",
+      "uri": [
+        "http://isanteplus.org/openmrs/fhir2/6-code-st", 
+        "http://isanteplusdemo.com/openmrs/fhir2/6-code-st"
+      ],
       "displayName": "ART Number"
     },
     "brokenMatch": {
