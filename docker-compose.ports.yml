@@ -85,8 +85,10 @@ services:
     container_name: opencr-fhir
     hostname: opencr-fhir
     restart: unless-stopped
+    env_file:
+      - configs/opencr/.env
     volumes:
-      - cr-data:/data/hapi
+      - /data/hapi
     networks:
       - sedish
 
@@ -127,12 +129,26 @@ services:
     hostname: shr-fhir
     restart: unless-stopped
     volumes:
-      - hapi-data:/data/hapi
-      - ./configs/shr/application.yml:/data/hapi/application.yaml
+      - /data/hapi
     networks:
       - sedish
+    env_file:
+      - configs/shr/.env
+  ####
+  # DBs
+  ###
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: unless-stopped
     environment:
-      SPRING_CONFIG_LOCATION: 'file:///data/hapi/application.yaml'
+      POSTGRES_PASSWORD: ${PG_PW}
+      POSTGRES_DB: opencr
+    volumes:
+      - pg-data:/var/lib/postgresql/data/
+  
   ####
   # Kafka
   ###
@@ -328,6 +344,8 @@ volumes:
   nginx-data:
     driver: local
   kafka-data1:
+    driver: local
+  pg-data:  
     driver: local
 networks:
   sedish:

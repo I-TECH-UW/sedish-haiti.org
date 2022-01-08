@@ -123,7 +123,6 @@ services:
     restart: unless-stopped
     volumes:
       - hapi-data:/data/hapi
-      - ./configs/shr/application.yml:/data/hapi/application.yaml
     networks:
       - sedish
     env_file:
