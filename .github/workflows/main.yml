@@ -19,8 +19,9 @@ jobs:
 
       - name: Copy config templates
         run: |
-          cp ${GITHUB_WORKSPACE}/configs/opencr/.env.template configs/opencr/.env
-          cp ${GITHUB_WORKSPACE}/configs/shr/.env.template configs/shr/.env
+          cp ${GITHUB_WORKSPACE}/configs/opencr/.env.template ${GITHUB_WORKSPACE}/configs/opencr/.env
+          cp ${GITHUB_WORKSPACE}/configs/shr/.env.template ${GITHUB_WORKSPACE}/configs/shr/.env
+          cp ${GITHUB_WORKSPACE}/configs/isanteplus/isanteplus.env.template ${GITHUB_WORKSPACE}/configs/isanteplus/isanteplus.env
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
