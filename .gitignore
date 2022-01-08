@@ -50,4 +50,8 @@ configs/shr/.env
 configs/opencr-hapi/.env
 configs/opencr/.env
 
+configs/isanteplus/custom_modules/*.omod
+configs/isanteplus/*.env
+configs/isanteplus/db/*.sql
+
 configs/streaming-pipeline/data*

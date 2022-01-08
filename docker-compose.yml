@@ -78,7 +78,7 @@ services:
     env_file:
       - configs/opencr/.env
     volumes:
-      - cr-data:/data/hapi
+      - /data/hapi
     networks:
       - sedish
   
@@ -94,7 +94,7 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
-      - esdata:/usr/share/elasticsearch/data
+      - es-data:/usr/share/elasticsearch/data
     networks:
       - sedish
 
@@ -172,16 +172,17 @@ services:
       - ./configs/isanteplus/isanteplus.env
     volumes:
       - isanteplus-data:/openmrs/data
+      - ./configs/isanteplus/custom_modules:/custom_modules
     networks:
       - sedish
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
+        max-size: "10m"      
 
   isanteplus-mysql:
     profiles: ['main']
-    image: ghcr.io/isanteplus/docker-isanteplus-db:main
+    image: ghcr.io/isanteplus/docker-isanteplus-db:${ISANTEPLUS_DB_VERSION}
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
     restart: unless-stopped
     container_name: isanteplus-mysql
@@ -196,10 +197,10 @@ services:
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
       - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
-      - isanteplus-db-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     networks:
-    - sedish
-  
+      - sedish
+
   ###
   # OpenHIM
   ###
@@ -260,6 +261,7 @@ services:
   
   ## SHR Resource Stream
   streaming-pipeline: 
+    profiles: ['main']
     image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-binlog:latest
     container_name: streaming-pipeline
     healthcheck:
@@ -285,6 +287,23 @@ services:
     networks:
       - sedish
   
+  # QA Framework
+  qa:
+    image: ghcr.io/isanteplus/isanteplus-qaframework::${ISANTEPLUS_QA_VERSION}
+    container_name: qa
+    environment:
+      - ISANTEPLUS_URL=http://isanteplus:8080/openmrs
+      - ISANTEPLUS_USER=admin
+      - ISANTEPLUS_PW=Admin123
+    networks:
+      - sedish
+  chrome:
+    image: selenium/standalone-chrome
+    hostname: chrome
+    container_name: chrome
+    networks:
+    - sedish
+
   # Newman Tests
   newman:
     image: postman/newman
@@ -295,11 +314,11 @@ services:
       - sedish
 
 volumes:
-  esdata:
+  es-data:
     driver: local
   isanteplus-data:
     driver: local
-  isanteplus-db-data:
+  mysql-data:
     driver: local
   mongo-data:
     driver: local
@@ -307,7 +326,7 @@ volumes:
     driver: local
   hapi-data:
     driver: local
-  cr-data:
+  opencr-data:
     driver: local
   certs:
     driver: local
