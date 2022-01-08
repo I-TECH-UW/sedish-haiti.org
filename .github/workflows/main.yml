@@ -43,7 +43,7 @@ jobs:
       - name: Start up support containers
         run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql chrome 
 
-      - name: Sleep for 1000 seconds
+      - name: Sleep for 1200 seconds
         run: sleep 1200
         shell: bash
 
@@ -53,8 +53,8 @@ jobs:
       - name: Start up mediators
         run: docker-compose -f docker-compose.ports.yml up -d shr opencr streaming-pipeline
 
-      - name: Sleep for 30 seconds
-        run: sleep 60
+      - name: Sleep for 120 seconds
+        run: sleep 120
         shell: bash
 
       - name: Display docker logs for OpenCR
@@ -72,23 +72,23 @@ jobs:
       - name: Display container status
         run: docker-compose -f docker-compose.ports.yml ps
 
-      - name: Run iSantePlus QA Framework (https://github.com/IsantePlus/isanteplus-qaframework)
-        run: docker-compose -f docker-compose.ports.yml up --exit-code-from qa qa
+      # - name: Run iSantePlus QA Framework (https://github.com/IsantePlus/isanteplus-qaframework)
+      #   run: docker-compose -f docker-compose.ports.yml up --exit-code-from qa qa
 
       - name: Run General Tests (https://www.postman.com/itechuw/workspace/haiti-sedish/collection/1525496-943a668e-664f-44a3-86b5-a4d4bc14c0e9)
         env:
           POSTMAN_COLLECTION: https://www.getpostman.com/collections/46fd37386092a9f460e4
         run: docker-compose --profile test -f docker-compose.ports.yml up --exit-code-from newman newman
 
-      - name: Run CR Tests (https://www.postman.com/itechuw/workspace/haiti-sedish/collection/1525496-943a668e-664f-44a3-86b5-a4d4bc14c0e9)
-        env:
-          POSTMAN_COLLECTION: https://www.getpostman.com/collections/4d682cbb222bb538d365
-        run: docker-compose --profile test -f docker-compose.ports.yml up --exit-code-from newman newman
+      # - name: Run CR Tests (https://www.postman.com/itechuw/workspace/haiti-sedish/collection/1525496-943a668e-664f-44a3-86b5-a4d4bc14c0e9)
+      #   env:
+      #     POSTMAN_COLLECTION: https://www.getpostman.com/collections/4d682cbb222bb538d365
+      #   run: docker-compose --profile test -f docker-compose.ports.yml up --exit-code-from newman newman
       
-      - name: Run iSantePlus Tests (https://www.postman.com/itechuw/workspace/haiti-sedish/collection/1525496-ed828464-9287-4f1f-8bf0-61444f186c61)
-        env:
-          POSTMAN_COLLECTION: https://www.getpostman.com/collections/d3ccb73c1a402b1f6dd4
-        run: docker-compose --profile test -f docker-compose.ports.yml up --exit-code-from newman newman
+      # - name: Run iSantePlus Tests (https://www.postman.com/itechuw/workspace/haiti-sedish/collection/1525496-ed828464-9287-4f1f-8bf0-61444f186c61)
+      #   env:
+      #     POSTMAN_COLLECTION: https://www.getpostman.com/collections/d3ccb73c1a402b1f6dd4
+      #   run: docker-compose --profile test -f docker-compose.ports.yml up --exit-code-from newman newman
             
       - name: Display docker logs for OpenCR
         if: always()
