@@ -17,6 +17,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
+      - name: Copy config templates
+        run: |
+          cp ${GITHUB_WORKSPACE}/configs/opencr/.env.template configs/opencr/.env
+          cp ${GITHUB_WORKSPACE}/configs/shr/.env.template configs/shr/.env
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
