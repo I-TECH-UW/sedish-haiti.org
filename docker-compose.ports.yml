@@ -88,7 +88,7 @@ services:
     env_file:
       - configs/opencr/.env
     volumes:
-      - cr-data:/data/hapi
+      - /data/hapi
     networks:
       - sedish
 
@@ -129,12 +129,11 @@ services:
     hostname: shr-fhir
     restart: unless-stopped
     volumes:
-      - hapi-data:/data/hapi
-      - ./configs/shr/application.yml:/data/hapi/application.yaml
+      - /data/hapi
     networks:
       - sedish
-    environment:
-      SPRING_CONFIG_LOCATION: 'file:///data/hapi/application.yaml'
+    env_file:
+      - configs/shr/.env
   ####
   # DBs
   ###
