@@ -47,7 +47,7 @@ jobs:
         run: docker-compose -f docker-compose.ports.yml logs openhim-config
 
       - name: Start up support containers
-        run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql chrome 
+        run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql chrome postgres
 
       - name: Sleep for 1200 seconds
         run: sleep 1200
