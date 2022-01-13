@@ -1,7 +1,7 @@
 {
     "debeziumConfigurations": {
-      "databaseServerName" : "isanteplus-mysql",
-      "databaseHostName" : "isanteplus-mysql",
+      "databaseServerName" : "test-mysql",
+      "databaseHostName" : "test-mysql",
       "databaseServerId" : "223344",
       "databasePort" : "3306",
       "databaseUser" : "root",

@@ -148,7 +148,8 @@ services:
       POSTGRES_DB: opencr
     volumes:
       - pg-data:/var/lib/postgresql/data/
-  
+    networks:
+      - sedish
   ####
   # Kafka
   ###
@@ -282,7 +283,7 @@ services:
       - OPENMRS_URL=http://isanteplus:8080/openmrs
       - OPENMRS_USERNAME=admin
       - OPENMRS_PASSWORD=Admin123
-      - SINK_URL=http://openhim-core:5001/SHR/fhir
+      - SINK_URL=http://shr-fhir:8080/fhir
       - SINK_USERNAME=shr-pipeline
       - SINK_PASSWORD=shr-pipeline
       - JDBC_FETCH_SIZE=10000

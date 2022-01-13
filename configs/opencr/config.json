@@ -79,7 +79,7 @@
     },
     "artnumber": {
       "uri": [
-        "http://isanteplus.org/openmrs/fhir2/6-code-st", 
+        "http://isanteplus.org/openmrs/fhir2/6-code-st",
         "http://isanteplusdemo.com/openmrs/fhir2/6-code-st"
       ],
       "displayName": "ART Number"
@@ -89,7 +89,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2022-01-07T23:20:59"
+    "lastFHIR2ESSync": "2022-01-11T18:47:21"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"

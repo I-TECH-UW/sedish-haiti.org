@@ -123,11 +123,25 @@ services:
     restart: unless-stopped
     volumes:
       - hapi-data:/data/hapi
+      - ./configs/shr/application.yml:/data/hapi/application.yaml
     networks:
       - sedish
     env_file:
       - configs/shr/.env
 
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: opencr,shr
+      POSTGRES_PASSWORD: ${PG_PW}
+    volumes:
+      - /var/lib/postgresql/data/
+      - ./configs/postgres:/docker-entrypoint-initdb.d
+    networks:
+      - sedish
   ####
   # Kafka
   ###
@@ -177,7 +191,9 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"      
+        max-size: "10m"   
+    ports:
+      - "1044:1044"
 
   isanteplus-mysql:
     profiles: ['main']
@@ -199,7 +215,28 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - sedish
-
+  test-mysql:
+    profiles: ['main']
+    image: ghcr.io/isanteplus/docker-isanteplus-db:v3.0.1
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
+    restart: unless-stopped
+    container_name: test-mysql
+    hostname: test-mysql
+    healthcheck:
+      test: "exit 0"
+    environment:
+      - MYSQL_DATABASE=openmrs
+      - MYSQL_ROOT_PASSWORD=debezium
+      - MYSQL_USER=mysqluser
+      - MYSQL_PASSWORD=mysqlpw
+      - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
+    volumes:
+      - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
+      - /var/lib/mysql
+    networks:
+      - sedish
+    ports: 
+      - 3307:3306
   ###
   # OpenHIM
   ###
@@ -268,12 +305,12 @@ services:
     volumes:
       - ./configs/streaming-pipeline/config.json:/deployments/config.json
       # data is the directory which you want to persist the generated parquet files
-      # - ./configs/streaming-pipeline/data:/tmp
+      - ./configs/streaming-pipeline/parquet:/tmp
     environment:
       - OPENMRS_URL=http://isanteplus:8080/openmrs
       - OPENMRS_USERNAME=admin
       - OPENMRS_PASSWORD=Admin123
-      - SINK_URL=http://openhim-core:5001/SHR/fhir
+      - SINK_URL=http://shr-fhir:8080/fhir
       - SINK_USERNAME=shr-pipeline
       - SINK_PASSWORD=shr-pipeline
       - JDBC_FETCH_SIZE=10000
