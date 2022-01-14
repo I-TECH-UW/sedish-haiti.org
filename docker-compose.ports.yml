@@ -175,10 +175,6 @@ services:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-    volumes:
-      - kafka-data1:/bitnami/kafka
-    depends_on:
-      - zookeeper
     networks:
       - sedish
 
@@ -347,8 +343,6 @@ volumes:
   letsencrypt:
     driver: local
   nginx-data:
-    driver: local
-  kafka-data1:
     driver: local
   pg-data:  
     driver: local

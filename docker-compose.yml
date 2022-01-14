@@ -76,12 +76,11 @@ services:
     hostname: opencr-fhir
     restart: unless-stopped
     env_file:
-      - configs/opencr/.env
+      - configs/opencr/.env  
     volumes:
       - /data/hapi
     networks:
       - sedish
-  
   opencr-es:
     profiles: ['main']
     container_name: es
@@ -147,12 +146,14 @@ services:
   ###
   zookeeper:
     profiles: ['main']
+    container_name: zookeeper
     image: "bitnami/zookeeper:latest"
     hostname: zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
       - sedish
+
   kafka:
     profiles: ['main']
     image: "bitnami/kafka:latest"
@@ -165,10 +166,6 @@ services:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-    volumes:
-      - kafka-data1:/bitnami/kafka
-    depends_on:
-      - zookeeper
     networks:
       - sedish
   
