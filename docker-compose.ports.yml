@@ -144,12 +144,14 @@ services:
     hostname: postgres
     restart: unless-stopped
     environment:
+      POSTGRES_MULTIPLE_DATABASES: opencr,shr
       POSTGRES_PASSWORD: ${PG_PW}
-      POSTGRES_DB: opencr
     volumes:
-      - pg-data:/var/lib/postgresql/data/
+      - /var/lib/postgresql/data/
+      - ./configs/postgres:/docker-entrypoint-initdb.d
     networks:
       - sedish
+      
   ####
   # Kafka
   ###
