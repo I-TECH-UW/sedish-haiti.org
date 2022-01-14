@@ -130,11 +130,11 @@ services:
     restart: unless-stopped
     volumes:
       - /data/hapi
+      - ./configs/shr/application.yml:/data/hapi/application.yaml
     networks:
       - sedish
     env_file:
       - configs/shr/.env
-      - ./configs/shr/application.yml:/data/hapi/application.yaml
 
   ####
   # DBs
