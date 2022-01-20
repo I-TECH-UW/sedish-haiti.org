@@ -52,7 +52,7 @@ jobs:
       - name: Wait for iSantePlus
         uses: nev7n/wait_for_response@v1
         with:
-          url: 'http://localhost:8000/openmrs/login.htm'
+          url: 'http://localhost:8000/openmrs/ws/fhir2/R4/metadata?_format=json'
           responseCode: 200
           timeout: 800000
           interval: 1000
