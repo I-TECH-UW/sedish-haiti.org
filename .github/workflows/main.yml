@@ -49,9 +49,13 @@ jobs:
       - name: Start up support containers
         run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql chrome postgres
 
-      - name: Sleep for 1200 seconds
-        run: sleep 1200
-        shell: bash
+      - name: Wait for iSantePlus
+        uses: nev7n/wait_for_response@v1
+        with:
+          url: 'http://localhost:8000/openmrs'
+          responseCode: 200
+          timeout: 800000
+          interval: 1000
 
       - name: Display docker logs for SHR & OpenCR
         run: docker-compose -f docker-compose.ports.yml logs shr-fhir opencr-fhir
