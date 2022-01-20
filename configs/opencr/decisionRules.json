@@ -29,26 +29,19 @@
     "fields": {
       "given": {
         "algorithm": "jaro-winkler-similarity",
-        "threshold": 0.5,
+        "threshold": 1,
         "fhirpath": "name.where(use='official').given",
         "espath": "given",
-        "null_handling": "greedy",
-        "null_handling_both": "greedy"
+        "null_handling": "conservative",
+        "null_handling_both": "conservative"
       },
       "family": {
-        "algorithm": "damerau-levenshtein",
-        "threshold": 2,
+        "algorithm": "jaro-winkler-similarity",
+        "threshold": 1,
         "fhirpath": "name.where(use='official').family",
         "espath": "family",
-        "null_handling": "greedy",
-        "null_handling_both": "greedy"
-      },
-      "phone": {
-        "algorithm": "exact",
-        "fhirpath": "telecom.where(system='phone').value",
-        "espath": "phone",
-        "null_handling": "greedy",
-        "null_handling_both": "greedy"
+        "null_handling": "conservative",
+        "null_handling_both": "conservative"
       }
     },
     "potentialMatchThreshold": 1,

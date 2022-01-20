@@ -76,7 +76,7 @@ services:
     hostname: opencr-fhir
     restart: unless-stopped
     env_file:
-      - configs/opencr/.env  
+      - configs/opencr/.env   
     volumes:
       - /data/hapi
     networks:
@@ -93,7 +93,7 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
-      - es-data:/usr/share/elasticsearch/data
+      - /usr/share/elasticsearch/data
     networks:
       - sedish
 
@@ -129,7 +129,7 @@ services:
       - configs/shr/.env
 
   postgres:
-    image: postgres
+    image: postgres:latest
     container_name: postgres
     hostname: postgres
     restart: unless-stopped
@@ -322,7 +322,7 @@ services:
   
   # QA Framework
   qa:
-    image: ghcr.io/isanteplus/isanteplus-qaframework::${ISANTEPLUS_QA_VERSION}
+    image: ghcr.io/isanteplus/isanteplus-qaframework:latest
     container_name: qa
     environment:
       - ISANTEPLUS_URL=http://isanteplus:8080/openmrs
@@ -347,7 +347,7 @@ services:
       - sedish
 
 volumes:
-  es-data:
+  es:
     driver: local
   isanteplus-data:
     driver: local
@@ -367,7 +367,6 @@ volumes:
     driver: local
   nginx-data: 
     driver: local
-  kafka-data1:
-    driver: local
+
 networks:
   sedish:
