@@ -64,9 +64,9 @@ jobs:
           # Where iSantePlus is running
           target-url: http://localhost:8000/openmrs
           # How often to check status in secs
-          interval: 10 
+          interval: 30 
           # How long to try for in secs
-          timeout: 1000
+          timeout: 10000
       
       - name: Display docker logs for iSantePlus
         run: docker-compose -f docker-compose.ports.yml logs isanteplus
