@@ -61,14 +61,16 @@ jobs:
 
       - name: Start up mediators
         run: docker-compose -f docker-compose.ports.yml up -d shr opencr streaming-pipeline
-
-      - name: Sleep for 120 seconds
-        run: sleep 120
-        shell: bash
       
-      - name: Wait for iSantePlus
-        run: |
-          wget -qO- https://raw.githubusercontent.com/eficode/wait-for/v2.2.1/wait-for | sh -s -- http://localhost:8000/openmrs/ws/fhir2/R4/metadata -t 1000 -- echo success
+      - name: Wait For iSantePlus
+        uses: IsantePlus/wait-for-isanteplus-action@v0.1.0
+        with:
+          # Where iSantePlus is running
+          target-url: http://isanteplusdemo.com/openmrs
+          # How often to check status in secs
+          interval: 10 
+          # How long to try for in secs
+          timeout: 1000
       
       - name: Display docker logs for iSantePlus
         run: docker-compose -f docker-compose.ports.yml logs isanteplus
