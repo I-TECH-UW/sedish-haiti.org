@@ -63,10 +63,10 @@ jobs:
         run: docker-compose -f docker-compose.ports.yml up -d shr opencr streaming-pipeline
       
       - name: Wait For iSantePlus
-        uses: IsantePlus/wait-for-isanteplus-action@v0.1.0
+        uses: I-TECH-UW/wait-for-openmrs-action@v0.1.0
         with:
           # Where iSantePlus is running
-          target-url: http://isanteplusdemo.com/openmrs
+          target-url: http://localhost:8000/openmrs
           # How often to check status in secs
           interval: 10 
           # How long to try for in secs
