@@ -49,10 +49,6 @@ jobs:
       - name: Start up support containers
         run: docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper isanteplus isanteplus-mysql chrome postgres
 
-      - name: Wait for iSantePlus
-        run: |
-          wget -qO- https://raw.githubusercontent.com/eficode/wait-for/v2.2.1/wait-for | sh -s -- http://localhost:8000/openmrs/ws/fhir2/R4/metadata -t 1000 -- echo success
-      
       - name: Show docker logs for isanteplus
         run: docker logs isanteplus
       
