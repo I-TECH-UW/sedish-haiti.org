@@ -321,6 +321,12 @@ services:
     container_name: chrome
     networks:
     - sedish
+  wait:
+    image: ghcr.io/i-tech-uw/wait-for-openmrs-action:latest 
+    command:
+    - "http://isanteplus:8080/openmrs"
+    - "30" 
+    - "10000"
 volumes:
   esdata:
     driver: local

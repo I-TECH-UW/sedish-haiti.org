@@ -58,15 +58,8 @@ jobs:
       - name: Start up mediators
         run: docker-compose -f docker-compose.ports.yml up -d shr opencr streaming-pipeline
       
-      - name: Wait For iSantePlus
-        uses: I-TECH-UW/wait-for-openmrs-action@v0.3.0
-        with:
-          # Where iSantePlus is running
-          target-url: http://localhost:8000/openmrs
-          # How often to check status in secs
-          interval: 30 
-          # How long to try for in secs
-          timeout: 10000
+      - name: Wait For OpenMRS
+        run: docker-compose up --exit-code-from wait wait
       
       - name: Display docker logs for iSantePlus
         run: docker-compose -f docker-compose.ports.yml logs isanteplus
