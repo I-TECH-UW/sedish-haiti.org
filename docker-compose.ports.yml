@@ -327,6 +327,8 @@ services:
     - "http://isanteplus:8080/openmrs"
     - "30" 
     - "10000"
+    networks:
+    - sedish
 volumes:
   esdata:
     driver: local

@@ -59,7 +59,7 @@ jobs:
         run: docker-compose -f docker-compose.ports.yml up -d shr opencr streaming-pipeline
       
       - name: Wait For OpenMRS
-        run: docker-compose up --exit-code-from wait wait
+        run: docker-compose -f docker-compose.ports.yml up --exit-code-from wait wait
       
       - name: Display docker logs for iSantePlus
         run: docker-compose -f docker-compose.ports.yml logs isanteplus
