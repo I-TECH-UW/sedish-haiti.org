@@ -57,7 +57,7 @@ services:
     profiles: ['main']
     container_name: opencr
     hostname: opencr
-    image: intrahealth/opencr:latest
+    image: intrahealth/opencr:d3119b2
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
