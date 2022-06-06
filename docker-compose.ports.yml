@@ -69,7 +69,7 @@ services:
     platform: linux/amd64
     container_name: opencr
     hostname: opencr
-    image: intrahealth/opencr:d3119b2
+    image: intrahealth/opencr:latest
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
