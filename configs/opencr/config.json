@@ -17,6 +17,9 @@
     },
     "register": true
   },
+  "cronJobs": {
+    "patientReprocessing": "0 21 * * *"
+  },
   "fhirServer": {
     "username": "hapi",
     "password": "hapi",
@@ -65,31 +68,47 @@
         "http://clientregistry.org/openmrs",
         "urn:ietf:rfc:3986",
         "LOCAL",
-        "http://isanteplus.org/openmrs/fhir2/3-isanteplus-id",
-        "http://isanteplusdemo.com/openmrs/fhir2/3-isanteplus-id"
+        "http://isanteplus.sedish-haiti.org/openmrs/fhir2/3-isanteplus-id",
+        "http://isanteplusdemo.com/openmrs/fhir2/3-isanteplus-id",
+        "http://isanteplus.hup.com/openmrs/fhir2/3-isanteplus-id",
+        "http://isanteplus.npfs.com/openmrs/fhir2/3-isanteplus-id",
+        "http://isanteplus.hueh.com/openmrs/fhir2/3-isanteplus-id"
       ],
       "displayName": "Internal ID"
     },
     "nationalid": {
       "uri": [
-        "http://isanteplus.org/openmrs/fhir2/5-code-national",
-        "http://isanteplusdemo.com/openmrs/fhir2/5-code-national"
+        "http://isanteplus.sedish-haiti.org/openmrs/fhir2/5-code-national",
+        "http://isanteplusdemo.com/openmrs/fhir2/5-code-national",
+        "http://isanteplus.hup.com/openmrs/fhir2/5-code-national",
+        "http://isanteplus.npfs.com/openmrs/fhir2/5-code-national",
+        "http://isanteplus.hueh.com/openmrs/fhir2/5-code-national",
+        "http://isanteplus.org/openmrs/fhir2/5-code-national"
       ],
       "displayName": "National ID"
     },
     "artnumber": {
       "uri": [
-        "http://isanteplus.org/openmrs/fhir2/6-code-st",
-        "http://isanteplusdemo.com/openmrs/fhir2/6-code-st"
+        "http://isanteplus.sedish-haiti.org/openmrs/fhir2/6-code-st",
+        "http://isanteplusdemo.com/openmrs/fhir2/6-code-st",
+        "http://isanteplus.hup.com/openmrs/fhir2/6-code-st",
+        "http://isanteplus.npfs.com/openmrs/fhir2/6-code-st",
+        "http://isanteplus.hueh.com/openmrs/fhir2/6-code-st"
       ],
       "displayName": "ART Number"
+    },
+    "biometricnational": {
+      "uri": [
+        "http://isanteplus.org/openmrs/fhir2/6-biometrics-national-reference-code"
+      ],
+      "displayName": "Biometrics National Reference Code"
     },
     "brokenMatch": {
       "uri": "http://clientregistry.org/brokenMatch"
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2022-01-11T18:47:21"
+    "lastFHIR2ESSync": "2022-08-08T19:26:11"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"

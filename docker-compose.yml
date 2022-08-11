@@ -68,6 +68,7 @@ services:
       - ./configs/opencr/config.json:/src/server/config/config_docker.json
       - ./configs/opencr/mediator.json:/src/server/config/mediator.json
       - ./configs/opencr/decisionRules.json:/src/server/config/decisionRules.json
+      - ./configs/opencr/PatientRelationship.json:/src/resources/Relationships/PatientRelationship.json
   
   opencr-fhir:
     profiles: ['main']
@@ -76,11 +77,14 @@ services:
     hostname: opencr-fhir
     restart: unless-stopped
     env_file:
-      - configs/opencr/.env   
+     - configs/opencr/.env   
     volumes:
-      - /data/hapi
+      - opencr-data-new:/data/hapi
+      - ./configs/opencr/application.yml:/data/hapi/application.yaml
     networks:
       - sedish
+    ports:
+      - 8090:8080
   opencr-es:
     profiles: ['main']
     container_name: es
@@ -93,7 +97,7 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
-      - /usr/share/elasticsearch/data
+      - es-data-new:/usr/share/elasticsearch/data
     networks:
       - sedish
 
@@ -153,6 +157,8 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
       - sedish
+    volumes:
+      - /data
 
   kafka:
     profiles: ['main']
@@ -168,7 +174,9 @@ services:
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
     networks:
       - sedish
-  
+    entrypoint: sh -c 'sleep 30 && /opt/bitnami/scripts/kafka/entrypoint.sh /opt/bitnami/scripts/kafka/run.sh' # prevent zookeeper conflict error
+    volumes:
+      - /bitnami/kafka
   ###
   # iSantePlus
   ###
@@ -190,6 +198,7 @@ services:
       options:
         max-size: "10m"   
     ports:
+      - "8080:8080"
       - "1044:1044"
 
   isanteplus-mysql:
@@ -212,28 +221,6 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - sedish
-  test-mysql:
-    profiles: ['main']
-    image: ghcr.io/isanteplus/docker-isanteplus-db:v3.0.1
-    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
-    restart: unless-stopped
-    container_name: test-mysql
-    hostname: test-mysql
-    healthcheck:
-      test: "exit 0"
-    environment:
-      - MYSQL_DATABASE=openmrs
-      - MYSQL_ROOT_PASSWORD=debezium
-      - MYSQL_USER=mysqluser
-      - MYSQL_PASSWORD=mysqlpw
-      - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
-    volumes:
-      - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
-      - /var/lib/mysql
-    networks:
-      - sedish
-    ports: 
-      - 3307:3306
   ###
   # OpenHIM
   ###
@@ -307,7 +294,7 @@ services:
       - OPENMRS_URL=http://isanteplus:8080/openmrs
       - OPENMRS_USERNAME=admin
       - OPENMRS_PASSWORD=Admin123
-      - SINK_URL=http://shr-fhir:8080/fhir
+      - SINK_URL=https://openhim.sedish-haiti.org/SHR/fhir
       - SINK_USERNAME=shr-pipeline
       - SINK_PASSWORD=shr-pipeline
       - JDBC_FETCH_SIZE=10000
@@ -347,11 +334,19 @@ services:
       - sedish
 
 volumes:
-  es:
+  es-data-new:
     driver: local
   isanteplus-data:
     driver: local
+  isanteplus1-data:
+    driver: local
+  isanteplus-data2:
+    driver: local
   mysql-data:
+    driver: local
+  mysql-data2:
+    driver: local
+  mysql1-data:
     driver: local
   mongo-data:
     driver: local
@@ -359,7 +354,7 @@ volumes:
     driver: local
   hapi-data:
     driver: local
-  opencr-data:
+  opencr-data-new:
     driver: local
   certs:
     driver: local

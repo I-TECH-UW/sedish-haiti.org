@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+  flyway:
+    check-location: false
+    baselineOnMigrate: true
+  jpa:
+    properties:
+      hibernate.format_sql: false
+      hibernate.show_sql: false
+  batch:
+    job:
+      enabled: false
+hapi:
+  fhir:
+    openapi_enabled: true
+    fhir_version: R4
+    server_address: http://opencr-fhir:8080/fhir
+    allow_cascading_deletes: true
+    allow_contains_searches: true
+    allow_external_references: true
+    allow_multiple_delete: true
+    narrative_enabled: false
+    auto_create_placeholder_reference_targets: true
+    default_page_size: 50
+    cors:
+      allow_Credentials: true
+      allowed_origin:
+        - '*'
+    search-coord-core-pool-size: 20
+    search-coord-max-pool-size: 100
+    search-coord-queue-capacity: 200
+    tester:
+      home:
+        name: Local Tester
+        server_address: 'http://localhost:8080/fhir'
+        refuse_to_fetch_third_party_urls: false
+        fhir_version: R4
+

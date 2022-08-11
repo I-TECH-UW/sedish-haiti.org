@@ -1,4 +1,4 @@
-{
+5a597bcc-26ad-11e8-b467-0ed5f89f718b{
   "__comments": {
     "path": "Its a fhir path, for syntax refer to https://www.hl7.org/fhir/fhirpath.html",
     "matchingType": "Must be specified, it can either",
@@ -33,14 +33,16 @@
       "fields": {
         "biometric": {
           "algorithm": "jaro-winkler-similarity",
-          "threshold": 1,
+          "threshold": 2,
           "fhirpath": "identifier.where(system='http://isanteplus.org/openmrs/fhir2/6-biometrics-national-reference-code').value",
           "espath": "biometric",
           "null_handling": "conservative",
           "null_handling_both": "conservative"
         }
       },
-      "autoMatchThreshold": 2
+      "autoMatchThreshold": 2,
+      "potentialMatchThreshold": 2
+
     },
    
     {
