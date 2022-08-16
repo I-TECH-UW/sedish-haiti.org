@@ -2,7 +2,7 @@
     "version": "1.13.2",
     "minimumCoreVersion": "5.2.0",
     "protocol": "https",
-    "host": "core.sedish-haiti.org",
+    "host": "openhim-api.sedish-haiti.org",
     "hostPath": "",
     "port": 443,
     "title": "SEDISH Admin Console V2",

@@ -1,0 +1,4 @@
+tls:
+  certificates:
+    - certFile: /etc/certs/live/sedish-haiti.org/cert.pem
+      keyFile: /etc/certs/live/sedish-haiti.org/privkey.pem

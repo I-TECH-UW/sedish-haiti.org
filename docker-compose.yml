@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3.8'
 
 ## Port Assignments:
 ##  See .env file
@@ -20,24 +20,22 @@ services:
   # nginx reverse proxy
   # TODO: set up to use non-root user. See https://www.rockyourcode.com/run-docker-nginx-as-non-root-user/
   ###
-  nginx:
-    profiles: ['main']
-    image: nginx:latest
-    container_name: nginx
-    hostname: nginx
+  traefik:
+    image: traefik:latest
+    container_name: traefik
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"
     volumes:
-      - certs:/etc/letsencrypt
-      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - nginx-data:/var/www
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./configs/traefik/traefik.yml:/etc/traefik/traefik.yml
+      - ./configs/traefik/certs.yml:/etc/traefik/dynamic_conf/certs.yml
+      - certs:/etc/certs
     networks:
       - sedish
-
   certbot:
-    profiles: ['main']
     image: certbot/dns-route53
     container_name: certbot
     entrypoint: "certbot certonly -n --agree-tos --email pmanko@uw.edu -d sedish-haiti.org -d '*.sedish-haiti.org' --dns-route53 --preferred-challenges=dns"
@@ -54,7 +52,6 @@ services:
   # OpenCR
   ###
   opencr:
-    profiles: ['main']
     container_name: opencr
     hostname: opencr
     image: intrahealth/opencr:latest
@@ -69,9 +66,14 @@ services:
       - ./configs/opencr/mediator.json:/src/server/config/mediator.json
       - ./configs/opencr/decisionRules.json:/src/server/config/decisionRules.json
       - ./configs/opencr/PatientRelationship.json:/src/resources/Relationships/PatientRelationship.json
-  
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=sedish-haitiorg_sedish'
+      - 'traefik.http.routers.opencr.tls=true'
+      - 'traefik.http.routers.opencr.entrypoints=web-secure'
+      - 'traefik.http.services.opencr.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.opencr.rule=Host(`${OPENCR_HOST-opencr.sedish-haiti.org}`)'
   opencr-fhir:
-    profiles: ['main']
     image: "hapiproject/hapi:latest"
     container_name: opencr-fhir
     hostname: opencr-fhir
@@ -85,9 +87,14 @@ services:
       - sedish
     ports:
       - 8090:8080
+    healthcheck:
+      test: "apt-get install -y curl; curl -sS http://opencr-fhir:8080/fhir/metadata || exit 1"
+      interval: 30s
+      timeout: 240s
+      retries: 3
+
   opencr-es:
-    profiles: ['main']
-    container_name: es
+    container_name: opencr-es
     hostname: es
     image: intrahealth/elasticsearch:latest
     restart: unless-stopped
@@ -105,10 +112,9 @@ services:
   # SHR
   ###
   shr:
-    profiles: ['main']
     container_name: shr
     hostname: shr
-    image: ghcr.io/i-tech-uw/shared-health-record:v0.4.3
+    image: ghcr.io/i-tech-uw/shared-health-record:${SHR_VERSION-latest}
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
@@ -119,7 +125,6 @@ services:
       - ./configs/shr/mediator.json:/app/config/mediator_docker.json
   
   shr-fhir:
-    profiles: ['main']
     image: "hapiproject/hapi:latest"
     container_name: shr-fhir
     hostname: shr-fhir
@@ -131,6 +136,11 @@ services:
       - sedish
     env_file:
       - configs/shr/.env
+    healthcheck:
+      test: "apt-get install -y curl; curl -sS http://localhost:8080/fhir/metadata || exit 1"
+      interval: 30s
+      timeout: 240s
+      retries: 5
 
   postgres:
     image: postgres:latest
@@ -139,7 +149,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_MULTIPLE_DATABASES: opencr,shr
-      POSTGRES_PASSWORD: ${PG_PW}
+      POSTGRES_PASSWORD: ${PG_PW-postgres}
     volumes:
       - /var/lib/postgresql/data/
       - ./configs/postgres:/docker-entrypoint-initdb.d
@@ -149,7 +159,6 @@ services:
   # Kafka
   ###
   zookeeper:
-    profiles: ['main']
     container_name: zookeeper
     image: "bitnami/zookeeper:latest"
     hostname: zookeeper
@@ -161,7 +170,6 @@ services:
       - /data
 
   kafka:
-    profiles: ['main']
     image: "bitnami/kafka:latest"
     hostname: kafka
     container_name: kafka
@@ -181,10 +189,9 @@ services:
   # iSantePlus
   ###
   isanteplus:
-    profiles: ['main']
     container_name: isanteplus
     hostname: isanteplus
-    image: ghcr.io/isanteplus/docker-isanteplus-server:${ISANTEPLUS_DOCKER_VERSION}
+    image: ghcr.io/isanteplus/docker-isanteplus-server:${ISANTEPLUS_DOCKER_VERSION-latest}
     restart: unless-stopped
     env_file:
       - ./configs/isanteplus/isanteplus.env
@@ -198,12 +205,18 @@ services:
       options:
         max-size: "10m"   
     ports:
-      - "8080:8080"
+      - "8081:8080"
       - "1044:1044"
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=sedish-haitiorg_sedish'
+      - 'traefik.http.routers.isanteplus.tls=true'
+      - 'traefik.http.routers.isanteplus.entrypoints=web-secure'
+      - 'traefik.http.services.isanteplus.loadbalancer.server.port=8080'
+      - 'traefik.http.routers.isanteplus.rule=Host(`${ISANTEPLUS_HOST-isanteplus.sedish-haiti.org}`)'
 
   isanteplus-mysql:
-    profiles: ['main']
-    image: ghcr.io/isanteplus/docker-isanteplus-db:${ISANTEPLUS_DB_VERSION}
+    image: ghcr.io/isanteplus/docker-isanteplus-db:${ISANTEPLUS_DB_VERSION-latest}
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
     restart: unless-stopped
     container_name: isanteplus-mysql
@@ -225,7 +238,6 @@ services:
   # OpenHIM
   ###
   openhim-core:
-    profiles: ['main']
     container_name: openhim-core
     image: jembi/openhim-core:latest
     restart: unless-stopped
@@ -234,15 +246,40 @@ services:
       mongo_atnaUrl: "mongodb://mongo-db/openhim"
       NODE_ENV: "development"
     healthcheck:
-      test: "curl -sSk https://localhost:8080/heartbeat || exit 1"
-      interval: 2m
-      timeout: 1m
+      test: "node /healthcheck.js"
+      interval: 20s
+      timeout: 40s
       retries: 5
     networks:
       - sedish
+    volumes:
+      - ./configs/openhim-core/healthcheck.js:/healthcheck.js
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=sedish-haitiorg_sedish'
+      
+      - 'traefik.http.services.openhim-api.loadbalancer.server.port=8080'
+      - 'traefik.http.services.openhim-api.loadbalancer.server.scheme=https'
+      - 'traefik.http.routers.openhim-api.service=openhim-api'
+      - 'traefik.http.routers.openhim-api.tls=true'
+      - 'traefik.http.routers.openhim-api.entrypoints=web-secure'
+      - 'traefik.http.routers.openhim-api.rule=Host(`${OPENHIM_API_HOST-openhim-api.sedish-haiti.org}`)'
+      
+      - 'traefik.http.services.openhim-ssl.loadbalancer.server.port=5000'
+      - 'traefik.http.services.openhim-ssl.loadbalancer.server.scheme=https'
+      - 'traefik.http.routers.openhim-ssl.service=openhim-ssl'
+      - 'traefik.http.routers.openhim-ssl.tls=true'
+      - 'traefik.http.routers.openhim-ssl.entrypoints=web-secure'
+      - 'traefik.http.routers.openhim-ssl.rule=Host(`${OPENHIM_SSL_HOST-openhim-ssl.sedish-haiti.org}`)'
+      
+      - 'traefik.http.services.openhim-http.loadbalancer.server.port=5001'
+      - 'traefik.http.services.openhim-http.loadbalancer.server.scheme=https'
+      - 'traefik.http.routers.openhim-http.service=openhim-http'
+      - 'traefik.http.routers.openhim-http.tls=false'
+      - 'traefik.http.routers.openhim-http.entrypoints=web'
+      - 'traefik.http.routers.openhim-http.rule=Host(`${OPENHIM_HTTP_HOST-openhim-http.sedish-haiti.org}`)'
 
   openhim-console:
-    profiles: ['main']
     container_name: openhim-console
     image: jembi/openhim-console:latest
     restart: unless-stopped
@@ -255,9 +292,13 @@ services:
       retries: 3
     networks:
       - sedish
-
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=sedish-haitiorg_sedish'
+      - 'traefik.http.routers.openhim-console.tls=true'
+      - 'traefik.http.routers.openhim-console.entrypoints=web-secure'
+      - 'traefik.http.routers.openhim-console.rule=Host(`${OPENHIM_HOST-openhim.sedish-haiti.org}`)||Host(`${OPENHIM_ROOT_HOST-sedish-haiti.org}`)'
   mongo-db:
-    profiles: ['main']
     container_name: mongo-db
     image: mongo:3.4
     volumes:
@@ -267,7 +308,6 @@ services:
       - sedish
 
   openhim-config:
-    profiles: ['main']
     container_name: openhim-config
     image: ghcr.io/i-tech-uw/openhim-config:v0.0.0
     volumes:
@@ -281,7 +321,6 @@ services:
   
   ## SHR Resource Stream
   streaming-pipeline: 
-    profiles: ['main']
     image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-binlog:latest
     container_name: streaming-pipeline
     healthcheck:
@@ -289,12 +328,12 @@ services:
     volumes:
       - ./configs/streaming-pipeline/config.json:/deployments/config.json
       # data is the directory which you want to persist the generated parquet files
-      - ./configs/streaming-pipeline/parquet:/tmp
+      # - ./configs/streaming-pipeline/parquet:/tmp
     environment:
       - OPENMRS_URL=http://isanteplus:8080/openmrs
       - OPENMRS_USERNAME=admin
       - OPENMRS_PASSWORD=Admin123
-      - SINK_URL=https://openhim.sedish-haiti.org/SHR/fhir
+      - SINK_URL=http://openhim-core:5001/SHR/fhir
       - SINK_USERNAME=shr-pipeline
       - SINK_PASSWORD=shr-pipeline
       - JDBC_FETCH_SIZE=10000
@@ -309,6 +348,7 @@ services:
   
   # QA Framework
   qa:
+    profiles: ['test']
     image: ghcr.io/isanteplus/isanteplus-qaframework:latest
     container_name: qa
     environment:
@@ -318,6 +358,7 @@ services:
     networks:
       - sedish
   chrome:
+    profiles: ['test']
     image: selenium/standalone-chrome
     hostname: chrome
     container_name: chrome
@@ -326,13 +367,22 @@ services:
 
   # Newman Tests
   newman:
+    profiles: ['test']
     image: postman/newman
     volumes:
       - ./.postman:/.postman
     entrypoint: newman run $POSTMAN_COLLECTION -e /.postman/postman_env.ci.json --insecure --timeout-request 20000 --delay-request 500
     networks:
       - sedish
-
+  wait:
+    profiles: ['test']
+    image: ghcr.io/i-tech-uw/wait-for-openmrs-action:latest 
+    command:
+    - "http://isanteplus:8080/openmrs"
+    - "20" 
+    - "10000"
+    networks:
+    - sedish
 volumes:
   es-data-new:
     driver: local
