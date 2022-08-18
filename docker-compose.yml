@@ -20,19 +20,18 @@ services:
   # nginx reverse proxy
   # TODO: set up to use non-root user. See https://www.rockyourcode.com/run-docker-nginx-as-non-root-user/
   ###
-  traefik:
-    image: traefik:latest
-    container_name: traefik
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    hostname: nginx
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
-      - "8080:8080"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./configs/traefik/traefik.yml:/etc/traefik/traefik.yml
-      - ./configs/traefik/certs.yml:/etc/traefik/dynamic_conf/certs.yml
-      - certs:/etc/certs
+      - certs:/etc/letsencrypt
+      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - nginx-data:/var/www
     networks:
       - sedish
   certbot:
