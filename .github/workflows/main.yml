@@ -52,6 +52,8 @@ jobs:
       - name: Wait For OpenMRS
         run: docker-compose --profile=utility up  --exit-code-from wait-for-openmrs wait-for-openmrs
       
+      - name: Restart streaming pipeline
+        run: docker-compose up -d --force-recreate streaming-pipeline
       - name: Sleep for 30 seconds
         run: sleep 30
         shell: bash

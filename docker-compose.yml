@@ -72,6 +72,7 @@ services:
       - 'traefik.http.routers.opencr.entrypoints=web-secure'
       - 'traefik.http.services.opencr.loadbalancer.server.port=3000'
       - 'traefik.http.routers.opencr.rule=Host(`${OPENCR_HOST-opencr.sedish-haiti.org}`)'
+
   opencr-fhir:
     image: "hapiproject/hapi:latest"
     container_name: opencr-fhir
