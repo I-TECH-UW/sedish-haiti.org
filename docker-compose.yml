@@ -345,6 +345,17 @@ services:
     networks:
       - sedish
   
+  wait-for-openmrs:
+    profiles: ['utility']
+    container_name: wait-for-openmrs
+    image: ghcr.io/i-tech-uw/wait-for-openmrs-action:latest 
+    command:
+    - "http://isanteplus:8080/openmrs"
+    - "20" 
+    - "10000"
+    networks:
+    - sedish
+
   # QA Framework
   qa:
     profiles: ['test']
@@ -373,15 +384,7 @@ services:
     entrypoint: newman run $POSTMAN_COLLECTION -e /.postman/postman_env.ci.json --insecure --timeout-request 20000 --delay-request 500
     networks:
       - sedish
-  wait:
-    profiles: ['test']
-    image: ghcr.io/i-tech-uw/wait-for-openmrs-action:latest 
-    command:
-    - "http://isanteplus:8080/openmrs"
-    - "20" 
-    - "10000"
-    networks:
-    - sedish
+
 volumes:
   es-data-new:
     driver: local
