@@ -33,9 +33,6 @@ jobs:
         uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
 
-      - name: generate certs
-        run: docker-compose up -d certgen
-
       - name: Start all containers
         run: docker-compose up -d
 
