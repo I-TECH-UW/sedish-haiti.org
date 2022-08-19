@@ -55,3 +55,7 @@ configs/isanteplus/*.env
 configs/isanteplus/db/*.sql
 
 configs/streaming-pipeline/data*
+
+*.bak
+
+parquet

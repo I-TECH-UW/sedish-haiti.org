@@ -1,11 +1,5 @@
 spring:
   datasource:
-    # url: 'jdbc:h2:file:./target/database/h2'
-    # username: sa
-    # password: null
-    # driverClassName: org.h2.Driver
-    # max-active: 15
-
     hikari:
       maximum-pool-size: 10
   flyway:
@@ -22,12 +16,7 @@ hapi:
   fhir:
     openapi_enabled: true
     fhir_version: R4
-    server_address: http://shr-fhir:8080/fhir
-    implementationguides:
-      ips_1_0_0:
-        url: https://build.fhir.org/ig/HL7/fhir-ips/package.tgz
-        name: hl7.fhir.uv.ips
-        version: 1.0.0
+    server_address: http://opencr-fhir:8080/fhir
     allow_cascading_deletes: true
     allow_contains_searches: true
     allow_external_references: true
@@ -48,8 +37,4 @@ hapi:
         server_address: 'http://localhost:8080/fhir'
         refuse_to_fetch_third_party_urls: false
         fhir_version: R4
-      global:
-        name: Global Tester
-        server_address: "http://hapi.fhir.org/baseR4"
-        refuse_to_fetch_third_party_urls: false
-        fhir_version: R4
+
