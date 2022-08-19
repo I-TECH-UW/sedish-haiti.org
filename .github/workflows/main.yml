@@ -54,12 +54,16 @@ jobs:
       
       - name: Restart streaming pipeline
         run: docker-compose up -d --force-recreate streaming-pipeline
+      
       - name: Sleep for 30 seconds
         run: sleep 30
         shell: bash
         
       - name: Display docker logs for iSantePlus
         run: docker-compose logs isanteplus
+      
+      - name: Display docker logs for Streaming Pipeline
+        run: docker-compose logs streaming-pipeline
 
       - name: Display docker logs for OpenCR
         run: docker-compose logs opencr
@@ -105,6 +109,10 @@ jobs:
       - name: Display docker logs for isanteplus
         if: always()
         run: docker logs -n 100 isanteplus
+      
+      - name: Display docker logs for OpenHIM
+        if: always()
+        run: docker-compose logs openhim-core openhim-console
       
       - name: Stop containers
         if: always()
