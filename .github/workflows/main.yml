@@ -116,7 +116,7 @@ jobs:
       
       - name: Display docker logs for SHR FHIR
         if: always()
-        run: docker-compose logs -n 500 shr-fhir
+        run: docker-compose logs --tail="500" shr-fhir
             
       - name: Stop containers
         if: always()
