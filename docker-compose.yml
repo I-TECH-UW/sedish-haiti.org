@@ -283,7 +283,7 @@ services:
       - INITIAL_PW=openhim-password
       - ADMIN_PW=$ADMIN_PW
       - API_URL=https://openhim-core:8080
-      
+
   wait-for-openmrs:
     profiles: ['utility']
     container_name: wait-for-openmrs
@@ -340,8 +340,6 @@ volumes:
   mysql1-data:
     driver: local
   mongo-data:
-    driver: local
-  shr:
     driver: local
   hapi-data:
     driver: local
