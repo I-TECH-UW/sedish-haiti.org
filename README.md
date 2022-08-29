@@ -85,27 +85,21 @@ You can also set up Clients and Roles for the following systems:
 
 **f) Start up Support Containers**  
 ```sh
-sudo docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper
+sudo docker-compose -f docker-compose.ports.yml up -d opencr-fhir opencr-es kafka zookeeper
 ```
 
 **g) Configure Mediators**  
 Open, examine, and edit the following files as needed, to update the IP address for OpenHIM and set the right passwords:
   - `./configs/opencr/config_ports.json`
-  - `./configs/shr/config_ports.json`
 #### Start up Mediators  
 
 ```sh
-sudo docker-compose -f docker-compose.ports.yml up -d shr opencr
+sudo docker-compose -f docker-compose.ports.yml up -d opencr
 ```
 #### Start up iSantePlus
 ```sh
 sudo docker-compose -f docker-compose.ports.yml up -d isanteplus-mysql isanteplus
 ```
-#### Start up SHR Streaming Pipeline
-```sh
-sudo docker-compose -f docker-compose.ports.yml up -d streaming-pipeline
-```
-
 ## 4. Testing and Validation
 Setup a Postman environment and run tests from this workspace: https://www.postman.com/itechuw/workspace/haiti-sedish
 
