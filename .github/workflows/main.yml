@@ -20,7 +20,6 @@ jobs:
       - name: Copy config templates
         run: |
           cp ${GITHUB_WORKSPACE}/configs/opencr/.env.template ${GITHUB_WORKSPACE}/configs/opencr/.env
-          cp ${GITHUB_WORKSPACE}/configs/shr/.env.template ${GITHUB_WORKSPACE}/configs/shr/.env
           cp ${GITHUB_WORKSPACE}/configs/isanteplus/isanteplus.env.template ${GITHUB_WORKSPACE}/configs/isanteplus/isanteplus.env
 
       - name: Set up Docker Buildx
@@ -46,8 +45,8 @@ jobs:
       - name: Show docker logs for isanteplus
         run: docker logs isanteplus
       
-      - name: Display docker logs for SHR & OpenCR
-        run: docker-compose logs shr-fhir opencr-fhir
+      - name: Display docker logs for OpenCR
+        run: docker-compose logs opencr-fhir
 
       - name: Wait For OpenMRS
         run: docker-compose --profile=utility up  --exit-code-from wait-for-openmrs wait-for-openmrs
@@ -67,9 +66,6 @@ jobs:
 
       - name: Display docker logs for OpenCR
         run: docker-compose logs opencr
-
-      - name: Display docker logs for SHR
-        run: docker-compose logs shr
 
       - name: Display docker logs for isanteplus mysql
         run: docker logs -n 500 isanteplus-mysql
@@ -101,11 +97,7 @@ jobs:
       - name: Display docker logs for OpenCR
         if: always()
         run: docker logs -n 100 opencr
-        
-      - name: Display docker logs for SHR
-        if: always()
-        run: docker logs -n 100 shr
-      
+
       - name: Display docker logs for isanteplus
         if: always()
         run: docker logs -n 100 isanteplus
@@ -113,10 +105,6 @@ jobs:
       - name: Display docker logs for OpenHIM
         if: always()
         run: docker-compose logs openhim-core openhim-console
-      
-      - name: Display docker logs for SHR FHIR
-        if: always()
-        run: docker-compose logs --tail="500" shr-fhir
             
       - name: Stop containers
         if: always()
