@@ -36,27 +36,8 @@
       "passwordAlgorithm": "sha512",
       "passwordSalt": "c7cf4c96589213e9e014db2d9ce1633e",
       "passwordHash": "7954b7a5b10ee9d28ebe287e92a2ff2cf76b953cd42be37a713711dbf294df2081816616f6ab6771f7f7e3313f2a8d605adfaadf408265fb56371b80c24729ae"
-    },
-    {
-      "roles": [
-        "shr"
-      ],
-      "clientID": "openshr",
-      "name": "OpenSHR",
-      "passwordAlgorithm": "sha512",
-      "passwordSalt": "4173d0a1bba4e2fcdc3bd0cc7aa60a96",
-      "passwordHash": "a5b09684e7f2e9356912b725f3d739dd102049f7fdec94ab8170d24c0d11e612c6da303c263bce7446a8673aa79d927e7bc17d47522ea7fabd57dda63ad557f0"
-    },
-    {
-      "roles": [
-        "pipeline"
-      ],
-      "clientID": "shr-pipeline",
-      "name": "shr-pipeline",
-      "passwordAlgorithm": "sha512",
-      "passwordSalt": "e538f4a341915058a00dd342b362349c",
-      "passwordHash": "0e2160d1a6be5bccd28181d0301a72e16d65424e86ee4a07a5227519423e8c3c5316e5feb459977d535a112c3a97c77fd466b835d2354ef9b6275822b2b279e8"
     }
+  
   ],
   "Channels": [
     {
@@ -68,7 +49,6 @@
       ],
       "type": "http",
       "allow": [
-        "shr",
         "emr",
         "test"
       ],
@@ -116,104 +96,6 @@
       ],
 
       "priority": 1
-    },
-    {
-      "methods": [
-        "GET",
-        "POST",
-        "PUT",
-        "PATCH"
-      ],
-      "type": "http",
-      "allow": [
-        "emr",
-        "test",
-        "pipeline"
-      ],
-      "whitelist": [],
-      "authType": "private",
-      "matchContentTypes": [],
-      "properties": [],
-      "txViewAcl": [],
-      "txViewFullAcl": [],
-      "txRerunAcl": [],
-      "status": "enabled",
-      "rewriteUrls": false,
-      "addAutoRewriteRules": true,
-      "autoRetryEnabled": false,
-      "autoRetryPeriodMinutes": 60,
-      "requestBody": true,
-      "responseBody": true,
-      "name": "SHR - FHIR Passthrough",
-      "description": "Get or Post a new FHIR Resource to the SHR",
-      "urlPattern": "^/SHR/fhir.*$",
-      "routes": [
-        {
-          "type": "http",
-          "status": "enabled",
-          "forwardAuthHeader": false,
-          "name": "SHR - Get/Create/Update Resource",
-          "secured": false,
-          "host": "shr",
-          "port": 3000,
-          "path": "",
-          "pathTransform": "s/SHR\\/fhir/fhir/g",
-          "primary": true,
-          "username": "",
-          "password": ""
-        }
-      ],
-      "priority": 1,
-      "alerts": [],
-      "rewriteUrlsConfig": []
-    },
-    {
-      "methods": [
-        "GET",
-        "POST",
-        "PUT"
-      ],
-      "type": "http",
-      "allow": [
-        "emr",
-        "test"
-      ],
-      "whitelist": [],
-      "authType": "private",
-      "matchContentTypes": [],
-      "properties": [],
-      "txViewAcl": [],
-      "txViewFullAcl": [],
-      "txRerunAcl": [],
-      "status": "enabled",
-      "rewriteUrls": false,
-      "addAutoRewriteRules": true,
-      "autoRetryEnabled": false,
-      "autoRetryPeriodMinutes": 60,
-      "name": "SHR - Get/Update IPS",
-      "requestBody": true,
-      "responseBody": true,
-      "description": "Get or Update the Internaional Patient Summary Bundle from the SHR",
-      "urlPattern": "^/SHR/fhir/ips.*$",
-      "routes": [
-        {
-          "type": "http",
-          "status": "enabled",
-          "forwardAuthHeader": false,
-          "name": "SHR - Get IPS",
-          "secured": false,
-          "host": "shr",
-          "port": 3000,
-          "path": "",
-          "pathTransform": "s/SHR\\/fhir\\/ips/ips/g",
-          "primary": true,
-          "username": "",
-          "password": ""
-        }
-      ],
-      "alerts": [],
-      "rewriteUrlsConfig": [],
-      "priority": 2
     }
   ]
 }
