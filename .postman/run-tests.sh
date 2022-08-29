@@ -8,15 +8,15 @@ sleep 10
 
 docker-compose -f docker-compose.ports.yml up openhim-config
 
-docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper
+docker-compose -f docker-compose.ports.yml up -d opencr-fhir opencr-es kafka zookeeper
 
 sleep 30
 
-docker-compose -f docker-compose.ports.yml up -d shr opencr
+docker-compose -f docker-compose.ports.yml up -d opencr
 
 sleep 30
 
-docker-compose -f docker-compose.ports.yml logs shr opencr
+docker-compose -f docker-compose.ports.yml logs opencr
 
 collections=(
   'https://www.getpostman.com/collections/46fd37386092a9f460e4'
