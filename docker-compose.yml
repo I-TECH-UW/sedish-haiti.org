@@ -22,28 +22,49 @@ services:
   ###
   nginx:
     image: nginx:latest
+    mem_limit: 812m
+    mem_reservation: 528M
+    cpus: 0.6
     container_name: nginx
     hostname: nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80" # OpenHIM Console
+      - "443:443" # OpenHIM Console
+      - "8080:8080" # OpenHIM Core API
+      - "5000:5000" # OpenHIM HTTPS
+      - "5001:5001" # OpenHIM HTTP
+      - "3000:3000" # OpenCR
+      - "8000:8000" # iSantePlus
     volumes:
-      - certs:/etc/letsencrypt
-      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./configs/nginx/nginx.ports.conf:/etc/nginx/nginx.conf
       - nginx-data:/var/www
+      - ./configs/nginx/healthcheck.sh:/healthcheck.sh
+      - certs:/etc/ssl/
     networks:
       - sedish
-  certbot:
-    image: certbot/dns-route53
-    container_name: certbot
-    entrypoint: "certbot certonly -n --agree-tos --email pmanko@uw.edu -d sedish-haiti.org -d '*.sedish-haiti.org' --dns-route53 --preferred-challenges=dns"
+    healthcheck:
+      test: ["CMD-SHELL", "/healthcheck.sh"]
+      interval: 10s
+      timeout: 1m
+      retries: 100
+      start_period: 3m
+  certgen:
+    image: magnitus/certificate-generator:latest
     environment:
-    - AWS_ACCESS_KEY_ID
-    - AWS_SECRET_ACCESS_KEY
+      COUNTRY: US
+      STATE: WA
+      CITY: SEATTLE
+      ORGANIZATION: I-TECH-UW
+      DEPARTMENT: DIGI
+      EMAIL: cert@sedish-heaiti.org
+      DOMAINS: dev.mydomain.com;test.mydomain.com;localhost
+      CERTIFICATE_DURATION: 11095
+      OUTPUT_CERTIFICATE_INFO: "true"
+      KEY_FILE: "ports.key"
+      CERTIFICATE_FILE: "ports.crt"
     volumes:
-    - certs:/etc/letsencrypt
-    - letsencrypt:/var/lib/letsencrypt
+      - certs:/opt/output
     networks:
     - sedish
 
