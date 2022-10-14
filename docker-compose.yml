@@ -107,7 +107,17 @@ services:
       - es-data-new:/usr/share/elasticsearch/data
     networks:
       - sedish
-
+  ###
+  # xds
+  ###
+  xds:
+    container_name: xds-mediator
+    hostname: xds
+    image: ghcr.io/isanteplus/openhim-mediator-xds:master
+    volumes:
+      - ./configs/xds/mediator.properties:/src/main/resources/mediator.properties
+    networks:
+      - sedish
   ###
   # SHR
   ###
