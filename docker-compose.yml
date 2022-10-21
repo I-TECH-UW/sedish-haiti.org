@@ -337,7 +337,7 @@ services:
       - configs/openshr/.env 
     depends_on:
       - openshr-db
-      - openxds
+      - xds
     volumes:
       - shr-orientdata:/
 
