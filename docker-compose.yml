@@ -264,6 +264,7 @@ services:
       - sedish
     volumes:
       - ./configs/openhim-core/healthcheck.js:/healthcheck.js
+      - ./configs/openhim-core/default.json:/default.json
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=sedish-haitiorg_sedish'

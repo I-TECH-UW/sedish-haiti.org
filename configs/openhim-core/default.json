@@ -1,0 +1,25 @@
+{
+    "auditing": {
+      "servers": {
+        "udp": {
+          "enabled": false,
+          "port": 5050
+        },
+        "tls": {
+          "enabled": false,
+          "port": 5051
+        },
+        "tcp": {
+          "enabled": true,
+          "port": 5052
+        }
+      },
+      "auditEvents": {
+        "interface": "internal",
+        "host": "localhost",
+        "port": 5051,
+        "auditSourceID": "OpenHIM"
+      }
+    }
+    
+    }
