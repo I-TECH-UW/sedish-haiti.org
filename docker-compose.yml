@@ -335,15 +335,14 @@ services:
     image: uwitech/osh
     env_file:  - configs/openshr/.env 
     depends_on:
-      - openmrs-mysql-db
+      - openshr-db
       - openxds
     volumes:
       - shr-orientdata:/root/.OpenMRS/
-  
-  openshr-mysql-db:
-    container_name: openmrs-mysql-db
+
+  openshr-db:
+    container_name: openshr-db
     image: uwitech/mysql
-    command: --sql_mode="NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
     env_file: .env
     volumes:
       - openmrs-mysqldata:/var/lib/mysql
