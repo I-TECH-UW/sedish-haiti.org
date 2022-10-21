@@ -339,7 +339,6 @@ services:
       - openshr-db
       - xds
     volumes:
-      - shr-orientdata:/
 
   openshr-db:
     container_name: openshr-db
@@ -347,7 +346,6 @@ services:
     env_file:
       - configs/openshr/.env
     volumes:
-      - openshr-mysqldata:/var/lib/mysql
   
   ## SHR Resource Stream
   streaming-pipeline: 
