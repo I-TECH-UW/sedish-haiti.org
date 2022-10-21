@@ -329,6 +329,24 @@ services:
       - INITIAL_PW=openhim-password
       - ADMIN_PW=$ADMIN_PW
       - API_URL=https://openhim-core:8080
+  ## openSHR
+  openshr:
+    container_name: oshr
+    image: uwitech/osh
+    env_file:  - configs/openshr/.env 
+    depends_on:
+      - openmrs-mysql-db
+      - openxds
+    volumes:
+      - shr-orientdata:/root/.OpenMRS/
+  
+  openshr-mysql-db:
+    container_name: openmrs-mysql-db
+    image: uwitech/mysql
+    command: --sql_mode="NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+    env_file: .env
+    volumes:
+      - openmrs-mysqldata:/var/lib/mysql
   
   ## SHR Resource Stream
   streaming-pipeline: 
