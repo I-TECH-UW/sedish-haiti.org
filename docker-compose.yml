@@ -332,7 +332,7 @@ services:
   ## openSHR
   openshr:
     container_name: oshr
-    image: uwitech/osh
+    image: uwitech/oshr
     env_file:  
       - configs/openshr/.env 
     depends_on:
