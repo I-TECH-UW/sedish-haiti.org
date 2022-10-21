@@ -339,14 +339,15 @@ services:
       - openshr-db
       - openxds
     volumes:
-      - shr-orientdata:/root/.OpenMRS/
+      - shr-orientdata:/
 
   openshr-db:
     container_name: openshr-db
     image: uwitech/mysql
-    env_file: .env
+    env_file:
+      - configs/openshr/.env
     volumes:
-      - openmrs-mysqldata:/var/lib/mysql
+      - openshr-mysqldata:/var/lib/mysql
   
   ## SHR Resource Stream
   streaming-pipeline: 
