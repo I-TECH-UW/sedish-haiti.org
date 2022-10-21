@@ -338,14 +338,13 @@ services:
     depends_on:
       - openshr-db
       - xds
-    volumes:
 
+   ## openshr-db
   openshr-db:
     container_name: openshr-db
     image: uwitech/mysql
     env_file:
       - configs/openshr/.env
-    volumes:
   
   ## SHR Resource Stream
   streaming-pipeline: 
