@@ -115,7 +115,7 @@ services:
     hostname: xds
     image: ghcr.io/isanteplus/openhim-mediator-xds:master
     volumes:
-      - ./configs/xds/mediator.properties:/src/main/resources/mediator.properties
+      - ./configs/xds/mediator.properties:/mediator.properties
     networks:
       - sedish
   ###
