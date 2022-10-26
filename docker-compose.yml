@@ -358,21 +358,20 @@ services:
   
   ## OpenXDS
   openxds:
-    image: ghcr.io/i-tech-uw/openxds:latest
+    image: ghcr.io/i-tech-uw/openxds:pr-2
     container_name: openxds-demo
     ports:
       - "8010:8010"
-      
-  
+    command: dockerize -wait tcp://postgresql-openxds:5432 -timeout 100s java -jar /opt/openxds/openxds-1.1.2.jar 
 
   postgresql-openxds:
     container_name: postgresql-openxds
     hostname: postgresql-openxds
     image: postgres:9.6-bullseye
     volumes:
-      - ./configs/postgresql_openxds/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
-      - /var/lib/postgresql/data
-     
+      # - ./configs/postgresql_openxds/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - xds-pg:/var/lib/postgresql/data
+      - ./configs/postgresql_openxds:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_USER=openxds
       - POSTGRES_PASSWORD=openxds
@@ -475,6 +474,8 @@ volumes:
   letsencrypt: 
     driver: local
   nginx-data: 
+    driver: local
+  xds-pg:
     driver: local
 
 networks:
