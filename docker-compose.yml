@@ -85,8 +85,6 @@ services:
       - ./configs/opencr/application.yml:/data/hapi/application.yaml
     networks:
       - sedish
-    ports:
-      - 8090:8080
     healthcheck:
       test: "apt-get install -y curl; curl -sS http://opencr-fhir:8080/fhir/metadata || exit 1"
       interval: 30s
@@ -118,6 +116,10 @@ services:
       - ./configs/xds/mediator.properties:/mediator.properties
     networks:
       - sedish
+    ports:
+      - 1045:1044
+    entrypoint: 'java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=1044 -jar /mediator-xds-1.0.3-jar-with-dependencies.jar --conf /mediator.properties'
+    
   ###
   # SHR
   ###
@@ -262,9 +264,11 @@ services:
       retries: 5
     networks:
       - sedish
+    ports:
+      - "5052:5052"
     volumes:
       - ./configs/openhim-core/healthcheck.js:/healthcheck.js
-      - ./configs/openhim-core/default.json:/default.json
+      - ./configs/openhim-core/default.json:/app/config/default.json
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=sedish-haitiorg_sedish'
@@ -329,23 +333,47 @@ services:
       - INITIAL_PW=openhim-password
       - ADMIN_PW=$ADMIN_PW
       - API_URL=https://openhim-core:8080
+  
   ## openSHR
   openshr:
     container_name: oshr
-    image: uwitech/oshr
+    image: ghcr.io/i-tech-uw/oshr:pr-3
     env_file:  
       - configs/openshr/.env 
-    depends_on:
-      - openshr-db
-      - xds
+    # tty: true
+    # stdin_open: true
+    # entrypoint: bash    
+    ports:
+      - 8090:8080
 
-   ## openshr-db
+  ## openshr-db
   openshr-db:
     container_name: openshr-db
-    image: uwitech/mysql
+    image: mysql:5.7
+    command: --sql_mode="NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
     env_file:
       - configs/openshr/.env
+    volumes:
+      - /var/lib/mysql
   
+  ## OpenXDS
+  openxds:
+    image: uwitech/openxds
+    container_name: openxds-demo
+    ports:
+      - "8010:8010"
+
+  pgsql:
+    container_name: pgsql
+    hostname: pgsql
+    image: postgres:9.6-bullseye
+    volumes:
+      - /var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=openxds
+      - POSTGRES_USER=openxds
+      - POSTGRES_DB=openxds
+
   ## SHR Resource Stream
   streaming-pipeline: 
     image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-binlog:latest
@@ -387,7 +415,7 @@ services:
   # QA Framework
   qa:
     profiles: ['test']
-    image: ghcr.io/isanteplus/isanteplus-qaframework:latest
+    image: ghcr.io/isanteplus/isanteplus-qaframework:latestds
     container_name: qa
     environment:
       - ISANTEPLUS_URL=http://isanteplus:8080/openmrs
