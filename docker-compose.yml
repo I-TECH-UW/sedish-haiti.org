@@ -358,21 +358,27 @@ services:
   
   ## OpenXDS
   openxds:
-    image: uwitech/openxds
+    image: ghcr.io/i-tech-uw/openxds:latest
     container_name: openxds-demo
     ports:
       - "8010:8010"
+      
+  
 
-  pgsql:
-    container_name: pgsql
-    hostname: pgsql
+  postgresql-openxds:
+    container_name: postgresql-openxds
+    hostname: postgresql-openxds
     image: postgres:9.6-bullseye
     volumes:
+      - ./configs/postgresql_openxds/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
       - /var/lib/postgresql/data
+     
     environment:
-      - POSTGRES_PASSWORD=openxds
       - POSTGRES_USER=openxds
+      - POSTGRES_PASSWORD=openxds
       - POSTGRES_DB=openxds
+    
+     
 
   ## SHR Resource Stream
   streaming-pipeline: 
