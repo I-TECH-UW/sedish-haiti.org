@@ -362,8 +362,9 @@ services:
     container_name: openxds-demo
     ports:
       - "8010:8010"
-    command: dockerize -wait tcp://postgresql-openxds:5432 -timeout 100s java -jar /opt/openxds/openxds-1.1.2.jar 
-
+    volumes:
+      - ./configs/openxds/openxds.properties:/opt/openxds/openxds.properties
+   
   postgresql-openxds:
     container_name: postgresql-openxds
     hostname: postgresql-openxds
