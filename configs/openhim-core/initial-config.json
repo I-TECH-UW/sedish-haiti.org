@@ -56,6 +56,26 @@
       "passwordAlgorithm": "sha512",
       "passwordSalt": "e538f4a341915058a00dd342b362349c",
       "passwordHash": "0e2160d1a6be5bccd28181d0301a72e16d65424e86ee4a07a5227519423e8c3c5316e5feb459977d535a112c3a97c77fd466b835d2354ef9b6275822b2b279e8"
+    },
+    {
+      "roles": [
+        "xds"
+      ],
+      "clientID": "xds_client",
+      "name": "xds_client",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "d2171539db69c06085fc33eedf4a8e41",
+      "passwordHash": "36a496767339fe41c1766213aa8ead610aa07874a6a9b20d84f36df555c48b29d5f84933821d3d3e1675155effe6eb06d9ada0af430990f5bc6ad93c80da9c10"
+    },
+    {
+      "roles": [
+        "emr"
+      ],
+      "clientID": "isanteplus.sedish-haiti.org",
+      "name": "isanteplus.sedish-haiti.org",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "228b11da37d15ac9971e8ec7bee28752",
+      "passwordHash": "1c8f12ebe71f7394f12c7aacc69cbe8c1ba041351e28a67364b079eb523f00368a97941b30fa960c12943bfd044d9253d79a0464b225679f8da01dc90addb54a"
     }
   ],
   "Channels": [
@@ -88,7 +108,7 @@
       "responseBody": true,
       "name": "Add or Get Resource Data From/To openCR",
       "description": "Add or Get Resource Data From/To openCR",
-      "urlPattern": "/CR/fhir",
+      "urlPattern": "^/CR/fhir.*$",
       "matchContentRegex": null,
       "matchContentXpath": null,
       "matchContentValue": null,
@@ -214,6 +234,87 @@
       "alerts": [],
       "rewriteUrlsConfig": [],
       "priority": 2
+    },
+    {
+      "methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PUT"
+      ],
+      "type": "http",
+      "allow": [
+        "test",
+        "xds"
+      ],
+      "authType": "private",
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "XDS.b Mediator",
+          "secured": false,
+          "host": "xds-mediator",
+          "port": 8500,
+          "path": "",
+          "pathTransform": "s/xdsbrepository/xdsrepository/g",
+          "primary": true,
+          "username": "",
+          "password": ""
+        }
+      ],
+      "requestBody": true,
+      "responseBody": true,
+      "rewriteUrlsConfig": [],
+      "name": "XDS.b Mediator",
+      "description": "XDS.b Mediator channel for https://github.com/IsantePlus/openhim-mediator-xds",
+      "urlPattern": "^/xds(registry|repository|brepository)$",
+      "priority": 2,
+      "updatedBy": {
+        "id": "636567132c87640013688d71",
+        "name": "Super User"
+      },
+      "alerts": []
+    },
+    {
+      "methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PUT"
+      ],
+      "type": "http",
+      "allow": [
+        "xds",
+        "test"
+      ],
+      "authType": "private",
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "name": "XDS.b Mediator dsub",
+      "urlPattern": "^/dsub$",
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "XDS.b Mediator - DSUB",
+          "host": "xds-mediator",
+          "port": 8500,
+          "primary": true
+        }
+      ],
+      "alerts": [],
+      "rewriteUrlsConfig": []
     }
   ]
 }

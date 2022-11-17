@@ -111,13 +111,15 @@ services:
   xds:
     container_name: xds-mediator
     hostname: xds
-    image: ghcr.io/isanteplus/openhim-mediator-xds:master
+    image: ghcr.io/isanteplus/openhim-mediator-xds:local
+    #image: ghcr.io/isanteplus/openhim-mediator-xds:master
     volumes:
       - ./configs/xds/mediator.properties:/mediator.properties
     networks:
       - sedish
     ports:
       - 1045:1044
+      - 8500:8500
     entrypoint: 'java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=1044 -jar /mediator-xds-1.0.3-jar-with-dependencies.jar --conf /mediator.properties'
     
   ###
@@ -218,7 +220,7 @@ services:
         max-size: "10m"   
     ports:
       - "8081:8080"
-      - "1044:1044"
+#      - "1044:1044"
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=sedish-haitiorg_sedish'
@@ -336,7 +338,8 @@ services:
   
   ## openSHR
   openshr:
-    container_name: oshr
+    container_name: openshr
+    hostname: openshr
     image: ghcr.io/i-tech-uw/oshr:pr-3
     env_file:  
       - configs/openshr/.env 
@@ -345,6 +348,8 @@ services:
     # entrypoint: bash    
     ports:
       - 8090:8080
+    networks:
+      - sedish
 
   ## openshr-db
   openshr-db:
@@ -355,7 +360,8 @@ services:
       - configs/openshr/.env
     volumes:
       - /var/lib/mysql
-  
+    networks:
+      - sedish
   ## OpenXDS
   openxds:
     image: ghcr.io/i-tech-uw/openxds:pr-2
@@ -364,7 +370,8 @@ services:
       - "8010:8010"
     volumes:
       - ./configs/openxds/openxds.properties:/opt/openxds/openxds.properties
-   
+    networks:
+      - sedish
   postgresql-openxds:
     container_name: postgresql-openxds
     hostname: postgresql-openxds
@@ -377,8 +384,8 @@ services:
       - POSTGRES_USER=openxds
       - POSTGRES_PASSWORD=openxds
       - POSTGRES_DB=openxds
-    
-     
+    networks:
+      - sedish
 
   ## SHR Resource Stream
   streaming-pipeline: 
