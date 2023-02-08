@@ -111,8 +111,9 @@ services:
   xds:
     container_name: xds-mediator
     hostname: xds
-    image: ghcr.io/isanteplus/openhim-mediator-xds:local
-    #image: ghcr.io/isanteplus/openhim-mediator-xds:master
+    image: ghcr.io/isanteplus/openhim-mediator-xds:v1.0.5
+    restart: unless-stopped
+    #image: ghcr.io/isanteplus/openhim-mediator-xds:local # Use with local build from ~/code/openhim-mediator-xds
     volumes:
       - ./configs/xds/mediator.properties:/mediator.properties
     networks:
@@ -120,7 +121,7 @@ services:
     ports:
       - 1045:1044
       - 8500:8500
-    entrypoint: 'java -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=1044 -jar /mediator-xds-1.0.3-jar-with-dependencies.jar --conf /mediator.properties'
+    entrypoint: 'java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044 -jar /mediator-xds-1.0.5-jar-with-dependencies.jar --conf /mediator.properties'
     
   ###
   # SHR
@@ -201,7 +202,7 @@ services:
       - /bitnami/kafka
   ###
   # iSantePlus
-  ###
+  ###docker
   isanteplus:
     container_name: isanteplus
     hostname: isanteplus
@@ -220,7 +221,7 @@ services:
         max-size: "10m"   
     ports:
       - "8081:8080"
-#      - "1044:1044"
+      - "1046:1044"
     labels:
       - 'traefik.enable=true'
       - 'traefik.docker.network=sedish-haitiorg_sedish'
@@ -248,6 +249,8 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - sedish
+    ports: 
+      - 3307:3306
   ###
   # OpenHIM
   ###
@@ -298,7 +301,7 @@ services:
 
   openhim-console:
     container_name: openhim-console
-    image: jembi/openhim-console:latest
+    image: jembi/openhim-console:v1.15.0
     restart: unless-stopped
     volumes:
       - ./configs/openhim-console/default.json:/usr/share/nginx/html/config/default.json
@@ -323,6 +326,8 @@ services:
     restart: unless-stopped
     networks:
       - sedish
+    ports:
+      - 27017:27017
 
   openhim-config:
     container_name: openhim-config
@@ -340,14 +345,20 @@ services:
   openshr:
     container_name: openshr
     hostname: openshr
-    image: ghcr.io/i-tech-uw/oshr:pr-3
+    image: ghcr.io/i-tech-uw/oshr:main
     env_file:  
       - configs/openshr/.env 
+    volumes:
+      ##- ./configs/openshr/custom-modules/shr-contenthandler-3.1.0.omod:/root/temp/modules/shr-contenthandler-3.1.0.omod
+      - ./configs/openshr/custom-modules/xds-b-repository-1.1.1.omod:/root/temp/modules/xds-b-repository-1.1.1.omod
+      - ./configs/openshr/custom-modules/shr-cdahandler-1.0.1-SNAPSHOT.omod:/root/temp/modules/shr-cdahandler-1.0.1-SNAPSHOT.omod
+
     # tty: true
     # stdin_open: true
     # entrypoint: bash    
     ports:
       - 8090:8080
+      - 1050:1048
     networks:
       - sedish
 
@@ -362,6 +373,8 @@ services:
       - /var/lib/mysql
     networks:
       - sedish
+    ports:
+      - '3306:3306'
   ## OpenXDS
   openxds:
     image: ghcr.io/i-tech-uw/openxds:pr-2

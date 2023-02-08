@@ -76,6 +76,16 @@
       "passwordAlgorithm": "sha512",
       "passwordSalt": "228b11da37d15ac9971e8ec7bee28752",
       "passwordHash": "1c8f12ebe71f7394f12c7aacc69cbe8c1ba041351e28a67364b079eb523f00368a97941b30fa960c12943bfd044d9253d79a0464b225679f8da01dc90addb54a"
+    },
+    {
+      "roles": [
+        "test"
+      ],
+      "clientID": "xds-mediator",
+      "name": "xds-mediator",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "f3ae3d8dc2ee9c74ab784205295b0388",
+      "passwordHash": "f67a4b77a6a4226cac15b8f2d08930768532549a3d2fb6985034c29814ea9ce497c08bbc02b657866f5dcca6646c7d0ba675b706157f05c476d283b636c8a94b"
     }
   ],
   "Channels": [
@@ -103,7 +113,7 @@
       "rewriteUrls": false,
       "addAutoRewriteRules": true,
       "autoRetryEnabled": false,
-      "autoRetryPeriodMinutes": 60,
+      "autoRetryPeriodMinutes": 600000000,
       "requestBody": true,
       "responseBody": true,
       "name": "Add or Get Resource Data From/To openCR",
@@ -161,7 +171,7 @@
       "rewriteUrls": false,
       "addAutoRewriteRules": true,
       "autoRetryEnabled": false,
-      "autoRetryPeriodMinutes": 60,
+      "autoRetryPeriodMinutes": 600000000000,
       "requestBody": true,
       "responseBody": true,
       "name": "SHR - FHIR Passthrough",
@@ -186,54 +196,6 @@
       "priority": 1,
       "alerts": [],
       "rewriteUrlsConfig": []
-    },
-    {
-      "methods": [
-        "GET",
-        "POST",
-        "PUT"
-      ],
-      "type": "http",
-      "allow": [
-        "emr",
-        "test"
-      ],
-      "whitelist": [],
-      "authType": "private",
-      "matchContentTypes": [],
-      "properties": [],
-      "txViewAcl": [],
-      "txViewFullAcl": [],
-      "txRerunAcl": [],
-      "status": "enabled",
-      "rewriteUrls": false,
-      "addAutoRewriteRules": true,
-      "autoRetryEnabled": false,
-      "autoRetryPeriodMinutes": 60,
-      "name": "SHR - Get/Update IPS",
-      "requestBody": true,
-      "responseBody": true,
-      "description": "Get or Update the Internaional Patient Summary Bundle from the SHR",
-      "urlPattern": "^/SHR/fhir/ips.*$",
-      "routes": [
-        {
-          "type": "http",
-          "status": "enabled",
-          "forwardAuthHeader": false,
-          "name": "SHR - Get IPS",
-          "secured": false,
-          "host": "shr",
-          "port": 3000,
-          "path": "",
-          "pathTransform": "s/SHR\\/fhir\\/ips/ips/g",
-          "primary": true,
-          "username": "",
-          "password": ""
-        }
-      ],
-      "alerts": [],
-      "rewriteUrlsConfig": [],
-      "priority": 2
     },
     {
       "methods": [
@@ -315,6 +277,69 @@
       ],
       "alerts": [],
       "rewriteUrlsConfig": []
+    },
+    {
+      "methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PUT",
+        "OPTIONS",
+        "HEAD",
+        "TRACE",
+        "CONNECT",
+        "PATCH"
+      ],
+      "type": "http",
+      "allow": [
+        "test"
+      ],
+      "whitelist": [],
+      "authType": "public",
+      "matchContentTypes": [],
+      "properties": [],
+      "txViewAcl": [],
+      "txViewFullAcl": [],
+      "txRerunAcl": [],
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "oshr passthrough",
+          "secured": false,
+          "host": "openshr",
+          "port": 8080,
+          "path": "",
+          "pathTransform": "s/oshr/openmrs\\/ms\\/xdsrepository/g",
+          "primary": true,
+          "username": "",
+          "password": ""
+        }
+      ],
+      "requestBody": true,
+      "responseBody": true,
+      "rewriteUrlsConfig": [],
+      "name": "oshr",
+      "urlPattern": "^/oshr$",
+      "priority": 2,
+      "matchContentRegex": null,
+      "matchContentXpath": null,
+      "matchContentValue": null,
+      "matchContentJson": null,
+      "pollingSchedule": null,
+      "tcpHost": null,
+      "tcpPort": null,
+      "updatedBy": {
+        "id": "63d97ff826d252001455cf7a",
+        "name": "Super User"
+      },
+      "alerts": []
     }
   ]
 }
