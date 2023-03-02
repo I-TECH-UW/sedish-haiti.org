@@ -349,13 +349,7 @@ services:
     env_file:  
       - configs/openshr/.env 
     volumes:
-      ##- ./configs/openshr/custom-modules/shr-contenthandler-3.1.0.omod:/root/temp/modules/shr-contenthandler-3.1.0.omod
-      - ./configs/openshr/custom-modules/xds-b-repository-1.1.1.omod:/root/temp/modules/xds-b-repository-1.1.1.omod
-      - ./configs/openshr/custom-modules/shr-cdahandler-1.0.1-SNAPSHOT.omod:/root/temp/modules/shr-cdahandler-1.0.1-SNAPSHOT.omod
-
-    # tty: true
-    # stdin_open: true
-    # entrypoint: bash    
+       - ./configs/openshr/custom-modules/xds-b-repository-1.1.1.omod:/root/temp/modules/xds-b-repository-1.1.1.omod
     ports:
       - 8090:8080
       - 1050:1048
@@ -371,6 +365,8 @@ services:
       - configs/openshr/.env
     volumes:
       - /var/lib/mysql
+      #- ./configs/openshr/dbdump:/docker-entrypoint-initdb.d
+
     networks:
       - sedish
     ports:
