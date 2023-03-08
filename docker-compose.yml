@@ -329,6 +329,18 @@ services:
     ports:
       - 27017:27017
 
+
+  mongo-db-xds:
+    container_name: mongo-db-xds
+    image: mongo:3.4
+    volumes:
+      - "./.data/mongoxds:/data/db"
+    restart: unless-stopped
+    networks:
+      - sedish
+    ports:
+      - 27018:27017
+
   openhim-config:
     container_name: openhim-config
     image: ghcr.io/i-tech-uw/openhim-config:v0.0.0

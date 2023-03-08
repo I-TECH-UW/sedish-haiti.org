@@ -340,6 +340,61 @@
         "name": "Super User"
       },
       "alerts": []
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "type": "http",
+      "allow": [
+        "test"
+      ],
+      "whitelist": [],
+      "authType": "public",
+      "matchContentTypes": [],
+      "properties": [],
+      "txViewAcl": [],
+      "txViewFullAcl": [],
+      "txRerunAcl": [],
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "LNSP passthrough",
+          "secured": true,
+          "host": "lnspmspp.org",
+          "port": 4434,
+          "path": "/esb_sta_upg/LNSP_IHE_IN/notify/",
+          "pathTransform": "",
+          "primary": true,
+          "username": "",
+          "password": ""  
+        }
+      ],
+      "requestBody": true,
+      "responseBody": true,
+      "rewriteUrlsConfig": [],
+      "name": "XDS Order Notification Passthrough",
+      "urlPattern": "^/xds-order-notification$",
+      "priority": 3,
+      "matchContentRegex": null,
+      "matchContentXpath": null,
+      "matchContentValue": null,
+      "matchContentJson": null,
+      "pollingSchedule": null,
+      "tcpHost": null,
+      "tcpPort": null,
+      "updatedBy": {
+        "id": "63d97ff826d252001455cf7a",
+        "name": "Super User"
+      },
+      "alerts": []
     }
   ]
 }
