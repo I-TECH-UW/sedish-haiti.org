@@ -56,6 +56,46 @@
       "passwordAlgorithm": "sha512",
       "passwordSalt": "e538f4a341915058a00dd342b362349c",
       "passwordHash": "0e2160d1a6be5bccd28181d0301a72e16d65424e86ee4a07a5227519423e8c3c5316e5feb459977d535a112c3a97c77fd466b835d2354ef9b6275822b2b279e8"
+    },
+    {
+      "roles": [
+        "xds"
+      ],
+      "clientID": "xds_client",
+      "name": "xds_client",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "d2171539db69c06085fc33eedf4a8e41",
+      "passwordHash": "36a496767339fe41c1766213aa8ead610aa07874a6a9b20d84f36df555c48b29d5f84933821d3d3e1675155effe6eb06d9ada0af430990f5bc6ad93c80da9c10"
+    },
+    {
+      "roles": [
+        "emr"
+      ],
+      "clientID": "isanteplus.sedish-haiti.org",
+      "name": "isanteplus.sedish-haiti.org",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "228b11da37d15ac9971e8ec7bee28752",
+      "passwordHash": "1c8f12ebe71f7394f12c7aacc69cbe8c1ba041351e28a67364b079eb523f00368a97941b30fa960c12943bfd044d9253d79a0464b225679f8da01dc90addb54a"
+    },
+    {
+      "roles": [
+        "test"
+      ],
+      "clientID": "xds-mediator",
+      "name": "xds-mediator",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "f3ae3d8dc2ee9c74ab784205295b0388",
+      "passwordHash": "f67a4b77a6a4226cac15b8f2d08930768532549a3d2fb6985034c29814ea9ce497c08bbc02b657866f5dcca6646c7d0ba675b706157f05c476d283b636c8a94b"
+    },
+    {
+      "roles": [
+        "xds"
+      ],
+      "clientID": "lnsp",
+      "name": "lnsp",
+      "passwordAlgorithm": "sha512",
+      "passwordSalt": "567467333573c5d0af37621ff6865b22",
+      "passwordHash": "46ea9ba3da044dee91dc19ed830000311e7e10737ebc51d497ca4594a4c20cb18a7609523eab853f28a1126ba9dfa18010de83dd785ba4575eaf3c5fbadbd4e1"
     }
   ],
   "Channels": [
@@ -83,12 +123,12 @@
       "rewriteUrls": false,
       "addAutoRewriteRules": true,
       "autoRetryEnabled": false,
-      "autoRetryPeriodMinutes": 60,
+      "autoRetryPeriodMinutes": 600000000,
       "requestBody": true,
       "responseBody": true,
       "name": "Add or Get Resource Data From/To openCR",
       "description": "Add or Get Resource Data From/To openCR",
-      "urlPattern": "/CR/fhir",
+      "urlPattern": "^/CR/fhir.*$",
       "matchContentRegex": null,
       "matchContentXpath": null,
       "matchContentValue": null,
@@ -141,7 +181,7 @@
       "rewriteUrls": false,
       "addAutoRewriteRules": true,
       "autoRetryEnabled": false,
-      "autoRetryPeriodMinutes": 60,
+      "autoRetryPeriodMinutes": 600000000000,
       "requestBody": true,
       "responseBody": true,
       "name": "SHR - FHIR Passthrough",
@@ -171,15 +211,101 @@
       "methods": [
         "GET",
         "POST",
+        "DELETE",
         "PUT"
       ],
       "type": "http",
       "allow": [
-        "emr",
+        "test",
+        "xds"
+      ],
+      "authType": "private",
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "XDS.b Mediator",
+          "secured": false,
+          "host": "xds-mediator",
+          "port": 8500,
+          "path": "",
+          "pathTransform": "s/xdsbrepository/xdsrepository/g",
+          "primary": true,
+          "username": "",
+          "password": ""
+        }
+      ],
+      "requestBody": true,
+      "responseBody": true,
+      "rewriteUrlsConfig": [],
+      "name": "XDS.b Mediator",
+      "description": "XDS.b Mediator channel for https://github.com/IsantePlus/openhim-mediator-xds",
+      "urlPattern": "^/xds(registry|repository|brepository)$",
+      "priority": 2,
+      "updatedBy": {
+        "id": "636567132c87640013688d71",
+        "name": "Super User"
+      },
+      "alerts": []
+    },
+    {
+      "methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PUT"
+      ],
+      "type": "http",
+      "allow": [
+        "xds",
+        "test"
+      ],
+      "authType": "private",
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "name": "XDS.b Mediator dsub",
+      "urlPattern": "^/dsub$",
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "XDS.b Mediator - DSUB",
+          "host": "xds-mediator",
+          "port": 8500,
+          "primary": true
+        }
+      ],
+      "alerts": [],
+      "rewriteUrlsConfig": []
+    },
+    {
+      "methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PUT",
+        "OPTIONS",
+        "HEAD",
+        "TRACE",
+        "CONNECT",
+        "PATCH"
+      ],
+      "type": "http",
+      "allow": [
         "test"
       ],
       "whitelist": [],
-      "authType": "private",
+      "authType": "public",
       "matchContentTypes": [],
       "properties": [],
       "txViewAcl": [],
@@ -190,30 +316,95 @@
       "addAutoRewriteRules": true,
       "autoRetryEnabled": false,
       "autoRetryPeriodMinutes": 60,
-      "name": "SHR - Get/Update IPS",
-      "requestBody": true,
-      "responseBody": true,
-      "description": "Get or Update the Internaional Patient Summary Bundle from the SHR",
-      "urlPattern": "^/SHR/fhir/ips.*$",
       "routes": [
         {
           "type": "http",
           "status": "enabled",
           "forwardAuthHeader": false,
-          "name": "SHR - Get IPS",
+          "name": "oshr passthrough",
           "secured": false,
-          "host": "shr",
-          "port": 3000,
+          "host": "openshr",
+          "port": 8080,
           "path": "",
-          "pathTransform": "s/SHR\\/fhir\\/ips/ips/g",
+          "pathTransform": "s/oshr/openmrs\\/ms\\/xdsrepository/g",
           "primary": true,
           "username": "",
           "password": ""
         }
       ],
-      "alerts": [],
+      "requestBody": true,
+      "responseBody": true,
       "rewriteUrlsConfig": [],
-      "priority": 2
+      "name": "oshr",
+      "urlPattern": "^/oshr$",
+      "priority": 2,
+      "matchContentRegex": null,
+      "matchContentXpath": null,
+      "matchContentValue": null,
+      "matchContentJson": null,
+      "pollingSchedule": null,
+      "tcpHost": null,
+      "tcpPort": null,
+      "updatedBy": {
+        "id": "63d97ff826d252001455cf7a",
+        "name": "Super User"
+      },
+      "alerts": []
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "type": "http",
+      "allow": [
+        "test"
+      ],
+      "whitelist": [],
+      "authType": "public",
+      "matchContentTypes": [],
+      "properties": [],
+      "txViewAcl": [],
+      "txViewFullAcl": [],
+      "txRerunAcl": [],
+      "status": "enabled",
+      "rewriteUrls": false,
+      "addAutoRewriteRules": true,
+      "autoRetryEnabled": false,
+      "autoRetryPeriodMinutes": 60,
+      "routes": [
+        {
+          "type": "http",
+          "status": "enabled",
+          "forwardAuthHeader": false,
+          "name": "LNSP passthrough",
+          "secured": true,
+          "host": "lnspmspp.org",
+          "port": 4434,
+          "path": "/esb_sta_upg/LNSP_IHE_IN/notify/",
+          "pathTransform": "",
+          "primary": true,
+          "username": "",
+          "password": ""  
+        }
+      ],
+      "requestBody": true,
+      "responseBody": true,
+      "rewriteUrlsConfig": [],
+      "name": "XDS Order Notification Passthrough",
+      "urlPattern": "^/xds-order-notification$",
+      "priority": 3,
+      "matchContentRegex": null,
+      "matchContentXpath": null,
+      "matchContentValue": null,
+      "matchContentJson": null,
+      "pollingSchedule": null,
+      "tcpHost": null,
+      "tcpPort": null,
+      "updatedBy": {
+        "id": "63d97ff826d252001455cf7a",
+        "name": "Super User"
+      },
+      "alerts": []
     }
   ]
 }
