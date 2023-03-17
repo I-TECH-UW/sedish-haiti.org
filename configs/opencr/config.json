@@ -5,7 +5,7 @@
   },
   "app": {
     "port": 3000,
-    "installed": false
+    "installed": true
   },
   "mediator": {
     "api": {
@@ -41,8 +41,8 @@
   },
   "clients": [
     {
-      "id": "openmrs",
-      "displayName": "OpenMRS"
+      "id": "isanteplus",
+      "displayName": "iSantePlus Demo Server"
     },
     {
       "id": "dhis2",
@@ -69,6 +69,7 @@
         "urn:ietf:rfc:3986",
         "LOCAL",
         "http://isanteplus.org/openmrs/fhir2/3-isanteplus-id",
+        "http://isanteplus.sedish-coc-demo.org/openmrs/fhir2/3-isanteplus-id",
         "http://isanteplus.sedish-haiti.org/openmrs/fhir2/3-isanteplus-id",
         "http://isanteplusdemo.com/openmrs/fhir2/3-isanteplus-id",
         "http://isanteplus.hup.com/openmrs/fhir2/3-isanteplus-id",
@@ -109,7 +110,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2023-01-31T20:56:51"
+    "lastFHIR2ESSync": "2023-03-16T21:09:28"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"
