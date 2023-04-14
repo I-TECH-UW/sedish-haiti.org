@@ -111,7 +111,7 @@ services:
   xds:
     container_name: xds-mediator
     hostname: xds
-    image: ghcr.io/isanteplus/openhim-mediator-xds:v1.0.5
+    image: ghcr.io/isanteplus/openhim-mediator-xds:local
     restart: unless-stopped
     #image: ghcr.io/isanteplus/openhim-mediator-xds:local # Use with local build from ~/code/openhim-mediator-xds
     volumes:
@@ -121,7 +121,7 @@ services:
     ports:
       - 1045:1044
       - 8500:8500
-    entrypoint: 'java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044 -jar /mediator-xds-1.0.5-jar-with-dependencies.jar --conf /mediator.properties'
+    entrypoint: 'java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044 -jar /mediator-xds-1.1.0-SNAPSHOT-jar-with-dependencies.jar --conf /mediator.properties'
     
   ###
   # SHR
@@ -246,7 +246,8 @@ services:
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
       - ./configs/isanteplus/mysql.cnf:/etc/mysql/conf.d/custom.cnf # mysql config preconfigured to allow binlog/debezium
-      - mysql-data:/var/lib/mysql
+      - .db/isanteplus:/var/lib/mysql
+      #- mysql-data:/var/lib/mysql
     networks:
       - sedish
     ports: 
@@ -361,12 +362,14 @@ services:
     env_file:  
       - configs/openshr/.env 
     volumes:
-       - ./configs/openshr/custom-modules/xds-b-repository-1.1.1.omod:/root/temp/modules/xds-b-repository-1.1.1.omod
+      - /openmrs/data
+      - ./configs/openshr/xds-b-repository-1.1.2.omod:/root/temp/modules/xds-b-repository-1.1.2.omod
     ports:
       - 8090:8080
       - 1050:1048
     networks:
       - sedish
+    restart: unless-stopped
 
   ## openshr-db
   openshr-db:
@@ -376,9 +379,8 @@ services:
     env_file:
       - configs/openshr/.env
     volumes:
-      - /var/lib/mysql
-      #- ./configs/openshr/dbdump:/docker-entrypoint-initdb.d
-
+      - .data/openshr:/var/lib/mysql
+    restart: unless-stopped
     networks:
       - sedish
     ports:
