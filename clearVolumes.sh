@@ -10,15 +10,15 @@
 #  - remove opencr and  volumes
 #
 
-# stop opencr and  containers
+# stop opencr container
 echo '####################################################'
 echo 'Stopping running opencr and  containers (if available)...'
 echo '####################################################'
 docker stop  opencr 
 
-# remove  opencr and  stopped containers
+# remove  opencr stopped containers
 echo '####################################################'
-echo 'Removing opencr and  containers ..'
+echo 'Removing opencr container ..'
 echo '####################################################'
 docker rm opencr 
 
@@ -29,8 +29,8 @@ echo 'Removing  opencr and  images ...'
 echo '####################################################'
 docker rmi opencr 
 
-# remove  opencr and  stray volumes if any
+# remove  opencr stray volumes if any
 echo '####################################################'
-echo 'Revoming  opencr and  container volumes (if any)'
+echo 'Revoming  opencr container volumes (if any)'
 echo '####################################################'
 docker volume rm opencr 
