@@ -1,36 +1,36 @@
 #!/bin/bash
 ###########################################
 #
-# Simple Shell script to clean/remove  opencr and opencr-fhir containers
+# Simple Shell script to clean/remove  opencr and  containers
 #
 # The script will 
-#  - first stop the opencr and opencr-fhir containers 
-#  - remove opencr and opencr-fhir containers
-#  - remove opencr and opencr-fhir images
-#  - remove opencr and opencr-fhir volumes
+#  - first stop the opencr and  containers 
+#  - remove opencr and  containers
+#  - remove opencr and  images
+#  - remove opencr and  volumes
 #
 
-# stop opencr and opencr-fhir containers
+# stop opencr and  containers
 echo '####################################################'
-echo 'Stopping running opencr and opencr-fhir containers (if available)...'
+echo 'Stopping running opencr and  containers (if available)...'
 echo '####################################################'
-docker stop  opencr opencr-fhir
+docker stop  opencr 
 
-# remove  opencr and opencr-fhir stopped containers
+# remove  opencr and  stopped containers
 echo '####################################################'
-echo 'Removing opencr and opencr-fhir containers ..'
+echo 'Removing opencr and  containers ..'
 echo '####################################################'
-docker rm opencr opencr-fhir
+docker rm opencr 
 
 
-# remove  opencr and opencr-fhir images
+# remove  opencr and  images
 echo '####################################################'
-echo 'Removing  opencr and opencr-fhir images ...'
+echo 'Removing  opencr and  images ...'
 echo '####################################################'
-docker rmi opencr opencr-fhir
+docker rmi opencr 
 
-# remove  opencr and opencr-fhir stray volumes if any
+# remove  opencr and  stray volumes if any
 echo '####################################################'
-echo 'Revoming  opencr and opencr-fhir container volumes (if any)'
+echo 'Revoming  opencr and  container volumes (if any)'
 echo '####################################################'
-docker volume rm opencr opencr-fhir
+docker volume rm opencr 
