@@ -111,7 +111,7 @@ services:
   xds:
     container_name: xds-mediator
     hostname: xds
-    image: ghcr.io/isanteplus/openhim-mediator-xds:local
+    image: ghcr.io/isanteplus/openhim-mediator-xds:latest
     restart: unless-stopped
     #image: ghcr.io/isanteplus/openhim-mediator-xds:local # Use with local build from ~/code/openhim-mediator-xds
     volumes:
@@ -509,3 +509,6 @@ volumes:
 
 networks:
   sedish:
+  public:
+    name: reverse-proxy_public
+    external: true

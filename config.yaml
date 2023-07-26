@@ -1,0 +1,7 @@
+projectName: SEDISH
+image: itechuw/sedish
+logPath: /tmp/logs
+
+packages:
+    - reverse-proxy-nginx
+    - interoperability-layer-openhim
