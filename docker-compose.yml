@@ -53,7 +53,7 @@ services:
   opencr:
     container_name: opencr
     hostname: opencr
-    image: intrahealth/opencr:latest
+    image: intrahealth/opencr:d4be221
     restart: unless-stopped
     environment:
       - NODE_ENV=docker
@@ -202,7 +202,7 @@ services:
       - /bitnami/kafka
   ###
   # iSantePlus
-  ###docker
+  ###
   isanteplus:
     container_name: isanteplus
     hostname: isanteplus
@@ -213,6 +213,8 @@ services:
     volumes:
       - isanteplus-data:/openmrs/data
       - ./configs/isanteplus/custom_modules:/custom_modules
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - sedish
     logging:
@@ -250,14 +252,13 @@ services:
       #- mysql-data:/var/lib/mysql
     networks:
       - sedish
-    ports: 
-      - 3307:3306
+
   ###
   # OpenHIM
   ###
   openhim-core:
     container_name: openhim-core
-    image: jembi/openhim-core:latest
+    image: jembi/openhim-core:v7.1.0
     restart: unless-stopped
     environment:
       mongo_url: "mongodb://mongo-db/openhim"
@@ -270,8 +271,6 @@ services:
       retries: 5
     networks:
       - sedish
-    ports:
-      - "5052:5052"
     volumes:
       - ./configs/openhim-core/healthcheck.js:/healthcheck.js
       - ./configs/openhim-core/default.json:/app/config/default.json
@@ -327,8 +326,6 @@ services:
     restart: unless-stopped
     networks:
       - sedish
-    ports:
-      - 27017:27017
 
 
   mongo-db-xds:
@@ -339,8 +336,7 @@ services:
     restart: unless-stopped
     networks:
       - sedish
-    ports:
-      - 27018:27017
+
 
   openhim-config:
     container_name: openhim-config
@@ -364,6 +360,7 @@ services:
     volumes:
       - /openmrs/data
       - ./configs/openshr/xds-b-repository-1.1.2.omod:/root/temp/modules/xds-b-repository-1.1.2.omod
+      # - ./configs/openshr/shr-cdahandler-1.1.0.omod:/root/temp/modules/shr-cdahandler-1.1.0.omod
     ports:
       - 8090:8080
       - 1050:1048
@@ -379,12 +376,13 @@ services:
     env_file:
       - configs/openshr/.env
     volumes:
-      - .data/openshr:/var/lib/mysql
+      - .data3/openshr:/var/lib/mysql
     restart: unless-stopped
     networks:
       - sedish
     ports:
-      - '3306:3306'
+      - "3306:3306"
+
   ## OpenXDS
   openxds:
     image: ghcr.io/i-tech-uw/openxds:pr-2

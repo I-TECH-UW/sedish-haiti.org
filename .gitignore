@@ -63,3 +63,6 @@ parquet
 .data/*
 
 .db/*
+
+.data*
+*.omod
