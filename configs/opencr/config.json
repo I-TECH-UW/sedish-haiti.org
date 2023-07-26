@@ -5,7 +5,7 @@
   },
   "app": {
     "port": 3000,
-    "installed": false
+    "installed": true
   },
   "mediator": {
     "api": {
@@ -109,7 +109,7 @@
     }
   },
   "sync": {
-    "lastFHIR2ESSync": "2022-08-18T23:12:22"
+    "lastFHIR2ESSync": "2023-06-02T13:59:00"
   },
   "__comments": {
     "matching.tool": "this tells if the app should use mediator algorithms or elasticsearch algorithms for matching, two options mediator and elasticsearch"
