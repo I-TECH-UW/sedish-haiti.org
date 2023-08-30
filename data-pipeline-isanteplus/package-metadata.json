@@ -1,0 +1,27 @@
+{
+  "id": "data-pipeline-isanteplus",
+  "name": "data-pipeline for iSantePlus",
+  "description": "data-pipeline for isanteplus",
+  "type": "infrastructure",
+  "version": "0.0.0",
+  "dependencies": [],
+  "environmentVariables": {
+
+    "OPENMRS_URL":"http://isanteplus:8080/openmrs",
+    "OPENMRS_USERNAME":"admin",
+    "OPENMRS_PASSWORD":"Admin123",
+    "SINK_URL":"http://openhim-core:5001/SHR/fhir",
+    "SINK_USERNAME":"shr-pipeline",
+    "SINK_PASSWORD":"shr-pipeline",
+    "JDBC_FETCH_SIZE":"10000",
+    "JDBC_MAX_POOL_SIZE":"50",
+    "JDBC_INITIAL_POOL_SIZE":"10",
+    "JDBC_DRIVER_CLASS":"com.mysql.cj.jdbc.Driver",
+    "PARQUET_PATH":"/tmp",
+    "FHIR_DEBEZIUM_CONFIG_PATH":"/deployments/config.json"
+  
+  }
+}
+
+
+

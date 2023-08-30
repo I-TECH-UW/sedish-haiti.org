@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+    
+  mongo-db-xds: 
+    image: mongo:3.4
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - openhim
+    configs:
+      - target: /docker-entrypoint-initdb.d/initdb.js
+        source: initdb.js
+
+volumes:
+  mongo-data:
+
+networks:
+  openhim:
+    external: true
+    name: openhim_public
+
+configs:
+  initdb.js:
+    file: ./config/initdb.js
+    name: initdb.js
+    labels:
+      name: initdb
+

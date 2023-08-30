@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+    ## SHR Resource Stream
+  streaming-pipeline: 
+    image: ghcr.io/i-tech-uw/openmrs-fhir-analytics/streaming-binlog:latest
+    
+    environment:
+      - OPENMRS_URL=${OPENMRS_URL}
+      - OPENMRS_USERNAME=${OPENMRS_USERNAME}
+      - OPENMRS_PASSWORD=${OPENMRS_PASSWORD}
+      - SINK_URL=${SINK_URL}
+      - SINK_USERNAME=${SINK_USERNAME}
+      - SINK_PASSWORD=${SINK_PASSWORD}
+      - JDBC_FETCH_SIZE=${JDBC_FETCH_SIZE}
+      - JDBC_MAX_POOL_SIZE=${JDBC_MAX_POOL_SIZE}
+      - JDBC_INITIAL_POOL_SIZE=${JDBC_INITIAL_POOL_SIZE}
+      - JDBC_DRIVER_CLASS=${JDBC_DRIVER_CLASS}
+      # the 2 variable below should be same as volume mappings above
+      - PARQUET_PATH=${PARQUET_PATH}
+      - FHIR_DEBEZIUM_CONFIG_PATH=${FHIR_DEBEZIUM_CONFIG_PATH}
+    configs:
+      - target: /deployments/config.json
+        source: config.json
+      
+    networks:
+     - openhim
+     - shr
+
+configs:
+  config.json:
+    file: ./config/config.json
+    name: datapipeline_config.json
+    labels:
+      name: datapipeline_config.json
+networks:
+  openhim:
+    name: openhim_public
+    external: true
+  shr:
+    name: shr
+    external: true
+
+
+
+

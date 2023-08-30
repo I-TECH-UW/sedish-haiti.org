@@ -1,0 +1,23 @@
+{
+  "app": {
+    "port": 3000,
+    "hapiPassthrough": true
+  },
+  "mediator": {
+    "api": {
+      "username": "root@openhim.org",
+      "password": "instant101",
+      "apiURL": "https://openhim-core:8080",
+      "trustSelfSigned": true,
+      "urn": "urn:mediator:haiti_sharedhealthrecord"
+    },
+    "client": {
+      "id": "shr-client",
+      "password": "shr-client"
+    }
+  },
+  "fhirServer": {
+    "baseURL": "http://hapi-fhir:8080/fhir"
+  },
+  "clientRegistryUrl": "http://openhim-core:5001/CR/fhir"
+}
