@@ -1,0 +1,7 @@
+projectName: SEDISH
+image: itechuw/sedish:local
+logPath: /home/ubuntu/instant/logs
+
+packages:
+    - reverse-proxy-nginx
+    - interoperability-layer-openhim

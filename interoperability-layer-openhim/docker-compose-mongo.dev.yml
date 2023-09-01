@@ -1,0 +1,8 @@
+version: '3.9'
+
+services:
+  mongo-1:
+    ports:
+      - target: 27017
+        published: 27017
+        mode: host
