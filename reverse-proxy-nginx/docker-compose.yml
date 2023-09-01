@@ -6,6 +6,7 @@ services:
     image: nginx:stable
     networks:
       public:
+      default:
     deploy:
       replicas: ${REVERSE_PROXY_INSTANCES}
       placement:
@@ -22,3 +23,5 @@ networks:
   public:
     name: reverse-proxy_public
     external: true
+    attachable: true
+  default:

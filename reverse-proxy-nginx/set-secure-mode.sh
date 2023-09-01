@@ -33,6 +33,16 @@ function create_secrets_from_certificates() {
 }
 
 function generate_dummy_certificates() {
+    log info "Generating dummy certificates..."
+    log info "docker run --rm \
+        --network host \
+        --name letsencrypt \
+        -v dummy-data-certbot-conf:/etc/letsencrypt/archive/${DOMAIN_NAME} \
+        certbot/certbot:v1.23.0 certonly -n \
+        -m ${RENEWAL_EMAIL} \
+        --staging \
+        ${DOMAIN_ARGS[*]} \
+        --standalone --agree-tos"
     try "docker run --rm \
         --network host \
         --name letsencrypt \
@@ -41,7 +51,7 @@ function generate_dummy_certificates() {
         -m ${RENEWAL_EMAIL} \
         --staging \
         ${DOMAIN_ARGS[*]} \
-        --standalone --agree-tos &>/dev/null" \
+        --standalone --agree-tos" \
         throw \
         "Failed to create certificate network"
 
@@ -64,16 +74,22 @@ function update_nginx_dummy_certificates() {
         "Failed to create nginx config"
 
     log info "Updating $SERVICE_NAMES service: adding config for dummy certificates..."
-    try "docker service update \
+    log info "docker service update \
           --config-add source=${TIMESTAMPED_NGINX},target=/etc/nginx/nginx.conf \
           --secret-add source=${TIMESTAMP}-fullchain.pem,target=/run/secrets/fullchain.pem \
           --secret-add source=${TIMESTAMP}-privkey.pem,target=/run/secrets/privkey.pem \
           --network-add name=cert-renewal-network,alias=cert-renewal-network \
           --publish-add published=80,target=80 \
           --publish-add published=443,target=443 \
-          ${STACK}_$SERVICE_NAMES" \
-        throw \
-        "Error updating $SERVICE_NAMES service"
+          ${STACK}_$SERVICE_NAMES"
+    docker service update \
+          --config-add source=${TIMESTAMPED_NGINX},target=/etc/nginx/nginx.conf \
+          --secret-add source=${TIMESTAMP}-fullchain.pem,target=/run/secrets/fullchain.pem \
+          --secret-add source=${TIMESTAMP}-privkey.pem,target=/run/secrets/privkey.pem \
+          --network-add name=cert-renewal-network,alias=cert-renewal-network \
+          --publish-add published=80,target=80 \
+          --publish-add published=443,target=443 \
+          ${STACK}_$SERVICE_NAMES
 
     overwrite "Updating $SERVICE_NAMES service: adding config for dummy certificates... Done"
 }

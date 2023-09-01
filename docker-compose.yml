@@ -217,6 +217,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     networks:
       - sedish
+      - reverse-proxyP
     logging:
       driver: "json-file"
       options:
@@ -509,6 +510,6 @@ volumes:
 
 networks:
   sedish:
-  public:
+  reverse-proxy:
     name: reverse-proxy_public
     external: true
