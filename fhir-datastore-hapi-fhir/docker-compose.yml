@@ -1,0 +1,55 @@
+version: '3.9'
+
+services:
+  hapi-fhir:
+    image: jembi/hapi:v6.0.1-wget
+    networks:
+      mpi:
+      public:
+      openhim:
+      default:
+    environment:
+      - spring.datasource.url=jdbc:postgresql://${HAPI_DB_SET}/hapi?targetServerType=primary
+      - spring.datasource.username=${HF_POSTGRESQL_USERNAME}
+      - spring.datasource.password=${HF_POSTGRESQL_PASSWORD}
+      - spring.datasource.driverClassName=org.postgresql.Driver
+      - spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQL95Dialect
+      - spring.datasource.hikari.maximumPoolSize=250
+      - spring.datasource.hikari.minimumIdle=20
+      - spring.datasource.hikari.connectionTimeout=60000
+      - spring.datasource.hikari.idleTimeout=600000
+      - hapi.fhir.allow_external_references=true
+      - hapi.fhir.auto_create_placeholder_reference_targets=true
+      - hapi.fhir.bulk_export_enabled=true
+      - hapi.fhir.enable_repository_validating_interceptor=true
+      - JAVA_TOOL_OPTIONS=${HF_JAVA_OPTS}
+      - CATALINA_OPTS=${HF_JAVA_OPTS}
+    deploy:
+      replicas: ${HAPI_FHIR_INSTANCES}
+      placement:
+        max_replicas_per_node: ${HAPI_FHIR_MAX_REPLICAS_PER_NODE}
+      resources:
+        limits:
+          cpus: ${HAPI_FHIR_CPU_LIMIT}
+          memory: ${HAPI_FHIR_MEMORY_LIMIT}
+        reservations:
+          cpus: ${HAPI_FHIR_CPU_RESERVE}
+          memory: ${HAPI_FHIR_MEMORY_RESERVE}
+    healthcheck:
+      test: /bin/wget --no-verbose --tries=1 --spider http://localhost:8080/fhir/Organization?identifier=urn:healthcheck
+      interval: 30s
+      timeout: 30s
+      retries: 2
+      start_period: 2m
+
+networks:
+  mpi:
+    name: mpi_public
+    external: true
+  public:
+    name: hapi-fhir_public
+    external: true
+  openhim:
+    name: openhim_public
+    external: true
+  default:

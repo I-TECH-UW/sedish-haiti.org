@@ -1,0 +1,250 @@
+version: '3.9'
+
+services:
+  grafana:
+    image: grafana/grafana-oss:9.2.3
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SMTP_ENABLED: ${GF_SMTP_ENABLED}
+      GF_SMTP_HOST: ${GF_SMTP_HOST}
+      GF_SMTP_USER: ${GF_SMTP_USER}
+      GF_SMTP_PASSWORD: ${GF_SMTP_PASSWORD}
+      GF_AUTH_BASIC_ENABLED: ${KC_GRAFANA_SSO_ENABLED}
+      GF_AUTH_DISABLE_LOGIN_FORM: ${KC_GRAFANA_SSO_ENABLED}
+      GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: "true"
+      GF_AUTH_GENERIC_OAUTH_ENABLED: ${KC_GRAFANA_SSO_ENABLED}
+      GF_AUTH_GENERIC_OAUTH_NAME: "Keycloak"
+      GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: "true"
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: ${KC_GRAFANA_CLIENT_ID}
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: ${KC_GRAFANA_CLIENT_SECRET}
+      GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_NAME: "email:primary"
+      GF_AUTH_GENERIC_OAUTH_SCOPES: "openid email profile offline_access roles"
+      GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH: "email"
+      GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: "username"
+      GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: "full_name"
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: "${KC_FRONTEND_URL}/realms/${KC_REALM_NAME}/protocol/openid-connect/auth"
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "${KC_API_URL}/realms/${KC_REALM_NAME}/protocol/openid-connect/token"
+      GF_AUTH_GENERIC_OAUTH_API_URL: "${KC_API_URL}/realms/${KC_REALM_NAME}/protocol/openid-connect/userinfo"
+      GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'"
+      GF_SERVER_DOMAIN: ${GF_SERVER_DOMAIN}
+      GF_SERVER_ROOT_URL: ${KC_GRAFANA_ROOT_URL}
+      GF_AUTH_SIGNOUT_REDIRECT_URL: "${KC_FRONTEND_URL}/realms/${KC_REALM_NAME}/protocol/openid-connect/logout?client_id=${KC_GRAFANA_CLIENT_ID}&post_logout_redirect_uri=${KC_GRAFANA_ROOT_URL}/login"
+    configs:
+      - target: /etc/grafana/grafana.ini
+        source: grafana.ini
+      - target: /etc/grafana/provisioning/datasources/datasource.yml
+        source: datasource.yml
+      - target: /etc/grafana/provisioning/dashboards/dashboard.yml
+        source: dashboard.yml
+      - target: /etc/grafana/provisioning/dashboards/nodes/node-exporter-full_rev27.json
+        source: node-exporter-full_rev27.json
+      - target: /etc/grafana/provisioning/dashboards/containers/docker-swarm-monitor-v2_rev2.json
+        source: docker-swarm-monitor-v2_rev2.json
+      - target: /etc/grafana/provisioning/dashboards/applications/kminion-cluster_rev1.json
+        source: kminion-cluster_rev1.json
+      - target: /etc/grafana/provisioning/dashboards/applications/kminion-groups_rev1.json
+        source: kminion-groups_rev1.json
+      - target: /etc/grafana/provisioning/dashboards/applications/kminion-topic_rev1.json
+        source: kminion-topic_rev1.json
+      - target: /etc/grafana/provisioning/dashboards/applications/openhim_nodejs_dashboard.json
+        source: openhim_nodejs_dashboard.json
+      - target: /etc/grafana/provisioning/dashboards/applications/openhim_transactions_dashboard.json
+        source: openhim_transactions_dashboard.json
+      - target: /etc/grafana/provisioning/dashboards/containers/logging-universal-dashboard_rev1.json
+        source: logging-universal-dashboard_rev1.json
+    networks:
+      keycloak:
+      reverse-proxy:
+      default:
+
+  prometheus:
+    image: prom/prometheus:v2.38.0
+    user: root
+    volumes:
+      - prometheus-data:/prometheus
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    configs:
+      - target: /etc/prometheus/prometheus.yml
+        source: prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      public:
+      default:
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.45.0
+    command: -docker_only
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker
+      - /dev/disk/:/dev/disk:ro
+    deploy:
+      mode: global
+
+  node-exporter:
+    image: quay.io/prometheus/node-exporter:v1.3.1
+    hostname: "{{.Node.ID}}"
+    command:
+      - '--path.rootfs=/host'
+    volumes:
+      - '/:/host:ro,rslave'
+    deploy:
+      mode: global
+
+  loki:
+    image: grafana/loki:2.6.1
+    volumes:
+      - loki-data:/tmp/loki
+    environment:
+      MO_SECURITY_ADMIN_USER: ${MO_SECURITY_ADMIN_USER}
+      MO_SECURITY_ADMIN_PASSWORD: ${MO_SECURITY_ADMIN_PASSWORD}
+    configs:
+      - target: /etc/loki/loki-config.yml
+        source: loki-config.yml
+    command: -config.file=/etc/loki/loki-config.yml -config.expand-env=true
+    deploy:
+      labels:
+        - prometheus-job-service=loki
+        - prometheus-address=loki:3100
+
+  promtail:
+    image: grafana/promtail:2.6.1
+    volumes:
+      - /var/lib/docker/containers:/host/containers
+      - /var/log:/var/log:ro
+    configs:
+      - target: /etc/promtail/promtail-config.yml
+        source: promtail-config.yml
+    command: -config.file=/etc/promtail/promtail-config.yml
+    deploy:
+      mode: global
+
+  minio-01:
+    image: quay.io/minio/minio:RELEASE.2022-10-24T18-35-07Z
+    entrypoint: sh
+    command: -c 'mkdir -p /data1/loki /data2/loki && minio server --console-address ":9001" http://minio-0{1...${NUM_MINIO_SERVERS}}/data{1...2}'
+    environment:
+      MINIO_ROOT_USER: ${MO_SECURITY_ADMIN_USER}
+      MINIO_ROOT_PASSWORD: ${MO_SECURITY_ADMIN_PASSWORD}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:9000/minio/health/live"
+        ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    hostname: minio-01
+    volumes:
+      - minio-01-data1:/data1
+      - minio-01-data2:/data2
+    deploy:
+      replicas: 1
+    networks:
+      reverse-proxy:
+      default:
+
+configs:
+  grafana.ini:
+    file: ./grafana/grafana.ini
+    name: grafana.ini-${grafana_ini_DIGEST:?err}
+    labels:
+      name: grafana
+  datasource.yml:
+    file: ./grafana/datasource.yml
+    name: datasource.yml-${datasource_yml_DIGEST:?err}
+    labels:
+      name: grafana
+  dashboard.yml:
+    file: ./grafana/dashboards/dashboard.yml
+    name: dashboard.yml-${dashboard_yml_DIGEST:?err}
+    labels:
+      name: grafana
+  node-exporter-full_rev27.json:
+    file: ./grafana/dashboards/nodes/node-exporter-full_rev27.json
+    name: node-exporter-full_rev27.json-${node_exporter_full_rev27_json_DIGEST:?err}
+    labels:
+      name: grafana
+  docker-swarm-monitor-v2_rev2.json:
+    file: ./grafana/dashboards/containers/docker-swarm-monitor-v2_rev2.json
+    name: docker-swarm-monitor-v2_rev2.json-${docker_swarm_monitor_v2_rev2_json_DIGEST:?err}
+    labels:
+      name: grafana
+  kminion-cluster_rev1.json:
+    file: ./grafana/dashboards/applications/kminion-cluster_rev1.json
+    name: kminion-cluster_rev1.json-${kminion_cluster_rev1_json_DIGEST:?err}
+    labels:
+      name: grafana
+  kminion-groups_rev1.json:
+    file: ./grafana/dashboards/applications/kminion-groups_rev1.json
+    name: kminion-groups_rev1.json-${kminion_groups_rev1_json_DIGEST:?err}
+    labels:
+      name: grafana
+  kminion-topic_rev1.json:
+    file: ./grafana/dashboards/applications/kminion-topic_rev1.json
+    name: kminion-topic_rev1.json-${kminion_topic_rev1_json_DIGEST:?err}
+    labels:
+      name: grafana
+  openhim_nodejs_dashboard.json:
+    file: ./grafana/dashboards/applications/openhim_nodejs_dashboard.json
+    name: openhim_nodejs_dashboard.json-${openhim_nodejs_dashboard_json_DIGEST:?err}
+    labels:
+      name: grafana
+  openhim_transactions_dashboard.json:
+    file: ./grafana/dashboards/applications/openhim_transactions_dashboard.json
+    name: openhim_transactions_dashboard.json-${openhim_transactions_dashboard_json_DIGEST:?err}
+    labels:
+      name: grafana
+  logging-universal-dashboard_rev1.json:
+    file: ./grafana/dashboards/containers/logging-universal-dashboard_rev1.json
+    name: logging-universal-dashboard_rev1.json-${logging_universal_dashboard_rev1_json_DIGEST:?err}
+    labels:
+      name: grafana
+  prometheus.yml:
+    file: ./prometheus/prometheus.yml
+    name: prometheus.yml-${prometheus_yml_DIGEST:?err}
+    labels:
+      name: prometheus
+  loki-config.yml:
+    file: ./loki/loki-config.yml
+    name: loki-config.yml-${loki_config_yml_DIGEST:?err}
+    labels:
+      name: loki
+  promtail-config.yml:
+    file: ./promtail/promtail-config.yml
+    name: promtail-config.yml-${promtail_config_yml_DIGEST:?err}
+    labels:
+      name: promtail
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  loki-data:
+  minio-01-data1:
+  minio-01-data2:
+
+networks:
+  keycloak:
+    name: keycloak_public
+    external: true
+  reverse-proxy:
+    name: reverse-proxy_public
+    external: true
+  public:
+    name: prometheus_public
+    external: true
+  default:

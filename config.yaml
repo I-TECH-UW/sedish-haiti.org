@@ -1,0 +1,22 @@
+projectName: hie-haiti
+image: itechuw/sedish-haiti:v1.0.0-alpha.1
+logPath: /tmp/logs
+
+packages:
+  # I-TECH
+  - client-registry-opencr
+  - fhir-datastore-hapi-fhir
+  - interoperability-layer-openhim
+  - message-bus-kafka
+  - monitoring
+  - shared-health-record-fhir
+  - reverse-proxy-nginx
+  - emr-isanteplus
+  - data-pipeline-isanteplus
+  - document-data-store-xds
+  - shared-health-record-openshr
+  - openhim-mediator-openxds
+  - metadata-management-zookeeper
+
+
+  

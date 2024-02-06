@@ -1,3 +1,5 @@
+#ignore the running script
+.mk.sh
 # Ignore OpenMRS modules + platform
 openmrs
 openmrs/*
@@ -59,3 +61,8 @@ configs/streaming-pipeline/data*
 *.bak
 
 parquet
+
+
+.env
+
+instant

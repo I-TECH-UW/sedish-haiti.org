@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  shr:
+    image: itechuw/shared-health-record:pr-100
+    networks:
+      - openhim
+      - shr
+    configs:
+      - source: shr_config
+        target: /app/config/config_docker.json
+      - source: shr_mediator
+        target: /app/config/mediator_docker.json
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+configs:
+  shr_config:
+    file: ./config/config.json
+    labels:
+      name: shr
+  shr_mediator:
+    file: ./config/mediator.json
+    labels:
+      name: shr
+
+networks:
+  openhim:
+    name: openhim_public
+    external: true
+  shr:
+    name: shr
+    external: true

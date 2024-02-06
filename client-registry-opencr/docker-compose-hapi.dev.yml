@@ -1,0 +1,7 @@
+version: "3.9"
+
+services:
+
+  opencr-hapi-fhir:
+    ports:
+      - "3444:8080"

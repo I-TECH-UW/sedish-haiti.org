@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  # Proxies requests to internal services
+  reverse-proxy-nginx:
+    image: nginx:stable
+    networks:
+      public:
+    deploy:
+      replicas: ${REVERSE_PROXY_INSTANCES}
+      placement:
+        max_replicas_per_node: 1
+      resources:
+        limits:
+          cpus: ${NGINX_CPU_LIMIT}
+          memory: ${NGINX_MEMORY_LIMIT}
+        reservations:
+          cpus: ${NGINX_CPU_RESERVE}
+          memory: ${NGINX_MEMORY_RESERVE}
+
+networks:
+  public:
+    name: reverse-proxy_public
+    external: true
