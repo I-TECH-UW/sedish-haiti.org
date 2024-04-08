@@ -59,6 +59,7 @@ services:
     networks:
       keycloak:
       reverse-proxy:
+      openhim:
       default:
 
   prometheus:
@@ -247,4 +248,7 @@ networks:
   public:
     name: prometheus_public
     external: true
+  openhim:
+    external: true
+    name: openhim_public
   default:

@@ -19,5 +19,11 @@
   "fhirServer": {
     "baseURL": "http://hapi-fhir:8080/fhir"
   },
-  "clientRegistryUrl": "http://openhim-core:5001/CR/fhir"
+  "clientRegistryUrl": "http://openhim-core:5001/CR/fhir",
+  "fhirConverterUrl": "http://openhim-core:5001/72f",
+  "taskRunner": {
+    "brokers": [
+      "kafka-01:9092"
+    ]
+  }
 }

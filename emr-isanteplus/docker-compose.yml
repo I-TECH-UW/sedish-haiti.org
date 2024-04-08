@@ -17,12 +17,39 @@ services:
       - OMRS_DEV_DEBUG_PORT=${OMRS_DEV_DEBUG_PORT}
     volumes:
       - isanteplus-data:/openmrs/data
-      # - ./configs/isanteplus/custom_modules/:/custom_modules/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 1046:1044
     networks:
       - public 
       - openhim
+    configs:
+      - target: /custom_modules/labintegration-2.2.1-SNAPSHOT.omod
+        source: labintegration-2.2.1-SNAPSHOT.omod
+ 
+
+configs:
+  labintegration-2.2.1-SNAPSHOT.omod:
+    file: ./config/custom_modules/labintegration-2.2.1-SNAPSHOT.omod
+    name: labintegration-2.2.1-SNAPSHOT.omod
+    labels:
+      name: labintegration-2.2.1-SNAPSHOT
+  # isanteplusreports-1.1-SNAPSHOT.omod:
+  #   file: ./config/custom_modules/isanteplusreports-1.1-SNAPSHOT.omod
+  #   name: isanteplusreports-1.1-SNAPSHOT.omod
+  #   labels:
+  #     name: isanteplusreports
+
 volumes:
   isanteplus-data:
+  custom_modules:
+    driver: local
+
+  #etc/timezone:
+  #etc/localtime:
+
+
 networks:
   public:
     external: true

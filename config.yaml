@@ -17,6 +17,7 @@ packages:
   - shared-health-record-openshr
   - openhim-mediator-openxds
   - metadata-management-zookeeper
+  - nfs
 
 
   

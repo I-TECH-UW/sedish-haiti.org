@@ -55,8 +55,8 @@ function initialize_package() {
       if [[ "${CLUSTERED_MODE}" == "true" ]]; then
         try "${COMPOSE_FILE_PATH}/initiate-replica-set.sh $STACK" throw "Fatal: Initiate Mongo replica set failed"
       else
-        try "docker exec -i $(docker ps -q -f name=openhim_mongo) mongo --eval \"rs.initiate()\"" throw "Could not initiate replica set for the single mongo instance. Some services use \
-        mongo event listeners which only work with a replica set"
+        try "docker exec -i $(docker ps -q -f name=openhim_mongo) mongo --eval \"rs.initiate({'_id': 'mongo-set','members': [{'_id': 0,'priority': 1,'host': 'mongo-1:27017'}]})\"" throw "Could not initiate replica set for the single mongo instance. Some services use \
+         mongo event listeners which only work with a replica set"
       fi
     fi
 

@@ -1,11 +1,13 @@
-version: '3.9'
+version: '3.8'
 
 services:
   shr:
-    image: itechuw/shared-health-record:pr-100
+    image: itechuw/shared-health-record:v0.13.0
     networks:
       - openhim
+      - kafka
       - shr
+      - hapi-fhir
     configs:
       - source: shr_config
         target: /app/config/config_docker.json
@@ -38,4 +40,10 @@ networks:
     external: true
   shr:
     name: shr
+    external: true
+  kafka:
+    name: kafka_public
+    external: true
+  hapi-fhir:
+    name: hapi-fhir_public
     external: true

@@ -182,7 +182,7 @@ docker::stack_destroy() {
     try "docker network prune -f" catch "Failed to prune networks"
     overwrite "Pruning networks ... done"
 
-    docker::prune_volumes
+    #docker::prune_volumes
 }
 
 # Loops through all current services and builds up a dictionary of volume names currently in use

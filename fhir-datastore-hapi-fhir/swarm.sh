@@ -39,7 +39,7 @@ function initialize_package() {
   if [ "${MODE}" == "dev" ]; then
     log info "Running package in DEV mode"
     postgres_dev_compose_filename="docker-compose-postgres.dev.yml"
-    hapi_fhir_dev_compose_filename="docker-compose.yml"
+    hapi_fhir_dev_compose_filename="docker-compose.dev.yml"
   else
     log info "Running package in PROD mode"
   fi
