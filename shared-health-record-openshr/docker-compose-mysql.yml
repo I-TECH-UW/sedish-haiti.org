@@ -14,12 +14,12 @@ services:
       - MYSQL_HOST=${MYSQL_HOST}
 
     volumes:
-      - "openshr-mysql-data:/var/lib/mysql"
+      - "openshr-mysql-data1:/var/lib/mysql"
     restart: unless-stopped
     networks:
       - openhim
 volumes:
-   openshr-mysql-data:
+   openshr-mysql-data1:
 networks:
   openhim:
     external: true
