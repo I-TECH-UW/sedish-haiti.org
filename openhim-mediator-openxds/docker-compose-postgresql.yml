@@ -3,6 +3,7 @@ version: "3.9"
 services:
   postgresql-openxds:
     container_name: postgresql-openxds
+    restart: always
     hostname: postgresql-openxds
     image: postgres:9.6-bullseye
  
