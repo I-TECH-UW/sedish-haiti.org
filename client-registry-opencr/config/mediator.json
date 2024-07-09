@@ -1,0 +1,179 @@
+{
+    "urn": "urn:mediator:haiti_clientregistry",
+    "version": "1.1.2",
+    "name": "Client Registry",
+    "description": "Haiti Client Registry",
+    "config": {
+        "fhirServer": {
+            "username": "hapi",
+            "password": "hapi",
+            "baseURL": "http://opencr-fhir:8080/fhir"
+        },
+        "elastic": {
+            "server": "http://opencr-es:9200",
+            "username": "",
+            "password": "",
+            "max_compilations_rate": "10000/1m",
+            "index": "patients"
+        },
+        "matching": {
+            "tool": "elasticsearch"
+        }
+    },
+    "configDefs": [
+        {
+            "param": "fhirServer",
+            "displayName": "FHIR Server",
+            "description": "FHIR Server Configuration Details",
+            "type": "struct",
+            "template": [
+                {
+                    "type": "string",
+                    "description": "The base URL (e.g. http://localhost:8080/hapi/fhir)",
+                    "displayName": "Base URL",
+                    "param": "baseURL"
+                },
+                {
+                    "type": "string",
+                    "description": "Username required to access FHIR server",
+                    "displayName": "Username",
+                    "param": "username"
+                },
+                {
+                    "type": "password",
+                    "description": "Password required to access FHIR server",
+                    "displayName": "Password",
+                    "param": "password"
+                }
+            ],
+            "values": []
+        },
+        {
+            "param": "elastic",
+            "displayName": "Elasticsearch Server",
+            "description": "Elasticsearch Server Configuration Details",
+            "type": "struct",
+            "template": [
+                {
+                    "type": "string",
+                    "description": "The base URL (e.g. http://localhost:9200)",
+                    "displayName": "Base URL",
+                    "param": "server"
+                },
+                {
+                    "type": "string",
+                    "description": "Username required to access elasticsearch server",
+                    "displayName": "Username",
+                    "param": "username"
+                },
+                {
+                    "type": "password",
+                    "description": "Password required to access elasticsearch server",
+                    "displayName": "Password",
+                    "param": "password"
+                },
+                {
+                    "type": "string",
+                    "description": "Number of requests to compile per minute",
+                    "displayName": "Maximum Compilations Rate",
+                    "param": "max_compilations_rate"
+                },
+                {
+                    "type": "string",
+                    "description": "index to use for data storage",
+                    "displayName": "Index Name",
+                    "param": "index"
+                }
+            ],
+            "values": []
+        },
+        {
+            "param": "matching",
+            "displayName": "FHIR Server",
+            "description": "FHIR Server Configuration Details",
+            "type": "struct",
+            "template": [
+                {
+                    "type": "option",
+                    "values": [
+                        "mediator",
+                        "elasticsearch"
+                    ],
+                    "description": "Tool to Use for Matching",
+                    "displayName": "Tool to Use for Matching",
+                    "param": "tool"
+                }
+            ],
+            "values": []
+        }
+    ],
+    "defaultChannelConfig": [
+        {
+            "requestBody": true,
+            "responseBody": true,
+            "name": "OpenCR Resource Endpoint",
+            "description": "Add or Get Resource Data From/To openCR",
+            "urlPattern": "^/CR/fhir$",
+            "matchContentRegex": null,
+            "matchContentXpath": null,
+            "matchContentValue": null,
+            "matchContentJson": null,
+            "pollingSchedule": null,
+            "tcpHost": null,
+            "tcpPort": null,
+            "autoRetryPeriodMinutes": 60,
+            "autoRetryEnabled": false,
+            "rewriteUrlsConfig": [],
+            "addAutoRewriteRules": true,
+            "rewriteUrls": false,
+            "status": "enabled",
+            "alerts": [],
+            "txRerunAcl": [],
+            "txViewFullAcl": [],
+            "txViewAcl": [],
+            "properties": [],
+            "matchContentTypes": [],
+            "routes": [
+                {
+                    "type": "http",
+                    "status": "enabled",
+                    "forwardAuthHeader": false,
+                    "name": "Add/Get Resources",
+                    "secured": false,
+                    "host": "opencr",
+                    "port": 3000,
+                    "path": "",
+                    "pathTransform": "s/CR\\/fhir/fhir/g",
+                    "primary": true,
+                    "username": "",
+                    "password": ""
+                }
+            ],
+            "authType": "private",
+            "whitelist": [],
+            "type": "http",
+            "methods": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE"
+            ],
+            "updatedBy": {
+                "id": "5d5d94607329d74724442f67",
+                "name": "Super User"
+            }
+        }
+    ],
+    "endpoints": [
+        {
+            "name": "Activate Client Registry",
+            "host": "opencr",
+            "path": "/",
+            "port": 3000,
+            "primary": true,
+            "forwardAuthHeader": false,
+            "status": "enabled",
+            "type": "http"
+        }
+    ]
+}

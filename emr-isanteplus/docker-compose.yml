@@ -1,0 +1,63 @@
+version: '3.9'
+
+services:
+  isanteplus:
+    image:  ghcr.io/isanteplus/docker-isanteplus-server:v2.3.4
+    environment:
+      - OMRS_JAVA_MEMORY_OPTS=${OMRS_JAVA_MEMORY_OPTS}
+      - OMRS_CONFIG_CONNECTION_SERVER=${OMRS_CONFIG_CONNECTION_SERVER}
+      - OMRS_CONFIG_CREATE_DATABASE_USER=${OMRS_CONFIG_CREATE_DATABASE_USER}
+      - OMRS_CONFIG_CREATE_TABLES=${OMRS_CONFIG_CREATE_TABLES}
+      - OMRS_CONFIG_ADD_DEMO_DATA=${OMRS_CONFIG_ADD_DEMO_DATA}
+      - OMRS_CONFIG_CONNECTION_URL=${OMRS_CONFIG_CONNECTION_URL}
+      - OMRS_CONFIG_HAS_CURRENT_OPENMRS_DATABASE=${OMRS_CONFIG_HAS_CURRENT_OPENMRS_DATABASE}
+      - OMRS_JAVA_SERVER_OPTS=${OMRS_JAVA_SERVER_OPTS}
+      - OMRS_CONFIG_CONNECTION_USERNAME=${OMRS_CONFIG_CONNECTION_USERNAME}
+      - OMRS_CONFIG_CONNECTION_PASSWORD=${OMRS_CONFIG_CONNECTION_PASSWORD}
+      - OMRS_DEV_DEBUG_PORT=${OMRS_DEV_DEBUG_PORT}
+    volumes:
+      - isanteplus-data:/openmrs/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 1046:1044
+    networks:
+      - public 
+      - openhim
+    configs:
+      - target: /custom_modules/labintegration-2.2.1-SNAPSHOT.omod
+        source: labintegration-2.2.1-SNAPSHOT.omod
+ 
+
+configs:
+  labintegration-2.2.1-SNAPSHOT.omod:
+    file: ./config/custom_modules/labintegration-2.2.1-SNAPSHOT.omod
+    name: labintegration-2.2.1-SNAPSHOT.omod
+    labels:
+      name: labintegration-2.2.1-SNAPSHOT
+  # isanteplusreports-1.1-SNAPSHOT.omod:
+  #   file: ./config/custom_modules/isanteplusreports-1.1-SNAPSHOT.omod
+  #   name: isanteplusreports-1.1-SNAPSHOT.omod
+  #   labels:
+  #     name: isanteplusreports
+
+volumes:
+  isanteplus-data:
+  custom_modules:
+    driver: local
+
+  #etc/timezone:
+  #etc/localtime:
+
+
+networks:
+  public:
+    external: true
+    name: reverse-proxy_public
+  openhim:
+    external: true
+    name: openhim_public
+
+
+      
+

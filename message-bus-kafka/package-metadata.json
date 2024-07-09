@@ -1,0 +1,26 @@
+{
+  "id": "message-bus-kafka",
+  "name": "Message Bus Kafka Package",
+  "description": "The Kafka message bus implements a robust publish-subscribe message streaming. This will take the pressure of downstream systems during high load",
+  "version": "0.1.0",
+  "type": "infrastructure",
+  "dependencies": [],
+  "environmentVariables": {
+    "KAFKA_HOSTS": "kafka-01:9092",
+    "KAFKA_CPU_LIMIT": "0",
+    "KAFKA_CPU_RESERVE": "0.05",
+    "KAFKA_MEMORY_LIMIT": "3G",
+    "KAFKA_MEMORY_RESERVE": "500M",
+    "KAFKA_TOPICS": "2xx,2xx-async,3xx,reprocess,errors,metrics:3:1",
+    "KAFDROP_INSTANCES": "1",
+    "KAFDROP_CPU_LIMIT": "0",
+    "KAFDROP_CPU_RESERVE": "0.05",
+    "KAFDROP_MEMORY_LIMIT": "3G",
+    "KAFDROP_MEMORY_RESERVE": "500M",
+    "KAFKA_DEBUG": false,
+    "KMINION_CPU_LIMIT": "0",
+    "KMINION_MEMORY_LIMIT": "3G",
+    "KMINION_CPU_RESERVE": "0.05",
+    "KMINION_MEMORY_RESERVE": "500M"
+  }
+}

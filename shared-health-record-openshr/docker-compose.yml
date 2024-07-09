@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  openshr:
+    container_name: openshr
+    hostname: openshr
+    image: ghcr.io/i-tech-uw/oshr:pr-14
+    environment:  
+      - MYSQL_ROOT_PASSWORD=shr
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=Admin123
+      - OPENMRS_DATABASE=openmrs
+      - MYSQL_PORT=3306
+      - MYSQL_HOST=openshr-db
+    volumes:
+      - openshr-data:/openmrs/data
+    configs:
+      - source: xds-b.cnf
+        target: /root/temp/modules/xds-b-repository-1.1.2.omod
+    ports:
+      - 8090:8080
+      - 1050:1048
+    networks:
+      - openhim
+    restart: unless-stopped
+volumes:
+  openshr-data:
+configs:
+  xds-b.cnf:
+    file: ./config/xds-b-repository-1.1.2.omod
+    name: xds-b
+    labels:
+      name: openshr
+networks:
+  openhim:
+    name: openhim_public
+    external: true
+
+

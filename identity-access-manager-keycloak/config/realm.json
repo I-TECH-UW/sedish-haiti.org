@@ -1,0 +1,23 @@
+{
+  "id": "${KC_REALM_NAME}",
+  "realm": "${KC_REALM_NAME}",
+  "displayNameHtml": "<div class=\"kc-logo-text\"><span>Keycloak</span></div>",
+  "enabled": true,
+  "clients": [],
+  "users": [
+    {
+      "email": "test@jembi.org",
+      "username": "test",
+      "enabled": true,
+      "credentials": [
+        {
+          "temporary": false,
+          "type": "password",
+          "value": "dev_password_only"
+        }
+      ],
+      "realmRoles": ["default-roles-${KC_REALM_NAME}"],
+      "clientRoles": {}
+    }
+  ]
+}

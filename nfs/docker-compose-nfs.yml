@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  nfs-server:
+    image: erichough/nfs-server
+    volumes:
+      - sedish-haiti.org/modules_folder:/exports
+    environment:
+      - SHARED_DIRECTORY=/exports
+      - READ_ONLY=false
+      - ALLOWED_CLIENTS=*(rw,sync,no_subtree_check,no_root_squash,insecure)
+    ports:
+      - "2049:2049"
+      #- "111:111"
+    privileged: true
+    restart: unless-stopped
+
+volumes:
+  sedish-haiti.org/modules_folder:
