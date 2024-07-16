@@ -1,12 +1,7 @@
-FROM openhie/package-base:2.1.3
+ARG PLATFORM_VERSION=latest
 
-# Install yq
-RUN curl -L https://github.com/mikefarah/yq/releases/download/v4.23.1/yq_linux_amd64 -o /usr/bin/yq
-RUN chmod +x /usr/bin/yq
+FROM jembi/platform:$PLATFORM_VERSION
+ADD . /implementation
 
-# Install jq
-RUN apt-get install jq -y 1>/dev/null
-# Install envsubst
-RUN apt-get install gettext-base -y 1>/dev/null
-
-ADD . .
+RUN chmod +x /implementation/scripts/cmd/override-configs/override-configs
+RUN /implementation/scripts/cmd/override-configs/override-configs

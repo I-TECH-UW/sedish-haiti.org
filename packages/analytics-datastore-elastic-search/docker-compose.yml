@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  analytics-datastore-elastic-search:
+    image: docker.elastic.co/elasticsearch/elasticsearch:local
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: ${ES_MEMORY_LIMIT}
+        reservations:
+          memory: ${ES_MEMORY_RESERVE}
+    environment:
+      node.name: es01
+      discovery.type: single-node
+      bootstrap.memory_lock: 'true'
+      xpack.security.enabled: 'true'
+      xpack.monitoring.collection.enabled: 'true'
+      ES_JAVA_OPTS: ${ES_HEAP_SIZE}
+      search.max_buckets: 1000000
+      search.default_search_timeout: -1
+      ES_LOGSTASH_SYSTEM: ${ES_LOGSTASH_SYSTEM}
+      ES_APM_SYSTEM: ${ES_APM_SYSTEM}
+      ES_REMOTE_MONITORING_USER: ${ES_REMOTE_MONITORING_USER}
+      ES_ELASTIC: ${ES_ELASTIC}
+      ES_KIBANA_SYSTEM: ${ES_KIBANA_SYSTEM}
+      ES_BEATS_SYSTEM: ${ES_BEATS_SYSTEM}
+      path.repo: ${ES_PATH_REPO}
+    healthcheck:
+      test: curl -u elastic:${ES_ELASTIC} -s -f localhost:9200/_cat/health >/dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 1m
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+      - ${ES_BACKUPS_PATH:-/backups}:/backups/elasticsearch
+    networks:
+      public:
+
+volumes:
+  es-data:
+
+networks:
+  public:
+    name: elastic_public
+    external: true
