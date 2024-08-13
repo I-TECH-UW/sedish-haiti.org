@@ -1,0 +1,1 @@
+{"version":3,"file":"lab-result.module.js","sourceRoot":"","sources":["../../src/lab-result/lab-result.module.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAAwC;AACxC,6DAAwD;AACxD,mEAA8D;AAMvD,IAAM,eAAe,GAArB,MAAM,eAAe;CAAG,CAAA;AAAlB,0CAAe;0BAAf,eAAe;IAJ3B,IAAA,eAAM,EAAC;QACN,SAAS,EAAE,CAAC,qCAAgB,CAAC;QAC7B,WAAW,EAAE,CAAC,2CAAmB,CAAC;KACnC,CAAC;GACW,eAAe,CAAG"}
