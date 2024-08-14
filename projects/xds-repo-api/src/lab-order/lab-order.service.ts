@@ -16,4 +16,18 @@ export class LabOrderService {
   async findById(id: string): Promise<LabOrder> {
     return this.labOrderModel.findById(id).exec();
   }
+
+  async parseLabOrderDocument(xmlPayload: any): any {
+    return {
+      documentId: xmlPayload.documentId,
+      labOrderId: xmlPayload.labOrderId,
+      facilityId: xmlPayload.facilityId,
+      documentContents: xmlPayload.documentContents,
+    };
+  }
+
+  async parseLabOrderRequest(xmlPayload: any): any {
+  
+    
+  }
 }

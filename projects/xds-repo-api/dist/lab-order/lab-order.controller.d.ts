@@ -2,5 +2,6 @@ import { LabOrderService } from './lab-order.service';
 export declare class LabOrderController {
     private readonly labOrderService;
     constructor(labOrderService: LabOrderService);
-    create(xmlPayload: string): Promise<LabOrder>;
+    create(xmlPayload: any): Promise<LabOrder>;
+    getLabOrderById(xmlPayload: any): Promise<LabOrder>;
 }

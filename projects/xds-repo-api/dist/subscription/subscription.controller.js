@@ -14,14 +14,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubscriptionController = void 0;
 const common_1 = require("@nestjs/common");
-const fastXmlParser = require("fast-xml-parser");
 const subscription_service_1 = require("./subscription.service");
 let SubscriptionController = class SubscriptionController {
     constructor(subscriptionService) {
         this.subscriptionService = subscriptionService;
     }
     async create(xmlPayload) {
-        const parsedData = fastXmlParser.parse(xmlPayload);
+        const parsedData = xmlPayload;
         const createSubscriptionDto = {
             targetAddress: parsedData.targetAddress,
         };
@@ -33,7 +32,7 @@ __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], SubscriptionController.prototype, "create", null);
 exports.SubscriptionController = SubscriptionController = __decorate([

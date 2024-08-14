@@ -7,7 +7,7 @@ export class SubscriptionController {
     constructor(private readonly subscriptionService: SubscriptionService) {}
 
     @Post()
-    async create(@Body() xmlPayload) {
+    async create(@Body() xmlPayload: any) {
       const parsedData = xmlPayload;
       const createSubscriptionDto: CreateSubscriptionDto = {
         targetAddress: parsedData.targetAddress,

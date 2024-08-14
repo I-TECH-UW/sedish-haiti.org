@@ -15,14 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LabOrderController = void 0;
 const common_1 = require("@nestjs/common");
 const lab_order_service_1 = require("./lab-order.service");
-const fast_xml_parser_1 = require("fast-xml-parser");
-const parser = new fast_xml_parser_1.XMLParser();
 let LabOrderController = class LabOrderController {
     constructor(labOrderService) {
         this.labOrderService = labOrderService;
     }
     async create(xmlPayload) {
-        const parsedData = parser.parse(xmlPayload);
+        let parsedData = this.labOrderService.parseLabOrderDocument(xmlPayload);
         const createLabOrderDto = {
             documentId: parsedData.documentId,
             labOrderId: parsedData.labOrderId,
@@ -31,15 +29,25 @@ let LabOrderController = class LabOrderController {
         };
         return this.labOrderService.create(createLabOrderDto);
     }
+    getLabOrderById(xmlPayload) {
+        return this.labOrderService.findById(xmlPayload.labOrderId);
+    }
 };
 exports.LabOrderController = LabOrderController;
 __decorate([
-    (0, common_1.Post)(),
+    (0, common_1.Post)('create'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], LabOrderController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('getByID'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], LabOrderController.prototype, "getLabOrderById", null);
 exports.LabOrderController = LabOrderController = __decorate([
     (0, common_1.Controller)('lab-orders'),
     __metadata("design:paramtypes", [lab_order_service_1.LabOrderService])

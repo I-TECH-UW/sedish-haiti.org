@@ -9,8 +9,9 @@ export class LabResultController {
   constructor(private readonly labResultService: LabResultService) {}
 
   @Post()
-  async create(@Body() xmlPayload: string) {
-    const parsedData = fastXmlParser.parse(xmlPayload);
+  async create(@Body() xmlPayload: any) {
+    let parsed_data = this.labResultService.parseLabResultDocument(xmlPayload);
+
     const createLabResultDto: CreateLabResultDto = {
       facilityId: parsedData.facilityId,
       labOrderId: parsedData.labOrderId,
@@ -21,10 +22,9 @@ export class LabResultController {
   }
 
   @Post('dsub')
-  findAll(@Body() xmlPayload: string) {
-    const parsedData = fastXmlParser.parse(xmlPayload);
+  findAll(@Body() xmlPayload: any) {
+    let parsedData = this.labResultService.parseLabResultRequest(xmlPayload);
 
-
-    return this.labResultService.findAllByFacilityId(parsedData.labOrderId);
+    return this.labResultService.findAllByFacilityId(parsedData.facilityId);
   }
 }

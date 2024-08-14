@@ -21,7 +21,7 @@ let LabResultController = class LabResultController {
         this.labResultService = labResultService;
     }
     async create(xmlPayload) {
-        const parsedData = fastXmlParser.parse(xmlPayload);
+        let parsed_data = this.labResultService.parseLabResultDocument(xmlPayload);
         const createLabResultDto = {
             facilityId: parsedData.facilityId,
             labOrderId: parsedData.labOrderId,
@@ -31,8 +31,8 @@ let LabResultController = class LabResultController {
         return this.labResultService.create(createLabResultDto);
     }
     findAll(xmlPayload) {
-        const parsedData = fastXmlParser.parse(xmlPayload);
-        return this.labResultService.findAllByFacilityId(parsedData.labOrderId);
+        let parsedData = this.labResultService.parseLabResultRequest(xmlPayload);
+        return this.labResultService.findAllByFacilityId(parsedData.facilityId);
     }
 };
 exports.LabResultController = LabResultController;
@@ -40,14 +40,14 @@ __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], LabResultController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('dsub'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], LabResultController.prototype, "findAll", null);
 exports.LabResultController = LabResultController = __decorate([

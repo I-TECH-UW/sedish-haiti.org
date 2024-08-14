@@ -16,7 +16,7 @@ exports.LabResultService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
-const lab_result_schema_1 = require("./schemas/lab-result.schema");
+const lab_result_schema_1 = require("./lab-result.schema");
 let LabResultService = class LabResultService {
     constructor(labResultModel) {
         this.labResultModel = labResultModel;
@@ -27,6 +27,11 @@ let LabResultService = class LabResultService {
     }
     async findByLabOrderId(labOrderId) {
         return this.labResultModel.findOne({ labOrderId }).exec();
+    }
+    async findAllByFacilityId(facilityId) {
+        return this.labResultModel.find({ facilityId }).exec();
+    }
+    async parseLabResultDocument(xmlPayload) {
     }
 };
 exports.LabResultService = LabResultService;

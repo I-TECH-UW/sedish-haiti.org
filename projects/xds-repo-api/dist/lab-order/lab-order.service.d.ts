@@ -6,4 +6,6 @@ export declare class LabOrderService {
     constructor(labOrderModel: Model<LabOrder>);
     create(createLabOrderDto: CreateLabOrderDto): Promise<LabOrder>;
     findById(id: string): Promise<LabOrder>;
+    parseLabOrderDocument(xmlPayload: any): any;
+    parseLabOrderRequest(xmlPayload: any): any;
 }

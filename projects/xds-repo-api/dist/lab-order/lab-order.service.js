@@ -28,6 +28,16 @@ let LabOrderService = class LabOrderService {
     async findById(id) {
         return this.labOrderModel.findById(id).exec();
     }
+    async parseLabOrderDocument(xmlPayload) {
+        return {
+            documentId: xmlPayload.documentId,
+            labOrderId: xmlPayload.labOrderId,
+            facilityId: xmlPayload.facilityId,
+            documentContents: xmlPayload.documentContents,
+        };
+    }
+    async parseLabOrderRequest(xmlPayload) {
+    }
 };
 exports.LabOrderService = LabOrderService;
 exports.LabOrderService = LabOrderService = __decorate([
