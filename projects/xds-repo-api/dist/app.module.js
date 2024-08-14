@@ -19,7 +19,7 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forRoot('mongodb://localhost/nest'), lab_order_module_1.LabOrderModule, lab_result_module_1.LabResultModule, subscription_module_1.SubscriptionModule],
+        imports: [mongoose_1.MongooseModule.forRoot('mongodb://localhost:27017/nest'), lab_order_module_1.LabOrderModule, lab_result_module_1.LabResultModule, subscription_module_1.SubscriptionModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

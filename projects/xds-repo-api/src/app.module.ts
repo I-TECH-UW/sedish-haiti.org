@@ -8,7 +8,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
 
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost/nest'), LabOrderModule, LabResultModule, SubscriptionModule],
+  imports: [MongooseModule.forRoot('mongodb://localhost:27017/nest'), LabOrderModule, LabResultModule, SubscriptionModule],
   controllers: [AppController],
   providers: [AppService],
 })
