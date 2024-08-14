@@ -15,13 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LabResultController = void 0;
 const common_1 = require("@nestjs/common");
 const lab_result_service_1 = require("./lab-result.service");
-const parser = new XMLParser();
 let LabResultController = class LabResultController {
     constructor(labResultService) {
         this.labResultService = labResultService;
     }
     async create(xmlPayload) {
-        let parsed_data = this.labResultService.parseLabResultDocument(xmlPayload);
+        let parsedData = await this.labResultService.parseLabResultDocument(xmlPayload);
         const createLabResultDto = {
             facilityId: parsedData.facilityId,
             labOrderId: parsedData.labOrderId,
@@ -30,8 +29,8 @@ let LabResultController = class LabResultController {
         };
         return this.labResultService.create(createLabResultDto);
     }
-    findAll(xmlPayload) {
-        let parsedData = this.labResultService.parseLabResultRequest(xmlPayload);
+    async findAll(xmlPayload) {
+        let parsedData = await this.labResultService.parseLabResultRequest(xmlPayload);
         return this.labResultService.findAllByFacilityId(parsedData.facilityId);
     }
 };
@@ -48,7 +47,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], LabResultController.prototype, "findAll", null);
 exports.LabResultController = LabResultController = __decorate([
     (0, common_1.Controller)('lab-results'),

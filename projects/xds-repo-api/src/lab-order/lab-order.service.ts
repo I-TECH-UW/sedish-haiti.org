@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { LabOrder } from './schemas/lab-order.schema';
+import { LabOrder } from './lab-order.schema';
 import { CreateLabOrderDto } from './dto/create-lab-order.dto';
 
 @Injectable()
@@ -13,11 +13,15 @@ export class LabOrderService {
     return labOrder.save();
   }
 
-  async findById(id: string): Promise<LabOrder> {
-    return this.labOrderModel.findById(id).exec();
+  async findById(id: string): Promise<LabOrder | null> {
+    let result = this.labOrderModel.findById(id).exec();
+    if (!result || result == null) {
+      throw new Error('Lab Order not found'); 
+    }
+    return result;
   }
 
-  async parseLabOrderDocument(xmlPayload: any): any {
+  async parseLabOrderDocument(xmlPayload: any): Promise<any> {
     return {
       documentId: xmlPayload.documentId,
       labOrderId: xmlPayload.labOrderId,
@@ -26,7 +30,7 @@ export class LabOrderService {
     };
   }
 
-  async parseLabOrderRequest(xmlPayload: any): any {
+  async parseLabOrderRequest(xmlPayload: any): Promise<any> {
   
     
   }

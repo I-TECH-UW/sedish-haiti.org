@@ -13,7 +13,7 @@ export class LabResultService {
     return labResult.save();
   }
 
-  async findByLabOrderId(labOrderId: string): Promise<LabResult> {
+  async findByLabOrderId(labOrderId: string): Promise<LabResult | null> {
     return this.labResultModel.findOne({ labOrderId }).exec();
   }
 
@@ -24,5 +24,9 @@ export class LabResultService {
   async parseLabResultDocument(xmlPayload: any): Promise<any> {
   
 
+  }
+
+  async parseLabResultRequest(xmlPayload: any): Promise<any> {
+    
   }
 }

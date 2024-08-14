@@ -20,7 +20,7 @@ let LabOrderController = class LabOrderController {
         this.labOrderService = labOrderService;
     }
     async create(xmlPayload) {
-        let parsedData = this.labOrderService.parseLabOrderDocument(xmlPayload);
+        let parsedData = await this.labOrderService.parseLabOrderDocument(xmlPayload);
         const createLabOrderDto = {
             documentId: parsedData.documentId,
             labOrderId: parsedData.labOrderId,

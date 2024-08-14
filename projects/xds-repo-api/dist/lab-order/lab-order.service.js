@@ -16,7 +16,7 @@ exports.LabOrderService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
-const lab_order_schema_1 = require("./schemas/lab-order.schema");
+const lab_order_schema_1 = require("./lab-order.schema");
 let LabOrderService = class LabOrderService {
     constructor(labOrderModel) {
         this.labOrderModel = labOrderModel;
@@ -26,7 +26,11 @@ let LabOrderService = class LabOrderService {
         return labOrder.save();
     }
     async findById(id) {
-        return this.labOrderModel.findById(id).exec();
+        let result = this.labOrderModel.findById(id).exec();
+        if (!result || result == null) {
+            throw new Error('Lab Order not found');
+        }
+        return result;
     }
     async parseLabOrderDocument(xmlPayload) {
         return {

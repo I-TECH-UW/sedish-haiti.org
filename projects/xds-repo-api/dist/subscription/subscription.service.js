@@ -16,7 +16,7 @@ exports.SubscriptionService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
-const subscription_schema_1 = require("./schemas/subscription.schema");
+const subscription_schema_1 = require("./subscription.schema");
 let SubscriptionService = class SubscriptionService {
     constructor(subscriptionModel) {
         this.subscriptionModel = subscriptionModel;

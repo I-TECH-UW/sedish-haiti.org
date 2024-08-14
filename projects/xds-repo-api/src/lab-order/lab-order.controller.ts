@@ -10,7 +10,7 @@ export class LabOrderController {
 
   @Post('create')
   async create(@Body() xmlPayload: any) {
-    let parsedData = this.labOrderService.parseLabOrderDocument(xmlPayload)
+    let parsedData = await this.labOrderService.parseLabOrderDocument(xmlPayload)
     const createLabOrderDto: CreateLabOrderDto = {
       documentId: parsedData.documentId,
       labOrderId: parsedData.labOrderId,

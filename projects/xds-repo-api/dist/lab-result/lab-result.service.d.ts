@@ -5,7 +5,8 @@ export declare class LabResultService {
     private labResultModel;
     constructor(labResultModel: Model<LabResult>);
     create(createLabResultDto: CreateLabResultDto): Promise<LabResult>;
-    findByLabOrderId(labOrderId: string): Promise<LabResult>;
+    findByLabOrderId(labOrderId: string): Promise<LabResult | null>;
     findAllByFacilityId(facilityId: string): Promise<LabResult[]>;
     parseLabResultDocument(xmlPayload: any): Promise<any>;
+    parseLabResultRequest(xmlPayload: any): Promise<any>;
 }

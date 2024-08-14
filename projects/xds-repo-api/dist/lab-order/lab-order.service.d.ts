@@ -1,11 +1,11 @@
 import { Model } from 'mongoose';
-import { LabOrder } from './schemas/lab-order.schema';
+import { LabOrder } from './lab-order.schema';
 import { CreateLabOrderDto } from './dto/create-lab-order.dto';
 export declare class LabOrderService {
     private labOrderModel;
     constructor(labOrderModel: Model<LabOrder>);
     create(createLabOrderDto: CreateLabOrderDto): Promise<LabOrder>;
-    findById(id: string): Promise<LabOrder>;
-    parseLabOrderDocument(xmlPayload: any): any;
-    parseLabOrderRequest(xmlPayload: any): any;
+    findById(id: string): Promise<LabOrder | null>;
+    parseLabOrderDocument(xmlPayload: any): Promise<any>;
+    parseLabOrderRequest(xmlPayload: any): Promise<any>;
 }

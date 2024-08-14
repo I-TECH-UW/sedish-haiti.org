@@ -33,6 +33,8 @@ let LabResultService = class LabResultService {
     }
     async parseLabResultDocument(xmlPayload) {
     }
+    async parseLabResultRequest(xmlPayload) {
+    }
 };
 exports.LabResultService = LabResultService;
 exports.LabResultService = LabResultService = __decorate([
