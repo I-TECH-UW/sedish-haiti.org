@@ -33,3 +33,5 @@ export class LabOrder {
   @Prop({ ref: 'LabResult', type: mongoose.Schema.Types.ObjectId })
   result: LabResult;
 }
+
+export const LabOrderSchema = SchemaFactory.createForClass(LabOrder);

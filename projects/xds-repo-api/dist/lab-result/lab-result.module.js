@@ -10,11 +10,14 @@ exports.LabResultModule = void 0;
 const common_1 = require("@nestjs/common");
 const lab_result_service_1 = require("./lab-result.service");
 const lab_result_controller_1 = require("./lab-result.controller");
+const mongoose_1 = require("@nestjs/mongoose");
+const lab_result_schema_1 = require("./lab-result.schema");
 let LabResultModule = class LabResultModule {
 };
 exports.LabResultModule = LabResultModule;
 exports.LabResultModule = LabResultModule = __decorate([
     (0, common_1.Module)({
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: lab_result_schema_1.LabResult.name, schema: lab_result_schema_1.LabResultSchema }])],
         providers: [lab_result_service_1.LabResultService],
         controllers: [lab_result_controller_1.LabResultController]
     })

@@ -135,3 +135,5 @@ configs/isanteplus/db/*.sql
 parquet
 
 isante-backup
+
+dist/*

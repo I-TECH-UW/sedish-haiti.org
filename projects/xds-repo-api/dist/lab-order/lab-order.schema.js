@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LabOrder = void 0;
+exports.LabOrderSchema = exports.LabOrder = void 0;
 const mongoose = require("mongoose");
 const mongoose_1 = require("@nestjs/mongoose");
 const lab_result_schema_1 = require("../lab-result/lab-result.schema");
@@ -51,4 +51,5 @@ __decorate([
 exports.LabOrder = LabOrder = __decorate([
     (0, mongoose_1.Schema)()
 ], LabOrder);
+exports.LabOrderSchema = mongoose_1.SchemaFactory.createForClass(LabOrder);
 //# sourceMappingURL=lab-order.schema.js.map
