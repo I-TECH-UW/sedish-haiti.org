@@ -18,4 +18,9 @@ export class SubscriptionController {
 
       return r
     }
+
+    @Get()
+    async getAll() {
+      return this.subscriptionService.getAll();
+    }
 }

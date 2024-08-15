@@ -12,4 +12,8 @@ export class SubscriptionService {
     const subscription = new this.subscriptionModel(createSubscriptionDto);
     return subscription
   }
+
+  getAll() {
+    return this.
+  }
 }

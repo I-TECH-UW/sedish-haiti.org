@@ -7,7 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       useFactory: () => {
         const host = 'localhost';
         const port = 27017;
-        const name = 'bookmarksy';
+        const name = 'nest';
         return {
           uri: `mongodb://${host}:${port}/${name}`,
           connectionFactory: (connection) => {
