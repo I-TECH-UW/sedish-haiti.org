@@ -15,3 +15,5 @@ services:
 volumes:
   mongo-data:
     driver: local
+
+# docker run -it --rm --network host mongo mongosh --host localhost --port 27017 -u root -p example --authenticationDatabase admin

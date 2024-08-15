@@ -2,13 +2,12 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { LabOrderModule } from './lab-order/lab-order.module';
-import { LabResultModule } from './lab-result/lab-result.module';
-import { SubscriptionModule } from './subscription/subscription.module';
+import { CoreModule } from './core/core.module';
+import { FeaturesModule } from './features/features.module';
 
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost:27017/nest'), LabOrderModule, LabResultModule, SubscriptionModule],
+  imports: [FeaturesModule, CoreModule],
   controllers: [AppController],
   providers: [AppService],
 })
