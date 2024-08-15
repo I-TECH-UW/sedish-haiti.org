@@ -17,6 +17,10 @@ export class LabOrderService {
     return this.labOrderDAO.findByDocumentId(documentId);
   }
 
+  async findAll() {
+    return this.labOrderDAO.find();
+  }
+
   parseLabOrderDocument(xmlPayload: any): LabOrder {
     const newLabOrder = new LabOrder();
     
