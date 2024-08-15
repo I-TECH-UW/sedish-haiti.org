@@ -1,8 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
+
+
+export type SubscriptionDocument = HydratedDocument<Subscription>;
 
 @Schema()
-export class Subscription extends Document {
+export class Subscription {
   @Prop({ required: true })
   targetAddress: string;
 }

@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Subscription } from './subscription.schema';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
+import { Subscription, SubscriptionDocument } from './subscription.schema';
+import { SubscriptionDAO } from './subscription.dao';
 
 @Injectable()
 export class SubscriptionService {
-  constructor(@InjectModel(Subscription.name) private subscriptionModel: Model<Subscription>) {}
+  constructor(private readonly subscriptionDAO: SubscriptionDAO) {}
 
-  create(createSubscriptionDto: CreateSubscriptionDto): Subscription {
-    const subscription = new this.subscriptionModel(createSubscriptionDto);
-    return subscription
+  create(subscription: Subscription) {
+    return this.subscriptionDAO.create(subscription);
   }
 
   getAll() {
-    return this.
+    return this.subscriptionDAO.find();
   }
 }

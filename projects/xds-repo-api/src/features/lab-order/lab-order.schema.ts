@@ -1,7 +1,5 @@
-import * as mongoose from 'mongoose';
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import  { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 
 import { LabResult } from '../lab-result/lab-result.schema';
 
@@ -30,8 +28,8 @@ export class LabOrder {
   @Prop()
   resultedAt: Date;
 
-  @Prop({ ref: 'LabResult', type: mongoose.Schema.Types.ObjectId })
-  result: LabResult;
+  @Prop({ ref: 'LabResult', type: MongooseSchema.Types.ObjectId })
+  result: LabResult | Types.ObjectId;
 }
 
 export const LabOrderSchema = SchemaFactory.createForClass(LabOrder);
