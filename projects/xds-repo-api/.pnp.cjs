@@ -42,8 +42,10 @@ const RAW_RUNTIME_STATE =
           ["@types/jest", "npm:29.5.12"],\
           ["@types/node", "npm:20.14.15"],\
           ["@types/supertest", "npm:6.0.2"],\
+          ["@types/xml2js", "npm:0.4.14"],\
           ["@typescript-eslint/eslint-plugin", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:7.18.0"],\
           ["@typescript-eslint/parser", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:7.18.0"],\
+          ["axios", "npm:1.7.4"],\
           ["body-parser", "npm:1.20.2"],\
           ["body-parser-xml", "npm:2.0.5"],\
           ["class-transformer", "npm:0.5.1"],\
@@ -65,7 +67,9 @@ const RAW_RUNTIME_STATE =
           ["ts-loader", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:9.5.1"],\
           ["ts-node", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:10.9.2"],\
           ["tsconfig-paths", "npm:4.2.0"],\
-          ["typescript", "patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"]\
+          ["typescript", "patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"],\
+          ["xml2js", "npm:0.6.2"],\
+          ["xml2js-xpath", "npm:0.13.0"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -1526,7 +1530,7 @@ const RAW_RUNTIME_STATE =
           ["@types/axios", null],\
           ["@types/nestjs__common", null],\
           ["@types/rxjs", null],\
-          ["axios", null],\
+          ["axios", "npm:1.7.4"],\
           ["rxjs", "npm:7.8.1"]\
         ],\
         "packagePeers": [\
@@ -3098,6 +3102,18 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../../../../.yarn/berry/cache/asynckit-npm-0.4.0-c718858525-10c0.zip/node_modules/asynckit/",\
         "packageDependencies": [\
           ["asynckit", "npm:0.4.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["axios", [\
+      ["npm:1.7.4", {\
+        "packageLocation": "../../../../.yarn/berry/cache/axios-npm-1.7.4-cc1c89ddba-10c0.zip/node_modules/axios/",\
+        "packageDependencies": [\
+          ["axios", "npm:1.7.4"],\
+          ["follow-redirects", "virtual:cc1c89ddbaa2ee6988ad04cd8f48fb510e98268b86b9002d50ceca7bd737255eca4ec5ce4ed954e6ba12356c7138528653644b23c509c9a7726b952c51404b15#npm:1.15.6"],\
+          ["form-data", "npm:4.0.0"],\
+          ["proxy-from-env", "npm:1.1.0"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -4848,6 +4864,28 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "../../../../.yarn/berry/cache/flatted-npm-3.3.1-458870f59b-10c0.zip/node_modules/flatted/",\
         "packageDependencies": [\
           ["flatted", "npm:3.3.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["follow-redirects", [\
+      ["npm:1.15.6", {\
+        "packageLocation": "../../../../.yarn/berry/cache/follow-redirects-npm-1.15.6-50635fe51d-10c0.zip/node_modules/follow-redirects/",\
+        "packageDependencies": [\
+          ["follow-redirects", "npm:1.15.6"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:cc1c89ddbaa2ee6988ad04cd8f48fb510e98268b86b9002d50ceca7bd737255eca4ec5ce4ed954e6ba12356c7138528653644b23c509c9a7726b952c51404b15#npm:1.15.6", {\
+        "packageLocation": "./.yarn/__virtual__/follow-redirects-virtual-b46b84e192/5/.yarn/berry/cache/follow-redirects-npm-1.15.6-50635fe51d-10c0.zip/node_modules/follow-redirects/",\
+        "packageDependencies": [\
+          ["follow-redirects", "virtual:cc1c89ddbaa2ee6988ad04cd8f48fb510e98268b86b9002d50ceca7bd737255eca4ec5ce4ed954e6ba12356c7138528653644b23c509c9a7726b952c51404b15#npm:1.15.6"],\
+          ["@types/debug", null],\
+          ["debug", null]\
+        ],\
+        "packagePeers": [\
+          "@types/debug",\
+          "debug"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -7551,6 +7589,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["proxy-from-env", [\
+      ["npm:1.1.0", {\
+        "packageLocation": "../../../../.yarn/berry/cache/proxy-from-env-npm-1.1.0-c13d07f26b-10c0.zip/node_modules/proxy-from-env/",\
+        "packageDependencies": [\
+          ["proxy-from-env", "npm:1.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["punycode", [\
       ["npm:2.3.1", {\
         "packageLocation": "../../../../.yarn/berry/cache/punycode-npm-2.3.1-97543c420d-10c0.zip/node_modules/punycode/",\
@@ -9199,8 +9246,10 @@ const RAW_RUNTIME_STATE =
           ["@types/jest", "npm:29.5.12"],\
           ["@types/node", "npm:20.14.15"],\
           ["@types/supertest", "npm:6.0.2"],\
+          ["@types/xml2js", "npm:0.4.14"],\
           ["@typescript-eslint/eslint-plugin", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:7.18.0"],\
           ["@typescript-eslint/parser", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:7.18.0"],\
+          ["axios", "npm:1.7.4"],\
           ["body-parser", "npm:1.20.2"],\
           ["body-parser-xml", "npm:2.0.5"],\
           ["class-transformer", "npm:0.5.1"],\
@@ -9222,7 +9271,9 @@ const RAW_RUNTIME_STATE =
           ["ts-loader", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:9.5.1"],\
           ["ts-node", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:10.9.2"],\
           ["tsconfig-paths", "npm:4.2.0"],\
-          ["typescript", "patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"]\
+          ["typescript", "patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"],\
+          ["xml2js", "npm:0.6.2"],\
+          ["xml2js-xpath", "npm:0.13.0"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -9243,6 +9294,25 @@ const RAW_RUNTIME_STATE =
           ["xml2js", "npm:0.5.0"],\
           ["sax", "npm:1.4.1"],\
           ["xmlbuilder", "npm:11.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:0.6.2", {\
+        "packageLocation": "../../../../.yarn/berry/cache/xml2js-npm-0.6.2-64cd781d74-10c0.zip/node_modules/xml2js/",\
+        "packageDependencies": [\
+          ["xml2js", "npm:0.6.2"],\
+          ["sax", "npm:1.4.1"],\
+          ["xmlbuilder", "npm:11.0.1"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["xml2js-xpath", [\
+      ["npm:0.13.0", {\
+        "packageLocation": "../../../../.yarn/berry/cache/xml2js-xpath-npm-0.13.0-0b14ceded2-10c0.zip/node_modules/xml2js-xpath/",\
+        "packageDependencies": [\
+          ["xml2js-xpath", "npm:0.13.0"],\
+          ["lodash", "npm:4.17.21"]\
         ],\
         "linkType": "HARD"\
       }]\

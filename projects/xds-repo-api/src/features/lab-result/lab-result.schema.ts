@@ -14,6 +14,9 @@ export class LabResult extends Document {
 
   @Prop({ required: true })
   documentContents: string;
+
+  @Prop({ required: true })
+  hl7Contents: string;
 }
 
 export const LabResultSchema = SchemaFactory.createForClass(LabResult);

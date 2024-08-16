@@ -9,6 +9,7 @@ import { SubscriptionDAO } from './subscription.dao';
   imports: [MongooseModule.forFeature([{ name: Subscription.name, schema: SubscriptionSchema }])],
 
   providers: [SubscriptionService, SubscriptionDAO],
-  controllers: [SubscriptionController]
+  controllers: [SubscriptionController],
+  exports: [SubscriptionDAO]
 })
 export class SubscriptionModule {}
