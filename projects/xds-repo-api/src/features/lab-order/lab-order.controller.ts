@@ -17,19 +17,16 @@ export class LabOrderController {
     return this.labOrderService.create(labOrder);
   }
 
-  // @Post('create')
-  // create(@Req() req: RawBodyRequest<Request>) {
-  //   // const labOrder: LabOrder = this.labOrderService.parseLabOrderDocument(xmlPayload)
-  //   const raw = req.rawBody;
-
-  //   const labOrder = new LabOrder();
-  //   return this.labOrderService.create(labOrder);
-  // }
-
-
-  @Post('getByDocumentID')
+  @Post('get-by-id')
   getLabOrderById(@Body() xmlPayload: any) {
-    return this.labOrderService.findById(xmlPayload.documentId);
+    const documentId = this.labOrderService.parseLabOrderRequest(xmlPayload);
+    let result = this.labOrderService.findById(documentId);
+
+    if(result) {
+      return result;  
+    } else {
+      return this.labOrderService.documentNotFoundResponse(documentId);
+    }
   }
 
   @Get()

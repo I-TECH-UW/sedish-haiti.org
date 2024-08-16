@@ -5,6 +5,82 @@ import { LabOrder } from './lab-order.schema';
 import { LabOrderDAO } from './lab-order.dao';
 import { CreateLabOrderDto } from './dto/create-lab-order.dto';
 
+const documentFoundTemplate = `
+------=_Part_59239_818160219.1723569579332
+Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
+
+
+<env:Envelope 
+  xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+  <env:Header 
+    xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <wsa:To env:mustUnderstand="true">http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    <wsa:Action>urn:ihe:iti:2007:RetrieveDocumentSetResponse</wsa:Action>
+    <wsa:MessageID>urn:uuid:0da76f77-05e7-4f5f-a2aa-26a1969d8e03</wsa:MessageID>
+    <wsa:RelatesTo>urn:uuid:1551bec4-61a4-4e90-81da-adffa8c5ad49</wsa:RelatesTo>
+  </env:Header>
+  <env:Body>
+    <ns4:RetrieveDocumentSetResponse 
+      xmlns:ns4="urn:ihe:iti:xds-b:2007" 
+      xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" 
+      xmlns:ns3="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" 
+      xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" 
+      xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0">
+      <ns3:RegistryResponse status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success"/>
+      <ns4:DocumentResponse>
+        <ns4:RepositoryUniqueId>{{Repository ID}}</ns4:RepositoryUniqueId>
+        <ns4:DocumentUniqueId>{{documentId}}</ns4:DocumentUniqueId>
+        <ns4:mimeType>text/plain</ns4:mimeType>
+        <ns4:Document>
+          <xop:Include 
+            xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:db353581-b1b7-4421-b941-f1cc46131ea6%40null"/>
+          </ns4:Document>
+        </ns4:DocumentResponse>
+      </ns4:RetrieveDocumentSetResponse>
+    </env:Body>
+  </env:Envelope>
+------=_Part_59239_818160219.1723569579332
+Content-Type: text/plain
+Content-ID: 
+  <db353581-b1b7-4421-b941-f1cc46131ea6@null>
+Content-Transfer-Encoding: binary
+
+{{hl7Message}}
+
+------=_Part_59239_818160219.1723569579332--
+`
+const documentNotFoundTemplate = `
+------=_Part_59241_1582618584.1723571227473
+Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
+
+
+<env:Envelope 
+  xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+  <env:Header 
+    xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <wsa:To env:mustUnderstand="true">http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    <wsa:Action>urn:ihe:iti:2007:RetrieveDocumentSetResponse</wsa:Action>
+    <wsa:MessageID>urn:uuid:49402a17-a02c-4890-99a2-695ccea412ec</wsa:MessageID>
+    <wsa:RelatesTo>urn:uuid:3fa010af-3624-4f03-bdc2-28bb0ca76405</wsa:RelatesTo>
+  </env:Header>
+  <env:Body>
+    <ns4:RetrieveDocumentSetResponse 
+      xmlns:ns4="urn:ihe:iti:xds-b:2007" 
+      xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" 
+      xmlns:ns3="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" 
+      xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" 
+      xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0">
+      <ns3:RegistryResponse status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure">
+        <ns3:RegistryErrorList>
+          <ns3:RegistryError codeContext="Document not found! document UID:{{documentId}}" errorCode="XDSMissingDocument" location="2.25.8729812114953458533" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error">Document not found! document UID:2.25.8729812114953458533</ns3:RegistryError>
+        </ns3:RegistryErrorList>
+      </ns3:RegistryResponse>
+    </ns4:RetrieveDocumentSetResponse>
+  </env:Body>
+</env:Envelope>
+------=_Part_59241_1582618584.1723571227473--`
+
+
 @Injectable()
 export class LabOrderService {
   constructor(private readonly labOrderDAO: LabOrderDAO) {}
@@ -107,8 +183,18 @@ export class LabOrderService {
     return newLabOrder
   }
 
-  async parseLabOrderRequest(xmlPayload: any): Promise<any> {
-  
-    
+  parseLabOrderRequest(xmlPayload: any): string {
+    return xmlPayload["soap:envelope"]["soap:body"][0]["xdsb:retrievedocumentsetrequest"][0]["xdsb:documentrequest"][0]["xdsb:documentuniqueid"][0]
+  }
+
+  decorateLabOrderResponse(labOrder: LabOrder) {
+    return documentFoundTemplate
+      .replace('{{Repository ID}}', '1.3.6.1.4.1.21367.2010.1.2.1125')
+      .replace('{{documentId}}', labOrder.documentId)
+      .replace('{{hl7Message}}', labOrder.hl7Contents);
+  }
+
+  documentNotFoundResponse(documentId: string) {
+    return documentNotFoundTemplate.replace('{{documentId}}', documentId);
   }
 }
