@@ -5,7 +5,7 @@ import { LabResult } from '../lab-result/lab-result.schema';
 
 export type LabOrderDocument = HydratedDocument<LabOrder>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class LabOrder {
   @Prop({ required: true })
   documentId: string;

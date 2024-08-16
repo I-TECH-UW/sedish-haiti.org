@@ -4,9 +4,9 @@ import { HydratedDocument } from 'mongoose';
 
 export type SubscriptionDocument = HydratedDocument<Subscription>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Subscription {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   targetAddress: string;
 }
 
