@@ -27,6 +27,7 @@ const RAW_RUNTIME_STATE =
       [null, {\
         "packageLocation": "./",\
         "packageDependencies": [\
+          ["@nestjs/axios", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:3.0.3"],\
           ["@nestjs/cli", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:10.4.4"],\
           ["@nestjs/common", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:10.4.1"],\
           ["@nestjs/core", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:10.4.1"],\
@@ -1505,6 +1506,36 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["@mongodb-js/saslprep", "npm:1.1.8"],\
           ["sparse-bitfield", "npm:3.0.3"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["@nestjs/axios", [\
+      ["npm:3.0.3", {\
+        "packageLocation": "../../../../.yarn/berry/cache/@nestjs-axios-npm-3.0.3-a89938a7b4-10c0.zip/node_modules/@nestjs/axios/",\
+        "packageDependencies": [\
+          ["@nestjs/axios", "npm:3.0.3"]\
+        ],\
+        "linkType": "SOFT"\
+      }],\
+      ["virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:3.0.3", {\
+        "packageLocation": "./.yarn/__virtual__/@nestjs-axios-virtual-2586ee233e/5/.yarn/berry/cache/@nestjs-axios-npm-3.0.3-a89938a7b4-10c0.zip/node_modules/@nestjs/axios/",\
+        "packageDependencies": [\
+          ["@nestjs/axios", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:3.0.3"],\
+          ["@nestjs/common", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:10.4.1"],\
+          ["@types/axios", null],\
+          ["@types/nestjs__common", null],\
+          ["@types/rxjs", null],\
+          ["axios", null],\
+          ["rxjs", "npm:7.8.1"]\
+        ],\
+        "packagePeers": [\
+          "@nestjs/common",\
+          "@types/axios",\
+          "@types/nestjs__common",\
+          "@types/rxjs",\
+          "axios",\
+          "rxjs"\
         ],\
         "linkType": "HARD"\
       }]\
@@ -9153,6 +9184,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./",\
         "packageDependencies": [\
           ["xds-repo-api", "workspace:."],\
+          ["@nestjs/axios", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:3.0.3"],\
           ["@nestjs/cli", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:10.4.4"],\
           ["@nestjs/common", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:10.4.1"],\
           ["@nestjs/core", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:10.4.1"],\

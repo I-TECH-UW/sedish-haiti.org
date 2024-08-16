@@ -9,6 +9,8 @@ export class LabResultService {
   constructor(@InjectModel(LabResult.name) private labResultModel: Model<LabResult>) {}
 
   async create(createLabResultDto: CreateLabResultDto): Promise<LabResult> {
+    // Create lab result and connect with lab order
+    
     const labResult = new this.labResultModel(createLabResultDto);
     return labResult.save();
   }

@@ -11,8 +11,8 @@ export class LabOrderController {
   constructor(private readonly labOrderService: LabOrderService) {}  
 
   @Post('create')
-  async create(@Body() body: string, @Headers('content-type') contentType: string) {
-    const labOrder: LabOrder = new LabOrder();// this.labOrderService.parseLabOrderDocument(xmlPayload)
+  async create(@Body() body: string) {
+    const labOrder: LabOrder = this.labOrderService.parseLabOrderDocument(body)
 
     return this.labOrderService.create(labOrder);
   }

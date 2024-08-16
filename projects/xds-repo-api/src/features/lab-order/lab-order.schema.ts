@@ -7,10 +7,10 @@ export type LabOrderDocument = HydratedDocument<LabOrder>;
 
 @Schema({ timestamps: true })
 export class LabOrder {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   documentId: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   labOrderId: string;
 
   @Prop({ required: true })

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { LabOrder } from './lab-order.schema';
+import { LabOrder, LabOrderDocument } from './lab-order.schema';
 import { LabOrderDAO } from './lab-order.dao';
 import { CreateLabOrderDto } from './dto/create-lab-order.dto';
+import { NotificationService } from '../notification/notification.service';
 
 const documentFoundTemplate = `
 ------=_Part_59239_818160219.1723569579332
@@ -83,9 +84,16 @@ Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
 
 @Injectable()
 export class LabOrderService {
-  constructor(private readonly labOrderDAO: LabOrderDAO) {}
+  constructor(
+    private readonly labOrderDAO: LabOrderDAO,
+    private readonly notificationService: NotificationService
+  ) {}
 
   async create(labOrder: LabOrder) {
+    const newLabOrder = await this.labOrderDAO.create(labOrder) as LabOrderDocument;
+    
+    this.notificationService.notifySubscribers(newLabOrder.documentId)
+
     return  this.labOrderDAO.create(labOrder);
   }
 
@@ -164,7 +172,6 @@ export class LabOrderService {
     if(orc2Field != null)
       newLabOrder.labOrderId = orc2Field;
     else 
-      // throw error
       throw new Error('Lab Order ID not found in HL7 message');
 
     // 7. Get the Facility ID from the HL7 message PV1-3
@@ -175,7 +182,6 @@ export class LabOrderService {
     if(pv13Field != null)
       newLabOrder.facilityId = pv13Field;
     else 
-      // throw error
       throw new Error('Facility ID not found in HL7 message');
 
     newLabOrder.documentContents = xmlMultipart;

@@ -1,25 +1,20 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { LabResultService } from './lab-result.service';
 import { CreateLabResultDto } from './dto/create-lab-result.dto';
+import { LabResult } from './lab-result.schema';
 
 @Controller('lab-results')
 export class LabResultController {
   constructor(private readonly labResultService: LabResultService) {}
 
-  @Post()
+  @Post('create')
   async create(@Body() xmlPayload: any) {
-    let parsedData = await this.labResultService.parseLabResultDocument(xmlPayload);
+    let labResult: LabResult = await this.labResultService.parseLabResultDocument(xmlPayload);
 
-    const createLabResultDto: CreateLabResultDto = {
-      facilityId: parsedData.facilityId,
-      labOrderId: parsedData.labOrderId,
-      documentId: parsedData.documentId,
-      documentContents: parsedData.documentContents,
-    };
-    return this.labResultService.create(createLabResultDto);
+    return this.labResultService.create(labResult);
   }
 
-  @Post('dsub')
+  @Post('get-by-facility')
   async findAll(@Body() xmlPayload: any) {
     let parsedData = await this.labResultService.parseLabResultRequest(xmlPayload);
 
