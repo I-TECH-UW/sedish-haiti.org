@@ -137,3 +137,5 @@ parquet
 isante-backup
 
 dist
+
+.tmp

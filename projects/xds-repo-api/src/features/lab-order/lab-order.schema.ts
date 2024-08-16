@@ -19,6 +19,9 @@ export class LabOrder {
   @Prop({ required: true })
   documentContents: string;
 
+  @Prop({ required: true })
+  hl7Contents: string;
+
   @Prop()
   submittedAt: Date;
 
