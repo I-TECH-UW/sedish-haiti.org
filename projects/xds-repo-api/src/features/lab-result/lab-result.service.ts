@@ -65,7 +65,14 @@ export class LabResultService {
 
   }
 
-  async parseLabResultRequest(xmlPayload: any): Promise<any> {
-    
+  parseLabResultRequest(xmlPayload: any): { facilityId: string, maxNumber: string } {
+    try {
+      const facilityId = xmlPayload["soap-env:envelope"]["soap-env:body"][0]["ns2:getmessages"][0].$.facility
+      const maxNumber = xmlPayload["soap-env:envelope"]["soap-env:body"][0]["ns2:getmessages"][0]["ns2:maximumnumber"][0]
+
+      return { facilityId, maxNumber };
+    } catch (error) {
+      throw new Error('Could not parse facility ID and maximum number from request');
+    }
   }
 }
