@@ -11,6 +11,12 @@ docker build \
     packages/analytics-datastore-elastic-search \
     --no-cache
 
+docker build \
+    -t xds-repo-api:local \
+    -f projects/xds-repo-api/Dockerfile \
+    projects/xds-repo-api \
+    --no-cache
+    
 # Build the Platform to contain the above custom builds
 ./build-image.sh
 

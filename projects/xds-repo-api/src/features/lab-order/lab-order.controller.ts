@@ -1,8 +1,8 @@
-import { Controller, Post, Body, Get, Headers } from '@nestjs/common';
+import { Controller, Post, Body, Get, Header } from '@nestjs/common';
 import { Request } from 'express';
 import { LabOrderService } from './lab-order.service';
 import { CreateLabOrderDto } from './dto/create-lab-order.dto';
-import { LabOrder } from './lab-order.schema';
+import { LabOrder, LabOrderDocument } from './lab-order.schema';
 
 
 @Controller('lab-orders')
@@ -18,12 +18,13 @@ export class LabOrderController {
   }
 
   @Post('get-by-id')
-  getLabOrderById(@Body() xmlPayload: any) {
+  @Header('Content-Type', 'multipart/related;start="<rootpart*59239_818160219.1723569579332@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:59239_818160219.1723569579332";start-info="application/soap+xml;action=\"urn:ihe:iti:2007:RetrieveDocumentSet\""')
+  async getLabOrderById(@Body() xmlPayload: any) {
     const documentId = this.labOrderService.parseLabOrderRequest(xmlPayload);
-    let result = this.labOrderService.findById(documentId);
+    let result = await this.labOrderService.findById(documentId);
 
-    if(result) {
-      return result;  
+    if(result && result.length == 1) {
+      return this.labOrderService.decorateLabOrderResponse(result[0]);  
     } else {
       return this.labOrderService.documentNotFoundResponse(documentId);
     }
