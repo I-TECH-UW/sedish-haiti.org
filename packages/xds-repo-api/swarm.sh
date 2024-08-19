@@ -4,7 +4,7 @@ declare ACTION=""
 declare MODE=""
 declare COMPOSE_FILE_PATH=""
 declare UTILS_PATH=""
-declare STACK="openshr"
+declare STACK="xds-repo-api"
 
 function init_vars() {
   ACTION=$1
@@ -32,24 +32,37 @@ function import_sources() {
 }
 
 function initialize_package() {
+  local mongo_cluster_compose_filename=""
+  local mongo_dev_compose_filename=""
+  local xds_dev_compose_filename=""
 
+  if [[ "${MODE}" == "dev" ]]; then
+    log info "Running package in DEV mode"
+    mongo_dev_compose_filename="docker-compose-mongo.dev.yml"
+    xds_dev_compose_filename="docker-compose.dev.yml"
+  else
+    log info "Running package in PROD mode"
+  fi
 
-  # if [ "${MODE}" == "dev" ]; then
-  #   log info "Running package in DEV mode"
-  #   postgres_dev_compose_filename="docker-compose-postgres.dev.yml"
-  #   hapi_fhir_dev_compose_filename="docker-compose.dev.yml"
-  # else
-  log info "Running package in PROD mode"
-  #fi
-
-  # if [ "${CLUSTERED_MODE}" == "true" ]; then
-  #   postgres_cluster_compose_filename="docker-compose-postgres.cluster.yml"
-  # fi
+  if [[ "${CLUSTERED_MODE}" == "true" ]]; then
+    mongo_cluster_compose_filename="docker-compose-mongo.cluster.yml"
+  fi
 
   (
-    docker::deploy_service "$STACK" "${COMPOSE_FILE_PATH}" "docker-compose-mysql.yml"
+    docker::deploy_service $STACK "${COMPOSE_FILE_PATH}" "docker-compose-mongo.yml" "$mongo_cluster_compose_filename" "$mongo_dev_compose_filename"
 
-    docker::deploy_service "$STACK" "${COMPOSE_FILE_PATH}" "docker-compose.yml" 
+    if [[ "${ACTION}" == "init" ]]; then
+      if [[ "${CLUSTERED_MODE}" == "true" ]]; then
+        try "${COMPOSE_FILE_PATH}/initiate-replica-set.sh $STACK" throw "Fatal: Initiate Mongo replica set failed"
+      else
+        config::await_service_running "mongo-1" "${COMPOSE_FILE_PATH}"/docker-compose.await-helper-mongo.yml "1" "$STACK"
+
+        try "docker exec -i $(docker ps -q -f name=xds_mongo) mongo --eval \"rs.initiate({'_id': 'mongo-set','members': [{'_id': 0,'priority': 1,'host': 'mongo-1:27017'}]})\"" throw "Could not initiate replica set for the single mongo instance. Some services use \
+        mongo event listeners which only work with a replica set"
+      fi
+    fi
+
+    docker::deploy_service $STACK "${COMPOSE_FILE_PATH}" "docker-compose.yml" "$xds_dev_compose_filename"
   ) ||
     {
       log error "Failed to deploy package"
@@ -61,10 +74,10 @@ function destroy_package() {
   docker::stack_destroy "$STACK"
 
   if [[ "${CLUSTERED_MODE}" == "true" ]]; then
-    log warn "Volumes are only deleted on the host on which the command is run. Postgres volumes on other nodes are not deleted"
+    log warn "Volumes are only deleted on the host on which the command is run. Mongo volumes on other nodes are not deleted"
   fi
 
-  docker::prune_configs "openshr"
+  docker::prune_configs "xds-repo-api"
 }
 
 main() {

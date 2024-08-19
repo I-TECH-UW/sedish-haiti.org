@@ -1,0 +1,5 @@
+  xds-repo-api:
+    ports:
+      - target: 3000
+        published: 3300
+        mode: host

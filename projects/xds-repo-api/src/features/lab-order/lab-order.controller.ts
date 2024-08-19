@@ -17,6 +17,8 @@ export class LabOrderController {
     return this.labOrderService.create(labOrder);
   }
 
+  // Multipart/Related; boundary="----=_Part_2619_649687092.1716989110121"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8
+  // Multipart/Related; boundary="----=_Part_59913_1123706865.1723834505685"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8
   @Post('get-by-id')
   @Header('Content-Type', 'multipart/related;start="<rootpart*59239_818160219.1723569579332@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:59239_818160219.1723569579332";start-info="application/soap+xml;action=\"urn:ihe:iti:2007:RetrieveDocumentSet\""')
   async getLabOrderById(@Body() xmlPayload: any) {
