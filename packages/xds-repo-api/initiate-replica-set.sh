@@ -62,3 +62,24 @@ else
     log error "Fatal: Unable to set up replica set"
     exit 1
 fi
+
+# Additional: Initialize the database and user
+log info "Initializing the database and user"
+
+docker exec -i "$container_name" mongo --eval "
+use admin;
+db.createUser({
+    user: '${MONGO_INITDB_ROOT_USERNAME:-"admin"}',
+    pwd: '${MONGO_INITDB_ROOT_PASSWORD:-"adminpassword"}',
+    roles: [{ role: 'root', db: 'admin' }]
+});
+
+use ${NESTJS_DB_NAME:-"mydatabase"};
+db.createUser({
+    user: '${NESTJS_DB_USER:-"nestjsuser"}',
+    pwd: '${NESTJS_DB_PASSWORD:-"nestjspassword"}',
+    roles: [{ role: 'readWrite', db: '${NESTJS_DB_NAME:-"mydatabase"}' }]
+});
+"
+
+log info "Database and user initialization completed"
