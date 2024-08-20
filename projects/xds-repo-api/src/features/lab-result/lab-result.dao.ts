@@ -10,7 +10,17 @@ export class LabResultDAO extends DAO<LabResultDocument> {
     super(model);
   }
 
-  async findByFacilityId(facilityId: string) {
-    return this.model.find({ facilityId });
+  async findByFacilityId(facilityId: string, limit: number = 100, afterDateTime?: Date) {
+    const query = this.model
+      .find({ facilityId })
+      .sort({ createdAt: -1 })  
+      .limit(limit);
+
+    // TODO: Figure out why can't filter by Date
+    // if (afterDateTime) {
+    //   query.where('createdAt').gte(afterDateTime);
+    // }
+
+    return query.exec();
   }
 }

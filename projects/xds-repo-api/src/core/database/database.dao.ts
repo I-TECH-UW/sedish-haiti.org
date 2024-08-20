@@ -15,11 +15,11 @@ export abstract class DAO<T> {
   }
 
   async find(filter: FilterQuery<T> = {}, options?: QueryOptions) {
-    return this.model.find(filter, null, options).lean();
+    return this.model.find(filter, null, options).lean().exec();
   }
 
   async findOne(filter: FilterQuery<T>, options?: QueryOptions) {
-    return this.model.findOne(filter, null, options).lean();
+    return this.model.findOne(filter, null, options).lean().exec();
   }
 
   async updateOne(
@@ -30,10 +30,10 @@ export abstract class DAO<T> {
     return this.model.findOneAndUpdate(filter, update, {
       new: true,
       ...options,
-    });
+    }).exec();
   }
 
   async deleteOne(filter: FilterQuery<T>, options?: QueryOptions) {
-    return this.model.findOneAndDelete(filter, options);
+    return this.model.findOneAndDelete(filter, options).exec();
   }
 }
