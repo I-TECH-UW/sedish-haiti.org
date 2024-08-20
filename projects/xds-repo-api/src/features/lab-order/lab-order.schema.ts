@@ -11,6 +11,12 @@ export class LabOrder {
   documentId: string;
 
   @Prop({ required: true, unique: true })
+  alternateVisitId: string;
+
+  @Prop({ required: true })
+  patientId: string;
+
+  @Prop({ required: true })
   labOrderId: string;
 
   @Prop({ required: true })

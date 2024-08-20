@@ -60,25 +60,34 @@ export class LabResultService {
       hl7Contents = hl7ContentsMatch[1];
     else throw new Error('HL7 contents not found in payload');
 
-    const parsedHl7Message = this.hl7Service.parseMessageContent(
-      hl7Contents,
+    const parsedHl7Message = await this.hl7Service.parseMessageContent(
+      hl7Contents.replaceAll('\n', '\r'),
       'incoming-result-message',
     );
 
-    const labOrderIdMatch = hl7Contents.match(/OBR\|[^|]+\|([^|]+)/);
-    if (!labOrderIdMatch || !labOrderIdMatch[1])
-      throw new Error('Lab Order ID not found in HL7 message');
-    const labOrderId = labOrderIdMatch[1];
-
-    const facilityIdMatch = hl7Contents.match(/PV1\|[^|]*\|[^|]*\|([^|]+)/);
-    if (!facilityIdMatch || !facilityIdMatch[1])
-      throw new Error('Facility ID not found in HL7 message');
-    const facilityId = facilityIdMatch[1];
-
     const newLabResult = new LabResult();
+
+    // 6. Get the Lab Order ID from the HL7 message ORC-2
+    const orc2Field = parsedHl7Message.get('ORC', 'Placer Order Number')
+    if (orc2Field) newLabResult.labOrderId = orc2Field;
+    else throw new Error('Lab Order ID not found in HL7 message');
+
+    // 7. Get the Facility ID from the HL7 message PV1-3 (assigned patient location)
+    const pv13Field = parsedHl7Message.get('PV1', 'Assigned Patient Location');
+    if (pv13Field) newLabResult.facilityId = pv13Field;
+    else throw new Error('Facility ID not found in HL7 message');
+
+    // 8. Save the Alternate Visit Id
+    const altVisitId = parsedHl7Message.get('PV1', 'Alternate Visit')[0];
+    if (altVisitId) newLabResult.alternateVisitId = altVisitId;
+    else throw new Error('Alternate Visit ID not found in HL7 message');
+    
+    // 9. Save the Patient ID
+    const patientId = parsedHl7Message.get('PID', 'Patient ID')[0];
+    if (patientId) newLabResult.patientId = patientId;
+    else throw new Error('Patient ID not found in HL7 message');    
+
     newLabResult.documentId = xdsDocumentEntryUniqueId[0];
-    newLabResult.labOrderId = labOrderId;
-    newLabResult.facilityId = facilityId;
     newLabResult.hl7Contents = hl7Contents;
     newLabResult.documentContents = xmlPayload;
 

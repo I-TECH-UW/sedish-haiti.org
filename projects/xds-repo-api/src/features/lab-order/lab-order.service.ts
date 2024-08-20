@@ -3,6 +3,7 @@ import { LabOrder, LabOrderDocument } from './lab-order.schema';
 import { LabOrderDAO } from './lab-order.dao';
 import { NotificationService } from '../notification/notification.service';
 import { Hl7Service } from 'src/core/hl7/hl7.service';
+import e from 'express';
 
 const documentFoundTemplate = `
 ------=_Part_59239_818160219.1723569579332
@@ -173,26 +174,30 @@ export class LabOrderService {
     newLabOrder.hl7Contents = hl7Message;
 
     const parsedHl7Message = await this.hl7Service.parseMessageContent(
-      hl7Message,
+      hl7Message.replaceAll('\n', '\r'),
       'incoming-order-message',
     );
 
     // 6. Get the Lab Order ID from the HL7 message ORC-2
-    const orcPattern = /^ORC\|[^|]+\|([^|]+)/m;
-    const orcMatch = hl7Message.match(orcPattern);
-    const orc2Field = orcMatch ? orcMatch[1] : null;
-
-    if (orc2Field != null) newLabOrder.labOrderId = orc2Field;
+    const orc2Field = parsedHl7Message.get('ORC', 'Placer Order Number')
+    if (orc2Field) newLabOrder.labOrderId = orc2Field;
     else throw new Error('Lab Order ID not found in HL7 message');
 
-    // 7. Get the Facility ID from the HL7 message PV1-3
-    const pv1Pattern = /^PV1\|[^|]*\|[^|]*\|([^|]+)/m;
-    const pv1Match = hl7Message.match(pv1Pattern);
-    const pv13Field = pv1Match ? pv1Match[1] : null;
-
-    if (pv13Field != null) newLabOrder.facilityId = pv13Field;
+    // 7. Get the Facility ID from the HL7 message PV1-3 (assigned patient location)
+    const pv13Field = parsedHl7Message.get('PV1', 'Assigned Patient Location');
+    if (pv13Field) newLabOrder.facilityId = pv13Field;
     else throw new Error('Facility ID not found in HL7 message');
 
+    // 8. Save the Alternate Visit Id
+    const altVisitId = parsedHl7Message.get('PV1', 'Alternate Visit')[0];
+    if (altVisitId) newLabOrder.alternateVisitId = altVisitId;
+    else throw new Error('Alternate Visit ID not found in HL7 message');
+    
+    // 9. Save the Patient ID
+    const patientId = parsedHl7Message.get('PID', 'Patient ID')[0];
+    if (patientId) newLabOrder.patientId = patientId;
+    else throw new Error('Patient ID not found in HL7 message');
+    
     newLabOrder.documentContents = xmlMultipart;
 
     return newLabOrder;

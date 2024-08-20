@@ -9,7 +9,7 @@ import { Hl7Module } from './hl7/hl7.module';
       mapping: false,
       profiling: true,
       debug: true,
-      fileEncoding: 'iso-8859-1',
+      fileEncoding: 'utf-8',
     }),
   ],
 })

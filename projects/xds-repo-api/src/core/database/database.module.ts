@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
 @Module({
   imports: [
@@ -14,6 +15,9 @@ import { MongooseModule } from '@nestjs/mongoose';
             if (connection.readyState === 1) {
               console.log(`Connected to database ${name} at ${host}:${port}`);
             }
+            
+            mongoose.set('debug', true);
+
             return connection;
           },
         };
