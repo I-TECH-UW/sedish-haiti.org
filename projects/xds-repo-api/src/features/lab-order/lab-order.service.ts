@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { LabOrder, LabOrderDocument } from './lab-order.schema';
 import { LabOrderDAO } from './lab-order.dao';
-import { CreateLabOrderDto } from './dto/create-lab-order.dto';
 import { NotificationService } from '../notification/notification.service';
+import { Hl7Service } from 'src/core/hl7/hl7.service';
 
 const documentFoundTemplate = `
 ------=_Part_59239_818160219.1723569579332
@@ -86,7 +84,8 @@ Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
 export class LabOrderService {
   constructor(
     private readonly labOrderDAO: LabOrderDAO,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
+    private readonly hl7Service: Hl7Service
   ) {}
 
   async create(labOrder: LabOrder) {
@@ -94,7 +93,7 @@ export class LabOrderService {
     
     this.notificationService.notifySubscribers(newLabOrder.documentId)
 
-    return  this.labOrderDAO.create(labOrder);
+    return newLabOrder
   }
 
   async findById(documentId: string) {
@@ -105,7 +104,7 @@ export class LabOrderService {
     return this.labOrderDAO.find();
   }
 
-  parseLabOrderDocument(xmlMultipart: any): LabOrder {
+  async parseLabOrderDocument(xmlMultipart: any): Promise<LabOrder> {
     // 1. Get Content-Id of the last document in multipart message
     // Content-Id: <780d4ac3-bf6e-48cc-acd4-b3208c65f974>
     const contentIdPattern = /Content-Id:\s*<([^>]+)>/g;
@@ -137,7 +136,7 @@ export class LabOrderService {
     const externalIdentifierMatch = xmlMultipart.match(externalIdentifierPattern);
     const externalIdentifierValue = externalIdentifierMatch ? externalIdentifierMatch[1] : null;
 
-    const newLabOrder = new LabOrder();
+    let newLabOrder = new LabOrder();
 
     // 4. Grab the value attribute to get the document ID to use as the documentId in the LabOrder objec
     newLabOrder.documentId = externalIdentifierValue;
@@ -162,8 +161,11 @@ export class LabOrderService {
       }
     }
 
-    newLabOrder.hl7Contents = hl7Message.trim();
+    hl7Message = hl7Message.trim();
+    newLabOrder.hl7Contents = hl7Message;
     
+    const parsedHl7Message = await this.hl7Service.parseMessageContent(hl7Message, 'incoming-order-message');
+
     // 6. Get the Lab Order ID from the HL7 message ORC-2
     const orcPattern = /^ORC\|[^|]+\|([^|]+)/m;
     const orcMatch = hl7Message.match(orcPattern);

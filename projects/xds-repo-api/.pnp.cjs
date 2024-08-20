@@ -58,6 +58,7 @@ const RAW_RUNTIME_STATE =
           ["fast-xml-parser", "npm:4.4.1"],\
           ["jest", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:29.7.0"],\
           ["mongoose", "npm:8.5.3"],\
+          ["nodehl7", "npm:0.2.6"],\
           ["prettier", "npm:3.3.3"],\
           ["reflect-metadata", "npm:0.2.2"],\
           ["rxjs", "npm:7.8.1"],\
@@ -7158,6 +7159,16 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["nodehl7", [\
+      ["npm:0.2.6", {\
+        "packageLocation": "../../../../.yarn/berry/cache/nodehl7-npm-0.2.6-5659d736f1-10c0.zip/node_modules/nodehl7/",\
+        "packageDependencies": [\
+          ["nodehl7", "npm:0.2.6"],\
+          ["encoding", "npm:0.1.13"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["nopt", [\
       ["npm:7.2.1", {\
         "packageLocation": "../../../../.yarn/berry/cache/nopt-npm-7.2.1-635b7da949-10c0.zip/node_modules/nopt/",\
@@ -9262,6 +9273,7 @@ const RAW_RUNTIME_STATE =
           ["fast-xml-parser", "npm:4.4.1"],\
           ["jest", "virtual:0258d056c3dfdd138889389344503b7f5a265dd4be93aa697a79ba6dd26b19a0c51ed8843255b60f85da8c8d233db78b258fda1dc8129a51887e35f68a43f49a#npm:29.7.0"],\
           ["mongoose", "npm:8.5.3"],\
+          ["nodehl7", "npm:0.2.6"],\
           ["prettier", "npm:3.3.3"],\
           ["reflect-metadata", "npm:0.2.2"],\
           ["rxjs", "npm:7.8.1"],\

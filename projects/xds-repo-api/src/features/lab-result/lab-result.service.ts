@@ -1,28 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { LabResult } from './lab-result.schema';
+import { LabResult, LabResultDocument } from './lab-result.schema';
 import { CreateLabResultDto } from './dto/create-lab-result.dto';
 import { parseStringPromise } from 'xml2js';
 import * as xpath from 'xml2js-xpath';
+import { Hl7Service } from 'src/core/hl7/hl7.service';
+import { LabResultDAO } from './lab-result.dao';
 
 @Injectable()
 export class LabResultService {
-  constructor(@InjectModel(LabResult.name) private labResultModel: Model<LabResult>) {}
+  constructor(
+    private readonly hl7Service: Hl7Service,
+    private readonly labResultDAO: LabResultDAO,
+  ) {}
 
-  async create(createLabResultDto: CreateLabResultDto): Promise<LabResult> {
+  async create(labResult: LabResult) {
     // Create lab result and connect with lab order
     
-    const labResult = new this.labResultModel(createLabResultDto);
-    return labResult.save();
+    return this.labResultDAO.create(labResult);
   }
 
-  async findByLabOrderId(labOrderId: string): Promise<LabResult | null> {
-    return this.labResultModel.findOne({ labOrderId }).exec();
+  async findByLabOrderId(labOrderId: string) {
+    return this.labResultDAO.findOne({ labOrderId });
   }
 
   async findAllByFacilityId(facilityId: string): Promise<LabResult[]> {
-      return this.labResultModel.find({ facilityId }).exec();
+      return this.labResultDAO.findByFacilityId(facilityId);
   }
 
   async parseLabResultDocument(xmlPayload: any): Promise<LabResult> {
@@ -45,6 +49,8 @@ export class LabResultService {
     else
       throw new Error('HL7 contents not found in payload');
 
+    let parsedHl7Message = this.hl7Service.parseMessageContent(hl7Contents, 'incoming-result-message');
+    
     const labOrderIdMatch = hl7Contents.match(/OBR\|[^|]+\|([^|]+)/);
     if(!labOrderIdMatch || !labOrderIdMatch[1])
       throw new Error('Lab Order ID not found in HL7 message');
@@ -55,14 +61,14 @@ export class LabResultService {
       throw new Error('Facility ID not found in HL7 message');
     const facilityId = facilityIdMatch[1];
 
-    return new LabResult({
-      documentId: xdsDocumentEntryUniqueId[0],
-      labOrderId: labOrderId,
-      facilityId: facilityId,
-      hl7Contents: hl7Contents,
-      documentContents: xmlPayload
-    });
+    let newLabResult = new LabResult();
+    newLabResult.documentId = xdsDocumentEntryUniqueId[0];
+    newLabResult.labOrderId = labOrderId;
+    newLabResult.facilityId = facilityId;
+    newLabResult.hl7Contents = hl7Contents;
+    newLabResult.documentContents = xmlPayload; 
 
+    return newLabResult;
   }
 
   parseLabResultRequest(xmlPayload: any): { facilityId: string, maxNumber: string } {

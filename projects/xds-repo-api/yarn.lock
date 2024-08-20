@@ -2996,7 +2996,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"encoding@npm:^0.1.13":
+"encoding@npm:^0.1.12, encoding@npm:^0.1.13":
   version: 0.1.13
   resolution: "encoding@npm:0.1.13"
   dependencies:
@@ -5541,6 +5541,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nodehl7@npm:^0.2.6":
+  version: 0.2.6
+  resolution: "nodehl7@npm:0.2.6"
+  dependencies:
+    encoding: "npm:^0.1.12"
+  checksum: 10c0/75a109de53dbaf6aebbc9fe5fb4a0f2c7107ac1ad9f8d3e9e86592208094968d2f534304885cfe53b83a99907e4c77c565006654b8013261fb99d3067a853d7a
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^7.0.0":
   version: 7.2.1
   resolution: "nopt@npm:7.2.1"
@@ -7378,6 +7387,7 @@ __metadata:
     fast-xml-parser: "npm:^4.4.1"
     jest: "npm:^29.5.0"
     mongoose: "npm:^8.5.3"
+    nodehl7: "npm:^0.2.6"
     prettier: "npm:^3.0.0"
     reflect-metadata: "npm:^0.2.0"
     rxjs: "npm:^7.8.1"

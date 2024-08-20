@@ -69,7 +69,7 @@ export class NotificationService {
 
   private async sendNotification(url: string, payload: any) {
     try {
-      const response = await firstValueFrom(this.httpService.post(url, payload));
+      const response = await firstValueFrom(this.httpService.post(url, payload, { headers: { 'Content-Type': 'application/soap+xml; charset=UTF-8' } }));
       return response.data;
     } catch (error) {
       throw error;
