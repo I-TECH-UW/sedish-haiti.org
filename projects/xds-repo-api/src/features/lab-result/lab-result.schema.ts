@@ -4,7 +4,7 @@ import { HydratedDocument } from 'mongoose';
 export type LabResultDocument = HydratedDocument<LabResult>;
 
 @Schema({ timestamps: true })
-export class LabResult extends Document {
+export class LabResult {
   @Prop({ required: true })
   facilityId: string;
 

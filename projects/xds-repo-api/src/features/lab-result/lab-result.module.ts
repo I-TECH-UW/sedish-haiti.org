@@ -3,10 +3,11 @@ import { LabResultService } from './lab-result.service';
 import { LabResultController } from './lab-result.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LabResult, LabResultSchema } from './lab-result.schema';
+import { LabResultDAO } from './lab-result.dao';
 
 @Module({
  imports: [MongooseModule.forFeature([{ name: LabResult.name, schema: LabResultSchema }])],
-  providers: [LabResultService],
+  providers: [LabResultDAO, LabResultService],
   controllers: [LabResultController]
 })
 export class LabResultModule {}

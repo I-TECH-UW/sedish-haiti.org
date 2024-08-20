@@ -11,7 +11,7 @@ import { Hl7Service } from './core/hl7/hl7.service';
     mapping: false,
     profiling: true,
     debug: true,
-    fileEncoding: 'iso-8859-1',
+    fileEncoding: 'utf-8',
   })],
   controllers: [AppController],
   providers: [AppService],

@@ -12,7 +12,7 @@ export class LabOrderController {
 
   @Post('create')
   async create(@Body() body: string) {
-    const labOrder: LabOrder = this.labOrderService.parseLabOrderDocument(body)
+    const labOrder: LabOrder = await this.labOrderService.parseLabOrderDocument(body)
 
     return this.labOrderService.create(labOrder);
   }
