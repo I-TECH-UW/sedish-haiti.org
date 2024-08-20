@@ -27,10 +27,12 @@ export abstract class DAO<T> {
     update: UpdateQuery<T>,
     options?: QueryOptions,
   ) {
-    return this.model.findOneAndUpdate(filter, update, {
-      new: true,
-      ...options,
-    }).exec();
+    return this.model
+      .findOneAndUpdate(filter, update, {
+        new: true,
+        ...options,
+      })
+      .exec();
   }
 
   async deleteOne(filter: FilterQuery<T>, options?: QueryOptions) {

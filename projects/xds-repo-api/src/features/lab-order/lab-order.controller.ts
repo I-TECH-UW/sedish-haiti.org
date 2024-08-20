@@ -11,13 +11,14 @@ export class LabOrderController {
 
   @Post('create')
   async create(@Body() body: string, @Res() res: Response) {
-    const contentType = 'Multipart/Related; boundary="----=_Part_60435_1628391534.1724167510003"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8';
+    const contentType =
+      'Multipart/Related; boundary="----=_Part_60435_1628391534.1724167510003"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8';
     res.setHeader('Content-Type', contentType);
 
     let responseBody;
     try {
       const labOrder: LabOrder =
-      await this.labOrderService.parseLabOrderDocument(body);
+        await this.labOrderService.parseLabOrderDocument(body);
 
       const result = await this.labOrderService.create(labOrder);
 
@@ -51,11 +52,14 @@ export class LabOrderController {
     res.setHeader('Content-Type', contentType);
 
     if (result && result.length === 1) {
-      const responseBody = this.labOrderService.decorateLabOrderResponse(result[0]);
+      const responseBody = this.labOrderService.decorateLabOrderResponse(
+        result[0],
+      );
       res.status(HttpStatus.OK);
       res.write(responseBody);
     } else {
-      const notFoundResponse = this.labOrderService.documentNotFoundResponse(documentId);
+      const notFoundResponse =
+        this.labOrderService.documentNotFoundResponse(documentId);
       res.status(HttpStatus.NOT_FOUND);
       res.write(notFoundResponse);
     }

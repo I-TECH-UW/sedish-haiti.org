@@ -12,16 +12,17 @@ export class LabResultController {
 
   @Post('create')
   async create(@Body() xmlPayload: any, @Res() res: Response) {
-    const contentType = 'Multipart/Related; boundary="----=_Part_59931_102464640.1723834961072"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8'
+    const contentType =
+      'Multipart/Related; boundary="----=_Part_59931_102464640.1723834961072"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8';
     res.setHeader('Content-Type', contentType);
 
     try {
       const labResult: LabResult =
-      await this.labResultService.parseLabResultDocument(xmlPayload);
+        await this.labResultService.parseLabResultDocument(xmlPayload);
 
       const createdLabResult = await this.labResultService.create(labResult);
 
-      if(createdLabResult) {
+      if (createdLabResult) {
         res.status(HttpStatusCode.Ok);
         res.write(this.labResultService.labResultSubmissionSuccess());
       } else {
@@ -33,7 +34,7 @@ export class LabResultController {
       res.status(HttpStatusCode.InternalServerError);
       res.write(this.labResultService.labResultSubmissionGeneralFailure());
     }
-    
+
     res.end();
   }
 
@@ -43,14 +44,18 @@ export class LabResultController {
     res.setHeader('Content-Type', contentType);
     try {
       const parsedData =
-      await this.labResultService.parseLabResultRequest(xmlPayload);
+        await this.labResultService.parseLabResultRequest(xmlPayload);
 
-      const resultList = await this.labResultService.findAllByFacilityId(parsedData.facilityId, parsedData.maxNumber);
+      const resultList = await this.labResultService.findAllByFacilityId(
+        parsedData.facilityId,
+        parsedData.maxNumber,
+      );
 
-      if(resultList.length === 0) {
-        res.status(HttpStatusCode.NotFound);      
+      if (resultList.length === 0) {
+        res.status(HttpStatusCode.NotFound);
       } else {
-        const responseBody = this.labResultService.decorateResultList(resultList);
+        const responseBody =
+          this.labResultService.decorateResultList(resultList);
 
         res.status(HttpStatusCode.Accepted);
         res.write(responseBody);

@@ -15,7 +15,7 @@ import mongoose from 'mongoose';
             if (connection.readyState === 1) {
               console.log(`Connected to database ${name} at ${host}:${port}`);
             }
-            
+
             mongoose.set('debug', true);
 
             return connection;

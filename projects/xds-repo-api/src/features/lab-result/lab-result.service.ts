@@ -63,7 +63,7 @@ const resultListTemplate = `<?xml version="1.0" encoding="UTF-8" standalone="yes
   xmlns:ns4="http://docs.oasis-open.org/wsn/t-1"
   xmlns:ns3="http://docs.oasis-open.org/wsrf/bf-2">
 {{result-list}}
-</ns2:GetMessagesResponse>`
+</ns2:GetMessagesResponse>`;
 
 const resultItemTemplate = `  <ns2:NotificationMessage>
     <ns2:Topic>{{facilityId}}</ns2:Topic>
@@ -91,7 +91,10 @@ export class LabResultService {
     return this.labResultDAO.findOne({ labOrderId });
   }
 
-  async findAllByFacilityId(facilityId: string, maxNumber: number = 100): Promise<LabResult[]> {
+  async findAllByFacilityId(
+    facilityId: string,
+    maxNumber: number = 100,
+  ): Promise<LabResult[]> {
     return this.labResultDAO.findByFacilityId(facilityId, maxNumber);
   }
 
@@ -137,7 +140,7 @@ export class LabResultService {
     const newLabResult = new LabResult();
 
     // 6. Get the Lab Order ID from the HL7 message ORC-2
-    const orc2Field = parsedHl7Message.get('ORC', 'Placer Order Number')
+    const orc2Field = parsedHl7Message.get('ORC', 'Placer Order Number');
     if (orc2Field) newLabResult.labOrderId = orc2Field;
     else throw new Error('Lab Order ID not found in HL7 message');
 
@@ -150,11 +153,11 @@ export class LabResultService {
     const altVisitId = parsedHl7Message.get('PV1', 'Alternate Visit')[0];
     if (altVisitId) newLabResult.alternateVisitId = altVisitId;
     else throw new Error('Alternate Visit ID not found in HL7 message');
-    
+
     // 9. Save the Patient ID
     const patientId = parsedHl7Message.get('PID', 'Patient ID')[0];
     if (patientId) newLabResult.patientId = patientId;
-    else throw new Error('Patient ID not found in HL7 message');    
+    else throw new Error('Patient ID not found in HL7 message');
 
     newLabResult.documentId = xdsDocumentEntryUniqueId[0].$.value;
     newLabResult.hl7Contents = hl7Contents;
@@ -169,7 +172,7 @@ export class LabResultService {
 
   labResultSubmissionGeneralFailure() {
     return labResultCreationErrorTemplate;
-  } 
+  }
 
   parseLabResultRequest(xmlPayload: any): {
     facilityId: string;
@@ -184,9 +187,9 @@ export class LabResultService {
         xmlPayload['soap-env:envelope']['soap-env:body'][0][
           'ns2:getmessages'
         ][0]['ns2:maximumnumber'][0];
-      
+
       const maxNumber = parseInt(maxNumberString);
-      
+
       return { facilityId, maxNumber };
     } catch (error) {
       throw new Error(
@@ -198,7 +201,7 @@ export class LabResultService {
   decorateResultList(resultList: LabResult[]): string {
     let resultItems = '';
     for (const result of resultList) {
-      let base64Message = undefined
+      let base64Message = undefined;
       if (result.hl7Contents) {
         const buffer = Buffer.from(result.hl7Contents, 'utf-8');
         base64Message = buffer.toString('base64');

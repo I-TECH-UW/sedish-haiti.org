@@ -3,7 +3,6 @@ import { LabOrder, LabOrderDocument } from './lab-order.schema';
 import { LabOrderDAO } from './lab-order.dao';
 import { NotificationService } from '../notification/notification.service';
 import { Hl7Service } from 'src/core/hl7/hl7.service';
-import e from 'express';
 
 const documentSubmissionSuccessTemplate = `------=_Part_60435_1628391534.1724167510003
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
@@ -56,7 +55,6 @@ Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
   </env:Body>
 </env:Envelope>
 ------=_Part_60435_1628391534.1724167510003--`;
-
 
 const documentFoundTemplate = `------=_Part_59239_818160219.1723569579332
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
@@ -230,7 +228,7 @@ export class LabOrderService {
     );
 
     // 6. Get the Lab Order ID from the HL7 message ORC-2
-    const orc2Field = parsedHl7Message.get('ORC', 'Placer Order Number')
+    const orc2Field = parsedHl7Message.get('ORC', 'Placer Order Number');
     if (orc2Field) newLabOrder.labOrderId = orc2Field;
     else throw new Error('Lab Order ID not found in HL7 message');
 
@@ -243,12 +241,12 @@ export class LabOrderService {
     const altVisitId = parsedHl7Message.get('PV1', 'Alternate Visit')[0];
     if (altVisitId) newLabOrder.alternateVisitId = altVisitId;
     else throw new Error('Alternate Visit ID not found in HL7 message');
-    
+
     // 9. Save the Patient ID
     const patientId = parsedHl7Message.get('PID', 'Patient ID')[0];
     if (patientId) newLabOrder.patientId = patientId;
     else throw new Error('Patient ID not found in HL7 message');
-    
+
     newLabOrder.documentContents = xmlMultipart;
 
     return newLabOrder;
