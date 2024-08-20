@@ -5,8 +5,60 @@ import { NotificationService } from '../notification/notification.service';
 import { Hl7Service } from 'src/core/hl7/hl7.service';
 import e from 'express';
 
-const documentFoundTemplate = `
-------=_Part_59239_818160219.1723569579332
+const documentSubmissionSuccessTemplate = `------=_Part_60435_1628391534.1724167510003
+Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
+
+
+<env:Envelope 
+  xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+  <env:Header 
+    xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <wsa:To env:mustUnderstand="true">http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    <wsa:Action>urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse</wsa:Action>
+    <wsa:MessageID>urn:uuid:38c3d8a5-00b3-4b84-b1f9-2c72c5b239e4</wsa:MessageID>
+    <wsa:RelatesTo>uuid:ab7948d8-26e5-4a9d-b719-3c2a477ca120</wsa:RelatesTo>
+  </env:Header>
+  <env:Body>
+    <ns3:RegistryResponse 
+      xmlns:ns3="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" 
+      xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" 
+      xmlns:ns4="urn:ihe:iti:xds-b:2007" 
+      xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" 
+      xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success"/>
+    </env:Body>
+  </env:Envelope>
+------=_Part_60435_1628391534.1724167510003--`;
+
+const documentSubmissionGeneralFailureTemplate = `------=_Part_60435_1628391534.1724167510003
+Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
+
+
+<env:Envelope 
+  xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+  <env:Header 
+    xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <wsa:To env:mustUnderstand="true">http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    <wsa:Action>urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse</wsa:Action>
+    <wsa:MessageID>urn:uuid:285e9789-9a02-48e0-9fa6-76efa561c249</wsa:MessageID>
+    <wsa:RelatesTo>uuid:5c666fec-2b59-4fa0-a660-2967e1a0c67d</wsa:RelatesTo>
+  </env:Header>
+  <env:Body>
+    <ns3:RegistryResponse 
+      xmlns:ns3="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" 
+      xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" 
+      xmlns:ns4="urn:ihe:iti:xds-b:2007" 
+      xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" 
+      xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure">
+      <ns3:RegistryErrorList>
+        <ns3:RegistryError errorCode="XDSRepositoryError" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error"/>
+      </ns3:RegistryErrorList>
+    </ns3:RegistryResponse>
+  </env:Body>
+</env:Envelope>
+------=_Part_60435_1628391534.1724167510003--`;
+
+
+const documentFoundTemplate = `------=_Part_59239_818160219.1723569579332
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
 
 
@@ -47,10 +99,9 @@ Content-Transfer-Encoding: binary
 
 {{hl7Message}}
 
-------=_Part_59239_818160219.1723569579332--
-`;
-const documentNotFoundTemplate = `
-------=_Part_59241_1582618584.1723571227473
+------=_Part_59239_818160219.1723569579332--`;
+
+const documentNotFoundTemplate = `------=_Part_59241_1582618584.1723571227473
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
 
 
@@ -207,6 +258,14 @@ export class LabOrderService {
     return xmlPayload['soap:envelope']['soap:body'][0][
       'xdsb:retrievedocumentsetrequest'
     ][0]['xdsb:documentrequest'][0]['xdsb:documentuniqueid'][0];
+  }
+
+  labOrderSubmissionSuccess() {
+    return documentSubmissionSuccessTemplate;
+  }
+
+  labOrderSubmissionGeneralFailure() {
+    return documentSubmissionGeneralFailureTemplate;
   }
 
   decorateLabOrderResponse(labOrder: LabOrder) {

@@ -10,11 +10,32 @@ export class LabOrderController {
   constructor(private readonly labOrderService: LabOrderService) {}
 
   @Post('create')
-  async create(@Body() body: string) {
-    const labOrder: LabOrder =
+  async create(@Body() body: string, @Res() res: Response) {
+    const contentType = 'Multipart/Related; boundary="----=_Part_60435_1628391534.1724167510003"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8';
+    res.setHeader('Content-Type', contentType);
+
+    let responseBody;
+    try {
+      const labOrder: LabOrder =
       await this.labOrderService.parseLabOrderDocument(body);
 
-    return this.labOrderService.create(labOrder);
+      const result = await this.labOrderService.create(labOrder);
+
+      // check if the lab order was created successfully
+      if (result) {
+        responseBody = this.labOrderService.labOrderSubmissionSuccess();
+        res.status(HttpStatus.OK);
+      } else {
+        responseBody = this.labOrderService.labOrderSubmissionGeneralFailure();
+        res.status(HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+    } catch (error) {
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR);
+      responseBody = this.labOrderService.labOrderSubmissionGeneralFailure();
+    }
+
+    res.write(responseBody);
+    res.end();
   }
 
   // Multipart/Related; boundary="----=_Part_2619_649687092.1716989110121"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8
