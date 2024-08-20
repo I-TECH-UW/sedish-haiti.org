@@ -47,7 +47,7 @@ Content-Transfer-Encoding: binary
 {{hl7Message}}
 
 ------=_Part_59239_818160219.1723569579332--
-`
+`;
 const documentNotFoundTemplate = `
 ------=_Part_59241_1582618584.1723571227473
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
@@ -77,23 +77,24 @@ Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
     </ns4:RetrieveDocumentSetResponse>
   </env:Body>
 </env:Envelope>
-------=_Part_59241_1582618584.1723571227473--`
-
+------=_Part_59241_1582618584.1723571227473--`;
 
 @Injectable()
 export class LabOrderService {
   constructor(
     private readonly labOrderDAO: LabOrderDAO,
     private readonly notificationService: NotificationService,
-    private readonly hl7Service: Hl7Service
+    private readonly hl7Service: Hl7Service,
   ) {}
 
   async create(labOrder: LabOrder) {
-    const newLabOrder = await this.labOrderDAO.create(labOrder) as LabOrderDocument;
-    
-    this.notificationService.notifySubscribers(newLabOrder.documentId)
+    const newLabOrder = (await this.labOrderDAO.create(
+      labOrder,
+    )) as LabOrderDocument;
 
-    return newLabOrder
+    this.notificationService.notifySubscribers(newLabOrder.documentId);
+
+    return newLabOrder;
   }
 
   async findById(documentId: string) {
@@ -120,7 +121,9 @@ export class LabOrderService {
       <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:780d4ac3-bf6e-48cc-acd4-b3208c65f974"></xop:Include>
     </Document>
     */
-    const documentIdPattern = new RegExp(`<Document id="([^"]+)"[\\s\\S]*?<xop:Include[^>]+href="cid:${lastContentId}"[^>]*>`);
+    const documentIdPattern = new RegExp(
+      `<Document id="([^"]+)"[\\s\\S]*?<xop:Include[^>]+href="cid:${lastContentId}"[^>]*>`,
+    );
     const documentMatch = xmlMultipart.match(documentIdPattern);
     const documentId = documentMatch ? documentMatch[1] : null;
 
@@ -132,16 +135,21 @@ export class LabOrderService {
       </ns2:Name>
     </ns2:ExternalIdentifier>
     */
-    const externalIdentifierPattern = new RegExp(`<ns2:ExternalIdentifier id="eid0" identificationScheme="[^"]+" registryObject="${documentId}" value="([^"]+)">`);
-    const externalIdentifierMatch = xmlMultipart.match(externalIdentifierPattern);
-    const externalIdentifierValue = externalIdentifierMatch ? externalIdentifierMatch[1] : null;
+    const externalIdentifierPattern = new RegExp(
+      `<ns2:ExternalIdentifier id="eid0" identificationScheme="[^"]+" registryObject="${documentId}" value="([^"]+)">`,
+    );
+    const externalIdentifierMatch = xmlMultipart.match(
+      externalIdentifierPattern,
+    );
+    const externalIdentifierValue = externalIdentifierMatch
+      ? externalIdentifierMatch[1]
+      : null;
 
-    let newLabOrder = new LabOrder();
+    const newLabOrder = new LabOrder();
 
     // 4. Grab the value attribute to get the document ID to use as the documentId in the LabOrder objec
     newLabOrder.documentId = externalIdentifierValue;
-    
-    
+
     // 5. Get HL7 message from the XML
     const lines = xmlMultipart.split('\n');
     let hl7Message = '';
@@ -163,36 +171,37 @@ export class LabOrderService {
 
     hl7Message = hl7Message.trim();
     newLabOrder.hl7Contents = hl7Message;
-    
-    const parsedHl7Message = await this.hl7Service.parseMessageContent(hl7Message, 'incoming-order-message');
+
+    const parsedHl7Message = await this.hl7Service.parseMessageContent(
+      hl7Message,
+      'incoming-order-message',
+    );
 
     // 6. Get the Lab Order ID from the HL7 message ORC-2
     const orcPattern = /^ORC\|[^|]+\|([^|]+)/m;
     const orcMatch = hl7Message.match(orcPattern);
     const orc2Field = orcMatch ? orcMatch[1] : null;
 
-    if(orc2Field != null)
-      newLabOrder.labOrderId = orc2Field;
-    else 
-      throw new Error('Lab Order ID not found in HL7 message');
+    if (orc2Field != null) newLabOrder.labOrderId = orc2Field;
+    else throw new Error('Lab Order ID not found in HL7 message');
 
     // 7. Get the Facility ID from the HL7 message PV1-3
     const pv1Pattern = /^PV1\|[^|]*\|[^|]*\|([^|]+)/m;
     const pv1Match = hl7Message.match(pv1Pattern);
     const pv13Field = pv1Match ? pv1Match[1] : null;
 
-    if(pv13Field != null)
-      newLabOrder.facilityId = pv13Field;
-    else 
-      throw new Error('Facility ID not found in HL7 message');
+    if (pv13Field != null) newLabOrder.facilityId = pv13Field;
+    else throw new Error('Facility ID not found in HL7 message');
 
     newLabOrder.documentContents = xmlMultipart;
-    
-    return newLabOrder
+
+    return newLabOrder;
   }
 
   parseLabOrderRequest(xmlPayload: any): string {
-    return xmlPayload["soap:envelope"]["soap:body"][0]["xdsb:retrievedocumentsetrequest"][0]["xdsb:documentrequest"][0]["xdsb:documentuniqueid"][0]
+    return xmlPayload['soap:envelope']['soap:body'][0][
+      'xdsb:retrievedocumentsetrequest'
+    ][0]['xdsb:documentrequest'][0]['xdsb:documentuniqueid'][0];
   }
 
   decorateLabOrderResponse(labOrder: LabOrder) {

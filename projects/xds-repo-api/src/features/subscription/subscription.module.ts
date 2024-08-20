@@ -6,10 +6,14 @@ import { Subscription, SubscriptionSchema } from './subscription.schema';
 import { SubscriptionDAO } from './subscription.dao';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Subscription.name, schema: SubscriptionSchema }])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: Subscription.name, schema: SubscriptionSchema },
+    ]),
+  ],
 
   providers: [SubscriptionService, SubscriptionDAO],
   controllers: [SubscriptionController],
-  exports: [SubscriptionDAO]
+  exports: [SubscriptionDAO],
 })
 export class SubscriptionModule {}

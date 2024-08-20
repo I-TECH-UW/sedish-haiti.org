@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CreateSubscriptionDto } from './dto/create-subscription.dto';
-import { Subscription, SubscriptionDocument } from './subscription.schema';
+import { Subscription } from './subscription.schema';
 import { SubscriptionDAO } from './subscription.dao';
 
 @Injectable()

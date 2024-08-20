@@ -17,6 +17,7 @@ export class Hl7Module {
     return {
       module: Hl7Module,
       providers: [hl7Provider, Hl7Service],
-      exports: [Hl7Service]
-  };
-}}
+      exports: [Hl7Service],
+    };
+  }
+}

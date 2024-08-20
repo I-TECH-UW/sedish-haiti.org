@@ -11,6 +11,6 @@ export class LabResultDAO extends DAO<LabResultDocument> {
   }
 
   async findByFacilityId(facilityId: string) {
-    return this.model.find({facilityId});
+    return this.model.find({ facilityId });
   }
 }

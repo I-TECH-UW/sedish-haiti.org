@@ -6,8 +6,12 @@ import { LabResult, LabResultSchema } from './lab-result.schema';
 import { LabResultDAO } from './lab-result.dao';
 
 @Module({
- imports: [MongooseModule.forFeature([{ name: LabResult.name, schema: LabResultSchema }])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: LabResult.name, schema: LabResultSchema },
+    ]),
+  ],
   providers: [LabResultDAO, LabResultService],
-  controllers: [LabResultController]
+  controllers: [LabResultController],
 })
 export class LabResultModule {}

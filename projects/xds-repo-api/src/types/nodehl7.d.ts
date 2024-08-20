@@ -4,7 +4,11 @@ declare module 'nodehl7' {
 
     parseFile(path: string, callback: (err: any, message: any) => void): void;
 
-    parse(messageContent: string, ID: string, callback: (err: any, message: any) => void): void;
+    parse(
+      messageContent: string,
+      ID: string,
+      callback: (err: any, message: any) => void,
+    ): void;
   }
 
   export = Hl7lib;

@@ -8,10 +8,12 @@ import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: LabOrder.name, schema: LabOrderSchema }]),
+    MongooseModule.forFeature([
+      { name: LabOrder.name, schema: LabOrderSchema },
+    ]),
     NotificationModule,
   ],
   providers: [LabOrderDAO, LabOrderService],
-  controllers: [LabOrderController]
+  controllers: [LabOrderController],
 })
 export class LabOrderModule {}

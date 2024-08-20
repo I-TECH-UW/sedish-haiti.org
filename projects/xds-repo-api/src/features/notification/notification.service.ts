@@ -40,8 +40,7 @@ const subscriptionNotificationTemplate = `
     </wsnt:Notify>
   </s:Body>
 </s:Envelope>
-`
-
+`;
 
 @Injectable()
 export class NotificationService {
@@ -55,7 +54,9 @@ export class NotificationService {
 
     const notificationPromises = subscriptions.map(async (subscription) => {
       const url = subscription.targetAddress;
-      const notification = subscriptionNotificationTemplate.replace('{{targetUrl}}', url).replace('{{documentId}}', documentId);
+      const notification = subscriptionNotificationTemplate
+        .replace('{{targetUrl}}', url)
+        .replace('{{documentId}}', documentId);
       try {
         const response = await this.sendNotification(url, notification);
         return response;
@@ -69,7 +70,11 @@ export class NotificationService {
 
   private async sendNotification(url: string, payload: any) {
     try {
-      const response = await firstValueFrom(this.httpService.post(url, payload, { headers: { 'Content-Type': 'application/soap+xml; charset=UTF-8' } }));
+      const response = await firstValueFrom(
+        this.httpService.post(url, payload, {
+          headers: { 'Content-Type': 'application/soap+xml; charset=UTF-8' },
+        }),
+      );
       return response.data;
     } catch (error) {
       throw error;

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
- 
+
 @Module({
   imports: [
     MongooseModule.forRootAsync({
@@ -15,10 +15,10 @@ import { MongooseModule } from '@nestjs/mongoose';
               console.log(`Connected to database ${name} at ${host}:${port}`);
             }
             return connection;
-          }
+          },
         };
-      }
-    })
-  ]
+      },
+    }),
+  ],
 })
 export class DatabaseModule {}

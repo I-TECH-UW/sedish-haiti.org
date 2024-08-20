@@ -2,12 +2,11 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { NotificationService } from './notification.service';
-import { SubscriptionModule } from '../subscription/subscription.module'; 
-import { SubscriptionDAO } from '../subscription/subscription.dao';
+import { SubscriptionModule } from '../subscription/subscription.module';
 
 @Module({
-  imports: [HttpModule, SubscriptionModule], 
+  imports: [HttpModule, SubscriptionModule],
   providers: [NotificationService],
-  exports: [NotificationService], 
+  exports: [NotificationService],
 })
 export class NotificationModule {}

@@ -11,6 +11,6 @@ export class LabOrderDAO extends DAO<LabOrderDocument> {
   }
 
   async findByDocumentId(documentId: string) {
-    return this.model.find({documentId})
+    return this.model.find({ documentId });
   }
 }
