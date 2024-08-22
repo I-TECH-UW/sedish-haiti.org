@@ -4,7 +4,7 @@ declare ACTION=""
 declare MODE=""
 declare COMPOSE_FILE_PATH=""
 declare UTILS_PATH=""
-declare STACK="xds-repo-api"
+declare STACK="lnsp-mediator"
 
 function init_vars() {
   ACTION=$1
@@ -77,7 +77,7 @@ function destroy_package() {
     log warn "Volumes are only deleted on the host on which the command is run. Mongo volumes on other nodes are not deleted"
   fi
 
-  docker::prune_configs "xds-repo-api"
+  docker::prune_configs "lnsp-mediator"
 }
 
 main() {

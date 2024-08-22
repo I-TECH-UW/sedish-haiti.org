@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
-  xds-repo-api:
-    image: xds-repo-api:local
-    container_name: xds-repo-api
+  lnsp-mediator:
+    image: lnsp-mediator:local
+    container_name: lnsp-mediator
     environment:
       - MONGO_URL=mongodb://mongo-1:27017/nest
       - NODE_ENV=production

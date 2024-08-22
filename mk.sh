@@ -12,16 +12,16 @@
 
 
 #reverse proxy
-#./instant package remove -n reverse-proxy-nginx --env-file .env
-#./instant package init -n reverse-proxy-nginx --env-file .env
+./instant package remove -n reverse-proxy-nginx --env-file .env
+./instant package init -n reverse-proxy-nginx --env-file .env -d
 #./instant package down -n reverse-proxy-nginx --env-file .env
-./instant package up -n reverse-proxy-nginx --env-file .env
+#./instant package up -n reverse-proxy-nginx --env-file .env
 
 #openhim
 
-#./instant package remove -n interoperability-layer-openhim --env-file .env
-#./instant package init -n interoperability-layer-openhim --env-file .env
-./instant package down -n interoperability-layer-openhim --env-file .env
+./instant package remove -n interoperability-layer-openhim --env-file .env
+./instant package init -n interoperability-layer-openhim --env-file .env -d
+#./instant package down -n interoperability-layer-openhim --env-file .env
 #./instant package up -n interoperability-layer-openhim --env-file .env
 
 #isanteplus
@@ -90,3 +90,5 @@
 
 
 
+./instant package remove -n lnsp-mediator --env-file .env -d
+./instant package init -n lnsp-mediator --env-file .env -d

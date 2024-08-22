@@ -13,7 +13,7 @@ async function bootstrap() {
 
   // Set up Swagger documentation
   const config = new DocumentBuilder()
-    .setTitle('xds-repo-api')
+    .setTitle('lnsp-mediator')
     .setDescription(
       'API for mediating XDS document storage for the iSantePlus - LNSP lab order and result workflows.',
     )

@@ -12,9 +12,9 @@ docker build \
     --no-cache
 
 docker build \
-    -t xds-repo-api:local \
-    -f projects/xds-repo-api/Dockerfile \
-    projects/xds-repo-api \
+    -t lnsp-mediator:local \
+    -f projects/lnsp-mediator/Dockerfile \
+    projects/lnsp-mediator \
     --no-cache
     
 # Build the Platform to contain the above custom builds

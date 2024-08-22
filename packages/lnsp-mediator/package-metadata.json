@@ -1,6 +1,6 @@
 {
-  "id": "xds-repo-api",
-  "name": "xds-repo-api",
+  "id": "lnsp-mediator",
+  "name": "lnsp-mediator",
   "description": "Repository for emulating XDS document storage for the Lab Workflow",
   "type": "infrastructure",
   "version": "0.0.0",
