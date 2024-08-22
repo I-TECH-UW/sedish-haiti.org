@@ -1,0 +1,28 @@
+{
+  "id": "xds-repo-api",
+  "name": "xds-repo-api",
+  "description": "Repository for emulating XDS document storage for the Lab Workflow",
+  "type": "infrastructure",
+  "version": "0.0.0",
+  "dependencies": [],
+  "environmentVariables": { 
+    "MONGO_IMAGE": "mongo:7.0.12",
+    "MONGO_1_PLACEMENT": "node-1",
+    "MONGO_2_PLACEMENT": "node-2",
+    "MONGO_3_PLACEMENT": "node-3",
+    "MONGO_SET_COUNT": "1",
+    "MONGO_CPU_LIMIT": "0",
+    "MONGO_CPU_RESERVE": "0.05",
+    "MONGO_MEMORY_LIMIT": "2G",
+    "MONGO_MEMORY_RESERVE": "500M",
+    "MONGO_INITDB_ROOT_PASSWORD": "change-admin-password",
+    "MONGO_INITDB_ROOT_USERNAME": "admin",
+    "NESTJS_DB_NAME": "xds-repo",
+    "NESTJS_DB_USER": "xds",
+    "NESTJS_DB_PASSWORD": "dev-password",
+    "MONGO_URL": "mongodb://mongo-1:27017/openhim",
+    "MONGO_ATNAURL": "mongodb://mongo-1:27017/openhim",
+    "AWAIT_HELPER_IMAGE": "jembi/await-helper:1.0.1"
+  }
+}
+

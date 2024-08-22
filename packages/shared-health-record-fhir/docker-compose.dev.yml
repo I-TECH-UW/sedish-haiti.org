@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  shr:
+    image: itechuw/shared-health-record:debug
+    ports:
+      - 4000:3000
+      - 3001:3001
+      - 3002:3001
+      - '9230:9230'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    entrypoint: node --inspect=0.0.0.0:9230 /app/dist/app.js

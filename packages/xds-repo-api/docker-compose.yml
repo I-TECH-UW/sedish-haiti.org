@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  xds-repo-api:
+    image: xds-repo-api:local
+    container_name: xds-repo-api
+    environment:
+      - MONGO_URL=mongodb://mongo-1:27017/nest
+      - NODE_ENV=production
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  openhim:
+    name: openhim_public
+    external: true
+  xds-repo-mongo:
+    name: xds_repo_mongo
+    external: true
+  default:
+  
+# docker run -it --rm --network host mongo mongosh --host localhost --port 27017 -u root -p example --authenticationDatabase admin

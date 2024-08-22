@@ -1,0 +1,7 @@
+version: '3.9'
+
+services:
+  opencr:
+    ports:
+      - target: 3000
+        published: 3002

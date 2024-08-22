@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  openxds:
+    image: ghcr.io/i-tech-uw/openxds:pr-2
+    container_name: openxds-demo
+    ports:
+      - "8010:8010"
+
+    configs:
+      - target: /opt/openxds/openxds.properties
+        source: openxds.properties
+
+    networks:
+      - openhim
+configs:
+  openxds.properties:
+    file: ./config/openxds.properties
+    name: openxds.cnf
+    labels:
+      name: openxds
+    
+networks:
+  openhim:
+    name: openhim_public
+    external: true
+
+

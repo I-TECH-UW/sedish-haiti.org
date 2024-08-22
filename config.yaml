@@ -1,0 +1,73 @@
+projectName: sedish-haiti
+image: jembi/platform:latest
+logPath: /tmp/logs
+
+packages:
+  - interoperability-layer-openhim
+  - reverse-proxy-nginx
+  - fhir-datastore-hapi-fhir
+  - monitoring
+  - database-postgres
+  - identity-access-manager-keycloak
+  - client-registry-opencr
+  - analytics-datastore-elastic-search
+  - message-bus-kafka
+  - shared-health-record-fhir
+  - dashboard-visualiser-kibana
+  # Sedish Haiti packages
+  - emr-isanteplus
+  - data-pipeline-isanteplus
+  - document-data-store-xds
+  - shared-health-record-openshr
+  - openhim-mediator-openxds
+  - xds-repo-api
+
+
+profiles:
+  - name: dev
+    packages:
+      - interoperability-layer-openhim
+      - reverse-proxy-nginx
+      - fhir-datastore-hapi-fhir
+      - monitoring
+      - database-postgres
+      - identity-access-manager-keycloak
+      - client-registry-opencr
+      - analytics-datastore-elastic-search
+      - message-bus-kafka
+      - shared-health-record-fhir
+      - dashboard-visualiser-kibana
+      # Sedish Haiti packages
+      - emr-isanteplus
+      - data-pipeline-isanteplus
+      - document-data-store-xds
+      - shared-health-record-openshr
+      - openhim-mediator-openxds
+    envFiles:
+      - .env
+    dev: true
+    only: false
+
+  - name: prod
+    packages:
+      - interoperability-layer-openhim
+      - reverse-proxy-nginx
+      - fhir-datastore-hapi-fhir
+      - monitoring
+      - database-postgres
+      - identity-access-manager-keycloak
+      - client-registry-opencr
+      - analytics-datastore-elastic-search
+      - message-bus-kafka
+      - shared-health-record-fhir
+      - dashboard-visualiser-kibana
+      # Sedish Haiti packages
+      - emr-isanteplus
+      - data-pipeline-isanteplus
+      - document-data-store-xds
+      - shared-health-record-openshr
+      - openhim-mediator-openxds
+    envFiles:
+      - .env.prod
+    dev: false
+    only: false
