@@ -182,7 +182,7 @@ docker::stack_destroy() {
     try "docker network prune -f" catch "Failed to prune networks"
     overwrite "Pruning networks ... done"
 
-    #docker::prune_volumes
+    docker::prune_volumes
 }
 
 # Loops through all current services and builds up a dictionary of volume names currently in use
@@ -326,13 +326,8 @@ docker::deploy_service() {
 
     docker::prepare_config_digests "$DOCKER_COMPOSE_PATH/$DOCKER_COMPOSE_FILE" ${docker_compose_param//-c /}
     docker::ensure_external_networks_existence "$DOCKER_COMPOSE_PATH/$DOCKER_COMPOSE_FILE" ${docker_compose_param//-c /}
-    log info "Deploying stack $STACK_NAME with compose file: ${DOCKER_COMPOSE_PATH}/$DOCKER_COMPOSE_FILE ${docker_compose_param}"
-    log info "docker stack deploy \
-        -c ${DOCKER_COMPOSE_PATH}/$DOCKER_COMPOSE_FILE \
-        $docker_compose_param \
-        --with-registry-auth \
-        ${STACK_NAME}"
-    try "docker stack deploy \
+
+    try "docker stack deploy -d \
         -c ${DOCKER_COMPOSE_PATH}/$DOCKER_COMPOSE_FILE \
         $docker_compose_param \
         --with-registry-auth \
@@ -372,7 +367,7 @@ docker::deploy_config_importer() {
         config::set_config_digests "$CONFIG_COMPOSE_PATH"
 
         try \
-            "docker stack deploy -c ${CONFIG_COMPOSE_PATH} ${STACK_NAME}" \
+            "docker stack deploy -d -c ${CONFIG_COMPOSE_PATH} ${STACK_NAME}" \
             throw \
             "Wrong configuration in $CONFIG_COMPOSE_PATH"
 
@@ -524,7 +519,7 @@ docker::join_network() {
         else
             log info "Waiting to join $SERVICE_NAME to external network $NETWORK_NAME ..."
             try \
-                "docker service update  \
+                "docker service update -d \
               --network-add name=$NETWORK_NAME \
               $SERVICE_NAME" \
                 throw \

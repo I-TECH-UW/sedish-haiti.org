@@ -7,22 +7,15 @@ services:
     volumes:
       - "openhim-mongo-01:/data/db"
       - "openhim-mongo-01-config:/data/configdb"
-    #   - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
-    # # environment:
-    # #   - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-    # #   - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-    # #   - NESTJS_DB_USER=${NESTJS_DB_USER}
-    # #   - NESTJS_DB_PASSWORD=${NESTJS_DB_PASSWORD}
-    # #   - NESTJS_DB_NAME=${NESTJS_DB_NAME}
     deploy:
       replicas: 1
       resources:
         limits:
-          cpus: ${OPENHIM_MONGO_CPU_LIMIT}
-          memory: ${OPENHIM_MONGO_MEMORY_LIMIT}
+          cpus: ${MONGO_CPU_LIMIT}
+          memory: ${MONGO_MEMORY_LIMIT}
         reservations:
           cpus: ${OPENHIM_MONGO_CPU_RESERVE}
-          memory: ${OPENHIM_MONGO_MEMORY_RESERVE}
+          memory: ${MONGO_MEMORY_RESERVE}
     networks:
       default:
       openhim-mongo:
