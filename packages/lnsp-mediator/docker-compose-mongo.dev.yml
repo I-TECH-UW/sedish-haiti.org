@@ -1,6 +1,6 @@
 services:
-  mongo-1:
+  mongo:
     ports:
       - target: 27017
-        published: 27017
+        published: 27018
         mode: host

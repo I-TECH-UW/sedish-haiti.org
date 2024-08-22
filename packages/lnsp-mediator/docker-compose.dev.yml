@@ -1,3 +1,4 @@
+services:
   lnsp-mediator:
     ports:
       - target: 3000

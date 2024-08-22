@@ -51,16 +51,16 @@ function initialize_package() {
   (
     docker::deploy_service $STACK "${COMPOSE_FILE_PATH}" "docker-compose-mongo.yml" "$mongo_cluster_compose_filename" "$mongo_dev_compose_filename"
 
-    if [[ "${ACTION}" == "init" ]]; then
-      if [[ "${CLUSTERED_MODE}" == "true" ]]; then
-        try "${COMPOSE_FILE_PATH}/initiate-replica-set.sh $STACK" throw "Fatal: Initiate Mongo replica set failed"
-      else
-        config::await_service_running "mongo-1" "${COMPOSE_FILE_PATH}"/docker-compose.await-helper-mongo.yml "1" "$STACK"
+    # if [[ "${ACTION}" == "init" ]]; then
+    #   if [[ "${CLUSTERED_MODE}" == "true" ]]; then
+    #     try "${COMPOSE_FILE_PATH}/initiate-replica-set.sh $STACK" throw "Fatal: Initiate Mongo replica set failed"
+    #   else
+    #     config::await_service_running "mongo-1" "${COMPOSE_FILE_PATH}"/docker-compose.await-helper-mongo.yml "1" "$STACK"
 
-        try "docker exec -i $(docker ps -q -f name=xds_mongo) mongo --eval \"rs.initiate({'_id': 'mongo-set','members': [{'_id': 0,'priority': 1,'host': 'mongo-1:27017'}]})\"" throw "Could not initiate replica set for the single mongo instance. Some services use \
-        mongo event listeners which only work with a replica set"
-      fi
-    fi
+    #     try "docker exec -i $(docker ps -q -f name=xds_mongo) mongo --eval \"rs.initiate({'_id': 'mongo-set','members': [{'_id': 0,'priority': 1,'host': 'mongo-1:27017'}]})\"" throw "Could not initiate replica set for the single mongo instance. Some services use \
+    #     mongo event listeners which only work with a replica set"
+    #   fi
+    # fi
 
     docker::deploy_service $STACK "${COMPOSE_FILE_PATH}" "docker-compose.yml" "$xds_dev_compose_filename"
   ) ||

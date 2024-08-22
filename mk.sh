@@ -26,14 +26,14 @@
 
 #isanteplus
 
-# ./instant package remove -n emr-isanteplus --env-file .env
-#./instant package init -n emr-isanteplus --env-file .env
+./instant package remove -n emr-isanteplus --env-file .env
+./instant package init -n emr-isanteplus --env-file .env
 #./instant package down -n emr-isanteplus --env-file .env
 #./instant package up -n emr-isanteplus --env-file .env
 
 #opencr
-# ./instant package remove -n client-registry-opencr --env-file .env
-# ./instant package init -n client-registry-opencr --env-file #.env
+./instant package remove -n client-registry-opencr --env-file .env
+./instant package init -n client-registry-opencr --env-file #.env
 #./instant package down -n client-registry-opencr --env-file .env
 #./instant package up -n client-registry-opencr --env-file .env
 
@@ -68,14 +68,14 @@
 #./instant package up -n message-bus-kafka --env-file .env
 
 #fhir-datastore-hapi-fhir
-#./instant package remove -n fhir-datastore-hapi-fhir --env-file .env
-#./instant package init -n fhir-datastore-hapi-fhir --env-file .env
+./instant package remove -n fhir-datastore-hapi-fhir --env-file .env
+./instant package init -n fhir-datastore-hapi-fhir --env-file .env
 #./instant package down -n fhir-datastore-hapi-fhir --env-file .env
 #./instant package up -n fhir-datastore-hapi-fhir --env-file .env -d
 
 #shared-health-record-fhir 
-#./instant package remove -n shared-health-record-fhir --env-file .env
-#./instant package init -n shared-health-record-fhir --env-file .env 
+./instant package remove -n shared-health-record-fhir --env-file .env
+./instant package init -n shared-health-record-fhir --env-file .env 
 #./instant package down -n shared-health-record-fhir --env-file .env
 #./instant package up -n shared-health-record-fhir --env-file .env
 
@@ -90,5 +90,5 @@
 
 
 # LNSP Mediator
-./instant package remove -n lnsp-mediator --env-file .env -d
-./instant package init -n lnsp-mediator --env-file .env -d
+# ./instant package remove -n lnsp-mediator --env-file .env -d
+# ./instant package init -n lnsp-mediator --env-file .env -d

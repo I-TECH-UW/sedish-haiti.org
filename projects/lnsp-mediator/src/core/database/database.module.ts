@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
   imports: [
     MongooseModule.forRootAsync({
       useFactory: () => {
-        const host = 'localhost';
+        const host = 'lnsp-mediator_mongo';
         const port = 27017;
         const name = 'nest';
         return {

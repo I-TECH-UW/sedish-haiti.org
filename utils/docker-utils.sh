@@ -327,13 +327,12 @@ docker::deploy_service() {
     docker::prepare_config_digests "$DOCKER_COMPOSE_PATH/$DOCKER_COMPOSE_FILE" ${docker_compose_param//-c /}
     docker::ensure_external_networks_existence "$DOCKER_COMPOSE_PATH/$DOCKER_COMPOSE_FILE" ${docker_compose_param//-c /}
 
-    try "docker stack deploy -d \
+    log info "docker stack deploy -d -c ${DOCKER_COMPOSE_PATH}/$DOCKER_COMPOSE_FILE $docker_compose_param --with-registry-auth ${STACK_NAME}"
+    docker stack deploy -d \
         -c ${DOCKER_COMPOSE_PATH}/$DOCKER_COMPOSE_FILE \
         $docker_compose_param \
         --with-registry-auth \
-        ${STACK_NAME}" \
-        throw \
-        "Wrong configuration in ${DOCKER_COMPOSE_PATH}/$DOCKER_COMPOSE_FILE or in the other supplied compose files"
+        ${STACK_NAME} 
 
     docker::cleanup_stale_configs "$DOCKER_COMPOSE_PATH/$DOCKER_COMPOSE_FILE" ${docker_compose_param//-c /}
 
