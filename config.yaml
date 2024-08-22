@@ -16,8 +16,6 @@ packages:
   - document-data-store-xds
   - shared-health-record-openshr
   - openhim-mediator-openxds
-  - metadata-management-zookeeper
-  - nfs
 
 
   

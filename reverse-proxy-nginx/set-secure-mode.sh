@@ -47,7 +47,7 @@ function generate_dummy_certificates() {
         --network host \
         --name letsencrypt \
         -v dummy-data-certbot-conf:/etc/letsencrypt/archive/${DOMAIN_NAME} \
-        certbot/certbot:v1.23.0 certonly -n \
+        certbot/certbot:v1.23.0 certonly -n -v \
         -m ${RENEWAL_EMAIL} \
         --staging \
         ${DOMAIN_ARGS[*]} \

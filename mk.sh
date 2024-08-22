@@ -45,15 +45,21 @@
 
 #data pipeline
 # ./instant package remove -n data-pipeline-isanteplus --env-file .env
-# ./instant package init -n data-pipeline-isanteplus --env-file .env
+#./instant package init -n data-pipeline-isanteplus --env-file .env
 #./instant package down -n data-pipeline-isanteplus --env-file .env
 #./instant package up -n data-pipeline-isanteplus --env-file .env
 
+#openhim-mediator-openxds 
+#./instant package remove -n openhim-mediator-openxds --env-file .env
+./instant package init -n openhim-mediator-openxds --env-file .env
+#./instant package down -n openhim-mediator-openxds --env-file .env
+#./instant package up -n openhim-mediator-openxds --env-file .env
+
 #document-data-store-xds
 #./instant package remove -n document-data-store-xds --env-file .env
-#./instant package init -n document-data-store-xds --env-file .env
-./instant package down -n document-data-store-xds --env-file .env
-./instant package up -n document-data-store-xds --env-file .env
+./instant package init -n document-data-store-xds --env-file .env
+#./instant package down -n document-data-store-xds --env-file .env
+#./instant package up -n document-data-store-xds --env-file .env
 
 #kafka
 #./instant package remove -n message-bus-kafka --env-file .env
@@ -68,32 +74,18 @@
 #./instant package up -n fhir-datastore-hapi-fhir --env-file .env -d
 
 #shared-health-record-fhir 
-# ./instant package init -n shared-health-record-fhir --env-file .env -d
 #./instant package remove -n shared-health-record-fhir --env-file .env
+#./instant package init -n shared-health-record-fhir --env-file .env 
 #./instant package down -n shared-health-record-fhir --env-file .env
 #./instant package up -n shared-health-record-fhir --env-file .env
 
 
 
-#openhim-mediator-openxds 
-#./instant package remove -n openhim-mediator-openxds --env-file .env
-#./instant package init -n openhim-mediator-openxds --env-file .env
-./instant package down -n openhim-mediator-openxds --env-file .env
-./instant package up -n openhim-mediator-openxds --env-file .env
-
-
 #shared-health-record-openshr
+#./instant package down -n shared-health-record-openshr --env-file .env
 #./instant package remove -n shared-health-record-openshr --env-file .env
 #./instant package init -n shared-health-record-openshr --env-file .env
-#./instant package down -n shared-health-record-openshr --env-file .env
 #./instant package up -n shared-health-record-openshr --env-file .env
-
-
-
-
-
-
-
 
 
 
