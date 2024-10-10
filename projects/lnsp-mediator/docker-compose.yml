@@ -3,14 +3,14 @@ version: '3.8'
 services:
   lnsp-mediator:
     image: lnsp-mediator:local
+    build: 
+      context: ./
     container_name: lnsp-mediator
     ports:
       - "3000:3000"
     environment:
       - MONGO_URL=mongodb://mongo:27017/nest
       - NODE_ENV=production
-    depends_on:
-      - mongo
 
   mongo:
     image: mongo:latest
