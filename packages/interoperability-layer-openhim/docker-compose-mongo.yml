@@ -1,4 +1,4 @@
-# docker run -it --rm --network host mongo mongosh --host localhost --port 27017 -u root -p example --authenticationDatabase admin
+version: "3.9"
 
 services:
   mongo-1:
@@ -7,13 +7,6 @@ services:
     volumes:
       - "openhim-mongo-01:/data/db"
       - "openhim-mongo-01-config:/data/configdb"
-      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - NESTJS_DB_USER=${NESTJS_DB_USER}
-      - NESTJS_DB_PASSWORD=${NESTJS_DB_PASSWORD}
-      - NESTJS_DB_NAME=${NESTJS_DB_NAME}
     deploy:
       replicas: 1
       resources:
@@ -33,11 +26,11 @@ volumes:
   openhim-mongo-01-config:
 
 networks:
-  xds-repo-mongo:
-    name: xds_repo_mongo
+  default:
+  openhim-mongo:
+    name: openhim_mongo_public
     external: true
   mongo_backup_net:
     name: mongo_backup
     driver: overlay
     attachable: true
-  default:

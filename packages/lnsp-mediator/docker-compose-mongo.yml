@@ -1,0 +1,19 @@
+# docker run -it --rm --network host mongo mongosh --host localhost --port 27017 -u root -p example --authenticationDatabase admin
+
+services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    # ports:
+    #   - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
+    driver: local
+networks:
+  default:
+  public:
+    external:
+      name: lnsp-mediator_public

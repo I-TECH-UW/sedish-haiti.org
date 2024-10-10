@@ -140,7 +140,7 @@ export class LabOrderService {
   async create(labOrder: LabOrder) {
     const newLabOrder = (await this.labOrderDAO.create(
       labOrder,
-    )) as LabOrderDocument;
+    )) as unknown as LabOrderDocument;
 
     this.notificationService.notifySubscribers(newLabOrder.documentId);
 

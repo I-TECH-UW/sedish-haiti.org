@@ -1,4 +1,5 @@
-  xds-repo-api:
+services:
+  lnsp-mediator:
     ports:
       - target: 3000
         published: 3300
