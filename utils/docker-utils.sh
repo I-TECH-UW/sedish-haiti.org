@@ -327,12 +327,13 @@ docker::deploy_service() {
     docker::prepare_config_digests "$DOCKER_COMPOSE_PATH/$DOCKER_COMPOSE_FILE" ${docker_compose_param//-c /}
     docker::ensure_external_networks_existence "$DOCKER_COMPOSE_PATH/$DOCKER_COMPOSE_FILE" ${docker_compose_param//-c /}
 
-    log info "docker stack deploy -d -c ${DOCKER_COMPOSE_PATH}/$DOCKER_COMPOSE_FILE $docker_compose_param --with-registry-auth ${STACK_NAME}"
-    docker stack deploy -d \
+    try "docker stack deploy -d \
         -c ${DOCKER_COMPOSE_PATH}/$DOCKER_COMPOSE_FILE \
         $docker_compose_param \
         --with-registry-auth \
-        ${STACK_NAME} 
+        ${STACK_NAME}" \
+        throw \
+        "Wrong configuration in ${DOCKER_COMPOSE_PATH}/$DOCKER_COMPOSE_FILE or in the other supplied compose files"
 
     docker::cleanup_stale_configs "$DOCKER_COMPOSE_PATH/$DOCKER_COMPOSE_FILE" ${docker_compose_param//-c /}
 
@@ -484,13 +485,13 @@ docker::ensure_external_networks_existence() {
                     fi
 
                     log info "Waiting to create external network $name ..."
-                    try \
-                        "docker network create --scope=swarm \
+                    # try \
+                    docker network create --scope=swarm \
                         -d $driver \
                         $attachable \
-                        $name" \
-                        throw \
-                        "Failed to create network $name"
+                        $name 
+                        # throw \
+                        # "Failed to create network $name"
                     overwrite "Waiting to create external network $name ... Done"
                 fi
             done

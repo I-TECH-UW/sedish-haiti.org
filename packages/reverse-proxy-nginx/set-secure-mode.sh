@@ -33,7 +33,7 @@ function create_secrets_from_certificates() {
 }
 
 function generate_dummy_certificates() {
-    try "docker run --rm \
+    docker run --rm \
         --network host \
         --name letsencrypt \
         -v dummy-data-certbot-conf:/etc/letsencrypt/archive/${DOMAIN_NAME} \
@@ -41,9 +41,9 @@ function generate_dummy_certificates() {
         -m ${RENEWAL_EMAIL} \
         --staging \
         ${DOMAIN_ARGS[*]} \
-        --standalone --agree-tos &>/dev/null" \
-        throw \
-        "Failed to create certificate network"
+        --standalone --agree-tos 
+        # throw \
+        # "Failed to create certificate network"
 
     try "docker run --rm --network host --name certbot-helper -w /temp \
         -v dummy-data-certbot-conf:/temp-certificates \
@@ -84,7 +84,18 @@ function generate_real_certificates() {
     if [[ "${STAGING}" == "true" ]]; then
         staging_args="--staging"
     fi
-
+    log info "docker run --rm \
+          -p 8083:80 \
+          -p 8443:443 \
+          --name certbot \
+          --network cert-renewal-network \
+          -v data-certbot-conf:/etc/letsencrypt/archive/${DOMAIN_NAME} \
+          certbot/certbot:v1.23.0 certonly -n \
+          --standalone \
+          ${staging_args} \
+          -m ${RENEWAL_EMAIL} \
+          ${DOMAIN_ARGS[*]} \
+          --agree-tos"
     try "docker run --rm \
           -p 8083:80 \
           -p 8443:443 \

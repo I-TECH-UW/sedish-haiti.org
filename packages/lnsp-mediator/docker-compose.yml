@@ -1,12 +1,14 @@
 services:
   lnsp-mediator:
-    image: lnsp-mediator:local
+    image: lnsp-mediator:local-2
     container_name: lnsp-mediator
     environment:
-      - MONGO_URL=mongodb://mongo-1:27017/nest
+      - MONGO_URL=mongodb://lnsp-mongo-1:27017/nest
       - NODE_ENV=production
-    depends_on:
-      - mongo
+    networks:
+      - default
+      - openhim
+      - xds-repo-mongo
 
 volumes:
   mongo-data:

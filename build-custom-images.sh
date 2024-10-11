@@ -5,7 +5,7 @@
 mkdir /tmp/backups
 
 docker build \
-    -t lnsp-mediator:local \
+    -t lnsp-mediator:local-2 \
     -f projects/lnsp-mediator/Dockerfile \
     projects/lnsp-mediator \
     

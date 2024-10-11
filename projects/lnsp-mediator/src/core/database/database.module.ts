@@ -6,9 +6,10 @@ import mongoose from 'mongoose';
   imports: [
     MongooseModule.forRootAsync({
       useFactory: () => {
-        const host = 'localhost';
+        const host = 'lnsp-mongo-1';
         const port = 27017;
         const name = 'nest';
+        console.log(`Connecting to database ${name} at ${host}:${port}`);
         return {
           uri: `mongodb://${host}:${port}/${name}`,
           connectionFactory: (connection: { readyState: number }) => {
