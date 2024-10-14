@@ -4,7 +4,7 @@ declare ACTION=""
 declare MODE=""
 declare COMPOSE_FILE_PATH=""
 declare UTILS_PATH=""
-declare STACK="openshr"
+declare STACK="superset"
 
 function init_vars() {
   ACTION=$1
@@ -32,39 +32,35 @@ function import_sources() {
 }
 
 function initialize_package() {
+  local superset_dev_compose_filename=""
 
+  if [[ "${MODE}" == "dev" ]]; then
+    log info "Running package in DEV mode"
+    superset_dev_compose_filename="docker-compose.dev.yml"
+  else
+    log info "Running package in PROD mode"
+  fi
 
-  # if [ "${MODE}" == "dev" ]; then
-  #   log info "Running package in DEV mode"
-  #   postgres_dev_compose_filename="docker-compose-postgres.dev.yml"
-  #   hapi_fhir_dev_compose_filename="docker-compose.dev.yml"
-  # else
-  log info "Running package in PROD mode"
-  #fi
-
-  # if [ "${CLUSTERED_MODE}" == "true" ]; then
-  #   postgres_cluster_compose_filename="docker-compose-postgres.cluster.yml"
-  # fi
+  # Replace env vars
+  envsubst <"${COMPOSE_FILE_PATH}/config/client_secret_env.json" >"${COMPOSE_FILE_PATH}/config/client_secret.json"
 
   (
-    docker::deploy_service "$STACK" "${COMPOSE_FILE_PATH}" "docker-compose-mysql.yml"
+    # Create postgres users and tables
+    docker::deploy_config_importer $STACK "$COMPOSE_FILE_PATH/importer/postgres/docker-compose.config.yml" "superset-db-config" "superset"
 
-    docker::deploy_service "$STACK" "${COMPOSE_FILE_PATH}" "docker-compose.yml" 
-  ) ||
-    {
-      log error "Failed to deploy package"
-      exit 1
-    }
+    docker::deploy_service $STACK "${COMPOSE_FILE_PATH}" "docker-compose.yml" "$superset_dev_compose_filename"
+  ) || {
+    log error "Failed to deploy package"
+    exit 1
+  }
+
+  docker::deploy_config_importer $STACK "$COMPOSE_FILE_PATH/importer/docker-compose.config.yml" "superset-config-importer" "superset"
 }
 
 function destroy_package() {
-  docker::stack_destroy "$STACK"
+  docker::stack_destroy $STACK
 
-  if [[ "${CLUSTERED_MODE}" == "true" ]]; then
-    log warn "Volumes are only deleted on the host on which the command is run. Postgres volumes on other nodes are not deleted"
-  fi
-
-  docker::prune_configs "openshr"
+  docker::prune_configs "superset"
 }
 
 main() {
@@ -82,7 +78,7 @@ main() {
   elif [[ "${ACTION}" == "down" ]]; then
     log info "Scaling down package"
 
-    docker::scale_services "$STACK" 0
+    docker::scale_services $STACK 0
   elif [[ "${ACTION}" == "destroy" ]]; then
     log info "Destroying package"
     destroy_package

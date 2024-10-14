@@ -11,9 +11,10 @@ packages:
   - identity-access-manager-keycloak
   - client-registry-opencr
   - analytics-datastore-elastic-search
+  - analytics-datastore-clickhouse
   - message-bus-kafka
   - shared-health-record-fhir
-  - dashboard-visualiser-kibana
+  - dashboard-visualiser-superset
   # Sedish Haiti packages
   - emr-isanteplus
   - data-pipeline-isanteplus
