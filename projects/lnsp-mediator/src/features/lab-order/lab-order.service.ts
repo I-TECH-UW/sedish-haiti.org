@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { LabOrder, LabOrderDocument } from './lab-order.schema';
 import { LabOrderDAO } from './lab-order.dao';
 import { NotificationService } from '../notification/notification.service';
@@ -136,6 +136,50 @@ export class LabOrderService {
     private readonly notificationService: NotificationService,
     private readonly hl7Service: Hl7Service,
   ) {}
+
+  private readonly contentType =
+    'Multipart/Related; boundary="----=_Part_60435_1628391534.1724167510003"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8';
+
+  async handleCreateLabOrder(body: string) {
+    let responseBody;
+    let status;
+    try {
+      const labOrder: LabOrder = await this.parseLabOrderDocument(body);
+      const result = await this.create(labOrder);
+
+      if (result) {
+        responseBody = this.labOrderSubmissionSuccess();
+        status = HttpStatus.OK;
+      } else {
+        responseBody = this.labOrderSubmissionGeneralFailure();
+        status = HttpStatus.UNPROCESSABLE_ENTITY;
+      }
+    } catch (error) {
+      responseBody = this.labOrderSubmissionGeneralFailure();
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+    return { contentType: this.contentType, responseBody, status };
+  }
+
+  async handleGetLabOrderById(xmlPayload: any) {
+    const documentId = this.parseLabOrderRequest(xmlPayload);
+    const result = await this.findById(documentId);
+
+    let responseBody;
+    let status;
+    const contentType =
+      'multipart/related;start="<rootpart*59239_818160219.1723569579332@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:59239_818160219.1723569579332";start-info="application/soap+xml;action="urn:ihe:iti:2007:RetrieveDocumentSet""';
+
+    if (result && result.length === 1) {
+      responseBody = this.decorateLabOrderResponse(result[0]);
+      status = HttpStatus.OK;
+    } else {
+      responseBody = this.documentNotFoundResponse(documentId);
+      status = HttpStatus.NOT_FOUND;
+    }
+
+    return { contentType, responseBody, status };
+  }
 
   async create(labOrder: LabOrder) {
     const newLabOrder = (await this.labOrderDAO.create(

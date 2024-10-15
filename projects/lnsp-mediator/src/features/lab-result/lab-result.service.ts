@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { LabResult } from './lab-result.schema';
 import { parseStringPromise } from 'xml2js';
 import * as xpath from 'xml2js-xpath';
@@ -80,6 +80,48 @@ export class LabResultService {
     private readonly hl7Service: Hl7Service,
     private readonly labResultDAO: LabResultDAO,
   ) {}
+
+  private readonly contentType =
+    'Multipart/Related; boundary="----=_Part_59931_102464640.1723834961072"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8';
+
+  async handleCreateLabResult(xmlPayload: any) {
+    let responseBody;
+    let status;
+    try {
+      const labResult: LabResult = await this.parseLabResultDocument(xmlPayload);
+      const createdLabResult = await this.create(labResult);
+
+      if (createdLabResult) {
+        responseBody = this.labResultSubmissionSuccess();
+        status = HttpStatus.OK;
+      } else {
+        responseBody = this.labResultSubmissionGeneralFailure();
+        status = HttpStatus.UNPROCESSABLE_ENTITY;
+      }
+    } catch (error) {
+      responseBody = this.labResultSubmissionGeneralFailure();
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+    return { contentType: this.contentType, responseBody, status };
+  }
+
+  async handleGetLabResultsByFacility(xmlPayload: any) {
+    const parsedData = await this.parseLabResultRequest(xmlPayload);
+    const resultList = await this.findAllByFacilityId(parsedData.facilityId, parsedData.maxNumber);
+
+    let responseBody;
+    let status;
+    const contentType = 'application/xml; charset=UTF-8';
+
+    if (resultList.length === 0) {
+      status = HttpStatus.NOT_FOUND;
+    } else {
+      responseBody = this.decorateResultList(resultList);
+      status = HttpStatus.ACCEPTED;
+    }
+
+    return { contentType, responseBody, status };
+  }
 
   async create(labResult: LabResult) {
     // Create lab result and connect with lab order
