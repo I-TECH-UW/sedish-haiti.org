@@ -4,7 +4,7 @@ import { LabResultService } from './features/lab-result/lab-result.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
-@Controller('api')
+@Controller()
 @ApiTags('api')
 export class AppController {
   constructor(
@@ -12,31 +12,26 @@ export class AppController {
     private readonly labResultService: LabResultService,
   ) {}
 
-  @Post('entrypoint')
+  @Post()
   async handleRequest(@Body() body: any, @Res() res: Response) {
     try {
       let serviceResponse;
-      if (body.type === 'labOrder') {
-        if (body.action === 'create') {
-          serviceResponse = await this.labOrderService.handleCreateLabOrder(body.payload);
-        } else if (body.action === 'getById') {
-          serviceResponse = await this.labOrderService.handleGetLabOrderById(body.payload);
-        }
-      } else if (body.type === 'labResult') {
-        if (body.action === 'create') {
-          serviceResponse = await this.labResultService.handleCreateLabResult(body.payload);
-        } else if (body.action === 'getByFacility') {
-          serviceResponse = await this.labResultService.handleGetLabResultsByFacility(body.payload);
-        }
-      } else {
-        res.status(HttpStatus.BAD_REQUEST).send('Unsupported type or action');
+      if(!body || typeof body !== 'string') {
+        res.status(HttpStatus.BAD_REQUEST).send('Invalid request body');
         return;
+      }
+
+      if (body.split('\n').some(line => line.startsWith('Content-Type:') && line.includes('urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b'))) {
+          serviceResponse = await this.labOrderService.handleCreateLabOrder(body);
+      } else {
+        serviceResponse = await this.labResultService.handleCreateLabResult(body);
       }
 
     if (!serviceResponse) {
       res.status(HttpStatus.BAD_REQUEST).send('Invalid service response');
       return;
     }
+
     const { contentType, responseBody, status } = serviceResponse;
       res.setHeader('Content-Type', contentType);
       res.status(status).write(responseBody);

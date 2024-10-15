@@ -5,6 +5,8 @@ import { CoreModule } from './core/core.module';
 import { FeaturesModule } from './features/features.module';
 import { Hl7Module } from './core/hl7/hl7.module';
 import { ConfigModule } from '@nestjs/config';
+import { LabOrderService } from './features/lab-order/lab-order.service';
+import { LabResultService } from './features/lab-result/lab-result.service';
 
 @Module({
   imports: [

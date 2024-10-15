@@ -5,5 +5,6 @@ import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [LabResultModule, LabOrderModule, SubscriptionModule],
+  exports: [LabResultModule, LabOrderModule, SubscriptionModule],
 })
 export class FeaturesModule {}
