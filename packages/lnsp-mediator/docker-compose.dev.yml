@@ -1,0 +1,10 @@
+services:
+  lnsp-mediator:
+    ports:
+      - target: 3000
+        published: 3300
+        mode: host
+      - target: 9229
+        published: 9229
+        mode: host
+    command: yarn start:debug

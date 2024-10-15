@@ -1,0 +1,22 @@
+# docker run -it --rm --network host mongo mongosh --host localhost --port 27017 -u root -p example --authenticationDatabase admin
+
+services:
+  lnsp-mongo-1:
+    image: mongo:latest
+    restart: always
+    # ports:
+    #   - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - default
+      - xds-repo-mongo
+
+volumes:
+  mongo-data:
+    driver: local
+networks:
+  default:
+  xds-repo-mongo:
+    name: xds_repo_mongo
+    external: true

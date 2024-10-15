@@ -1,0 +1,6 @@
+services:
+  lnsp-mongo-1:
+    ports:
+      - target: 27017
+        published: 27019
+        mode: host

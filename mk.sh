@@ -1,4 +1,4 @@
-./build-image.sh
+./build-custom-images.sh
 
 #./instant project down --env-file .env
 #./instant project destroy --env-file .env
@@ -13,27 +13,27 @@
 
 #reverse proxy
 #./instant package remove -n reverse-proxy-nginx --env-file .env
-#./instant package init -n reverse-proxy-nginx --env-file .env
+# ./instant package init -n reverse-proxy-nginx --env-file .env -d
 #./instant package down -n reverse-proxy-nginx --env-file .env
-./instant package up -n reverse-proxy-nginx --env-file .env
+#./instant package up -n reverse-proxy-nginx --env-file .env
 
 #openhim
 
 #./instant package remove -n interoperability-layer-openhim --env-file .env
-#./instant package init -n interoperability-layer-openhim --env-file .env
-./instant package down -n interoperability-layer-openhim --env-file .env
+#./instant package init -n interoperability-layer-openhim --env-file .env -d
+#./instant package down -n interoperability-layer-openhim --env-file .env
 #./instant package up -n interoperability-layer-openhim --env-file .env
 
 #isanteplus
 
-# ./instant package remove -n emr-isanteplus --env-file .env
+#./instant package remove -n emr-isanteplus --env-file .env
 #./instant package init -n emr-isanteplus --env-file .env
-#./instant package down -n emr-isanteplus --env-file .env
-#./instant package up -n emr-isanteplus --env-file .env
+# ./instant package down -n emr-isanteplus --env-file .env
+# ./instant package up -n emr-isanteplus --env-file .env
 
-#opencr
-# ./instant package remove -n client-registry-opencr --env-file .env
-# ./instant package init -n client-registry-opencr --env-file #.env
+# #opencr
+#./instant package remove -n client-registry-opencr --env-file .env
+#./instant package init -n client-registry-opencr --env-file #.env
 #./instant package down -n client-registry-opencr --env-file .env
 #./instant package up -n client-registry-opencr --env-file .env
 
@@ -79,8 +79,6 @@
 #./instant package down -n shared-health-record-fhir --env-file .env
 #./instant package up -n shared-health-record-fhir --env-file .env
 
-
-
 #shared-health-record-openshr
 #./instant package down -n shared-health-record-openshr --env-file .env
 #./instant package remove -n shared-health-record-openshr --env-file .env
@@ -89,4 +87,10 @@
 #./instant package up -n shared-health-record-openshr --env-file .env
 
 
+# LNSP Mediator
+./instant package remove -n lnsp-mediator --env-file .env -d
+./instant package init -n lnsp-mediator --env-file .env -d
+# ./instant package down -n lnsp-mediator --env-file .env -d
+# ./instant package up -n lnsp-mediator --env-file .env -d
 
+# 

@@ -1,5 +1,5 @@
 projectName: sedish-haiti
-image: jembi/platform:latest
+image: itechuw/sedish-haiti:latest
 logPath: /tmp/logs
 
 packages:
@@ -11,16 +11,17 @@ packages:
   - identity-access-manager-keycloak
   - client-registry-opencr
   - analytics-datastore-elastic-search
+  - analytics-datastore-clickhouse
   - message-bus-kafka
   - shared-health-record-fhir
-  - dashboard-visualiser-kibana
+  - dashboard-visualiser-superset
   # Sedish Haiti packages
   - emr-isanteplus
   - data-pipeline-isanteplus
   - document-data-store-xds
   - shared-health-record-openshr
   - openhim-mediator-openxds
-  - xds-repo-api
+  - lnsp-mediator
 
 
 profiles:
