@@ -13,5 +13,6 @@ import { LabResultDAO } from './lab-result.dao';
   ],
   providers: [LabResultDAO, LabResultService],
   controllers: [LabResultController],
+  exports: [LabResultService, LabResultDAO],
 })
 export class LabResultModule {}

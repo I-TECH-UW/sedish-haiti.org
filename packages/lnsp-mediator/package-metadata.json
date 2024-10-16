@@ -17,11 +17,11 @@
     "MONGO_MEMORY_RESERVE": "500M",
     "MONGO_INITDB_ROOT_PASSWORD": "change-admin-password",
     "MONGO_INITDB_ROOT_USERNAME": "admin",
-    "NESTJS_DB_NAME": "xds-repo",
-    "NESTJS_DB_USER": "xds",
-    "NESTJS_DB_PASSWORD": "dev-password",
-    "MONGO_URL": "mongodb://mongo-1:27017/openhim",
-    "MONGO_ATNAURL": "mongodb://mongo-1:27017/openhim",
+    "DB_PORT": "27017",
+    "DB_HOST": "lnsp-mongo-1",
+    "DB_NAME": "nest",
+    "MONGO_URL": "mongodb://lnsp-mongo-1:27017/nest",
+    "MONGO_ATNAURL": "mongodb://lnsp-mongo-1:27017/nest",
     "AWAIT_HELPER_IMAGE": "jembi/await-helper:1.0.1"
   }
 }

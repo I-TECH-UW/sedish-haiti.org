@@ -3,6 +3,8 @@ import { LabOrder, LabOrderDocument } from './lab-order.schema';
 import { LabOrderDAO } from './lab-order.dao';
 import { NotificationService } from '../notification/notification.service';
 import { Hl7Service } from 'src/core/hl7/hl7.service';
+import { last } from 'rxjs';
+import e from 'express';
 
 const documentSubmissionSuccessTemplate = `------=_Part_60435_1628391534.1724167510003
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
@@ -49,7 +51,7 @@ Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
       xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" 
       xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure">
       <ns3:RegistryErrorList>
-        <ns3:RegistryError errorCode="XDSRepositoryError" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error"/>
+        <ns3:RegistryError errorCode="XDSRepositoryError" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error" codeContext="{{error}}"/>
       </ns3:RegistryErrorList>
     </ns3:RegistryResponse>
   </env:Body>
@@ -155,7 +157,7 @@ export class LabOrderService {
         status = HttpStatus.UNPROCESSABLE_ENTITY;
       }
     } catch (error) {
-      responseBody = this.labOrderSubmissionGeneralFailure();
+      responseBody = this.labOrderSubmissionGeneralFailure(error.message);
       status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
     return { contentType: this.contentType, responseBody, status };
@@ -245,22 +247,31 @@ export class LabOrderService {
     newLabOrder.documentId = externalIdentifierValue;
 
     // 5. Get HL7 message from the XML
-    const lines = xmlMultipart.split('\n');
+    let lines = xmlMultipart.split('\r\n');
+
+    // Handle postman vs. isanteplus eol encodings
+    if(lines.length === 1) {
+      lines = xmlMultipart.split('\n');
+    }
+
     let hl7Message = '';
     let startParsing = false;
 
-    for (const line of lines) {
-      if (line.startsWith('MSH|^~\\&|')) {
-        startParsing = true;
-      }
+    // Find line that starts HL7 message
+    const firstHl7LineI = lines.findIndex((line: string) => line.startsWith('MSH|^~\\&|'));
+    const lastHl7LineI = lines.findIndex((line: string) => line.startsWith('OBR|'));
 
-      if (startParsing) {
-        hl7Message += line + '\n';
-      }
+    if (firstHl7LineI === -1) throw new Error('HL7 message not found in XML');
+    const firstHl7Line = lines[firstHl7LineI];
 
-      if (line.startsWith('OBR|')) {
-        break;
+    if(lastHl7LineI === -1) {
+      if(firstHl7Line.includes('\r')) {
+        hl7Message = firstHl7Line;
+      } else {
+        throw new Error('HL7 message not found in XML');
       }
+    } else {
+      hl7Message = lines.slice(firstHl7LineI, lastHl7LineI).join('\r');
     }
 
     hl7Message = hl7Message.trim();
@@ -306,8 +317,11 @@ export class LabOrderService {
     return documentSubmissionSuccessTemplate;
   }
 
-  labOrderSubmissionGeneralFailure() {
-    return documentSubmissionGeneralFailureTemplate;
+  labOrderSubmissionGeneralFailure(error?: string) {
+    if(!error) {
+      error = 'General error';
+    }
+    return documentSubmissionGeneralFailureTemplate.replace('{{error}}', error);
   }
 
   decorateLabOrderResponse(labOrder: LabOrder) {
