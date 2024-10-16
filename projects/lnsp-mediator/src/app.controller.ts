@@ -18,7 +18,7 @@ export class AppController {
       let serviceResponse;
 
       // Handle XML as string
-      if(!body) {
+      if (!body) {
         res.status(HttpStatus.BAD_REQUEST).send('Invalid request body');
         return;
       }
@@ -29,24 +29,36 @@ export class AppController {
         bodyString = JSON.stringify(body);
       }
 
-      if (bodyString.split('\n').some((line: string) => line.startsWith('Content-Type:') && line.includes('urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b'))) {
+      if (
+        bodyString
+          .split('\n')
+          .some(
+            (line: string) =>
+              line.startsWith('Content-Type:') &&
+              line.includes('urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b'),
+          )
+      ) {
         serviceResponse = await this.labOrderService.handleCreateLabOrder(body);
       } else if (bodyString.includes('urn:ihe:iti:2007:RetrieveDocumentSet')) {
-        serviceResponse = await this.labOrderService.handleGetLabOrderById(body);
+        serviceResponse =
+          await this.labOrderService.handleGetLabOrderById(body);
       } else {
-        serviceResponse = await this.labResultService.handleCreateLabResult(body);
+        serviceResponse =
+          await this.labResultService.handleCreateLabResult(body);
       }
 
-    if (!serviceResponse) {
-      res.status(HttpStatus.BAD_REQUEST).send('Invalid service response');
-      return;
-    }
+      if (!serviceResponse) {
+        res.status(HttpStatus.BAD_REQUEST).send('Invalid service response');
+        return;
+      }
 
-    const { contentType, responseBody, status } = serviceResponse;
+      const { contentType, responseBody, status } = serviceResponse;
       res.setHeader('Content-Type', contentType);
       res.status(status).write(responseBody);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).write('Internal Server Error');
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .write('Internal Server Error');
     } finally {
       res.end();
     }

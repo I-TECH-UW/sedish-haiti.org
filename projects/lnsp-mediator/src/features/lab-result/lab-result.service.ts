@@ -88,7 +88,8 @@ export class LabResultService {
     let responseBody;
     let status;
     try {
-      const labResult: LabResult = await this.parseLabResultDocument(xmlPayload);
+      const labResult: LabResult =
+        await this.parseLabResultDocument(xmlPayload);
       const createdLabResult = await this.create(labResult);
 
       if (createdLabResult) {
@@ -107,7 +108,10 @@ export class LabResultService {
 
   async handleGetLabResultsByFacility(xmlPayload: any) {
     const parsedData = await this.parseLabResultRequest(xmlPayload);
-    const resultList = await this.findAllByFacilityId(parsedData.facilityId, parsedData.maxNumber);
+    const resultList = await this.findAllByFacilityId(
+      parsedData.facilityId,
+      parsedData.maxNumber,
+    );
 
     let responseBody;
     let status;
