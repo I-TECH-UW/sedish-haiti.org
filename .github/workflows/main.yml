@@ -1,0 +1,53 @@
+name: CI
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+  workflow_dispatch:
+
+jobs:
+  init-project:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Initialize docker swarm
+        run: docker swarm init
+
+      - name: Build local docker image of HIE
+        run: ./build-image.sh
+
+      - name: Download instant CLI
+        run: ./get-cli.sh linux latest
+
+      - name: Boot up HIE 
+        run: ./instant project init --env-file .env.hie -d
+
+      - name: Display container status
+        run: docker service ls
+
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+      
+      # - name: Login to Postman CLI
+      #   run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+
+      # - name: Sleep for 250 seconds
+      #   run: sleep 250
+      #   shell: bash
+          
+      - name: Stop containers
+        if: always()
+        run: ./instant project destroy
