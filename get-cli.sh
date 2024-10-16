@@ -6,8 +6,8 @@ cli_version=${2:-latest}
 case ${option} in
 linux)
   echo "Downloading linux binary version: ${cli_version}"
-  curl -L https://github.com/openhie/instant-v2/releases/download/"$cli_version"/instant-linux -o instant-linux
-  chmod +x ./instant-linux
+  curl -L https://github.com/openhie/instant-v2/releases/download/"$cli_version"/instant-linux -o instant
+  chmod +x ./instant
   exit 0
   ;;
 macos)
@@ -24,10 +24,10 @@ windows)
   ;;
 all)
   echo "Downloading all binaries, version: ${cli_version}"
-  curl -L https://github.com/openhie/instant-v2/releases/download/"$cli_version"/instant-linux -o instant-linux
+  curl -L https://github.com/openhie/instant-v2/releases/download/"$cli_version"/instant-linux -o instant
   curl -L https://github.com/openhie/instant-v2/releases/download/"$cli_version"/instant-macos -o instant-macos
   curl -L https://github.com/openhie/instant-v2/releases/download/"$cli_version"/instant-win.exe -o instant.exe
-  chmod +x ./instant-linux
+  chmod +x ./instant
   chmod +x ./instant-macos
   chmod +x ./instant.exe
   exit 0
