@@ -90,8 +90,8 @@
 
 # LNSP Mediator
 ./instant package remove -n lnsp-mediator --env-file .env
-./instant package init -n lnsp-mediator --env-file .env -d
+./instant package init -n lnsp-mediator --env-file .env
 # ./instant package down -n lnsp-mediator --env-file .env -d
 # ./instant package up -n lnsp-mediator --env-file .env -d
 
-# 
+# 172.31.2.125

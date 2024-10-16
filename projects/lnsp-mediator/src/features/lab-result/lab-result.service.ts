@@ -26,7 +26,7 @@ Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
       xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" 
       xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure">
       <ns3:RegistryErrorList>
-        <ns3:RegistryError errorCode="XDSRepositoryError" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error"/>
+        <ns3:RegistryError errorCode="XDSRepositoryError" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error" codeContext="{{error}}"/>
       </ns3:RegistryErrorList>
     </ns3:RegistryResponse>
   </env:Body>
@@ -212,8 +212,11 @@ export class LabResultService {
     return labResultCreationSuccessTemplate;
   }
 
-  labResultSubmissionGeneralFailure() {
-    return labResultCreationErrorTemplate;
+  labResultSubmissionGeneralFailure(error?: string) {
+    if (!error) {
+      error = 'General error';
+    }
+    return labResultCreationErrorTemplate.replace('{{error}}', error);
   }
 
   parseLabResultRequest(xmlPayload: any): {
