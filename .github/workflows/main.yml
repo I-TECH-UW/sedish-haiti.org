@@ -2,10 +2,10 @@ name: CI
 on:
   push:
     branches:
-    - master
+    - main
   pull_request:
     branches:
-    - master
+    - main
   workflow_dispatch:
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
         run: docker swarm init
 
       - name: Build local docker image of HIE
-        run: ./build-image.sh
+        run: ./build-custom-images.sh
 
       - name: Download instant CLI
         run: ./get-cli.sh linux latest
