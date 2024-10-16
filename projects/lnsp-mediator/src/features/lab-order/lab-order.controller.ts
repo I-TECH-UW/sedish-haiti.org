@@ -11,12 +11,15 @@ export class LabOrderController {
   @Post('create')
   async create(@Body() body: string, @Res() res: Response) {
     try {
-      const { contentType, responseBody, status } = await this.labOrderService.handleCreateLabOrder(body);
+      const { contentType, responseBody, status } =
+        await this.labOrderService.handleCreateLabOrder(body);
       res.setHeader('Content-Type', contentType);
       res.status(status);
       res.write(responseBody);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).write('Internal Server Error');
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .write('Internal Server Error');
     } finally {
       res.end();
     }
@@ -25,12 +28,15 @@ export class LabOrderController {
   @Post('get-by-id')
   async getLabOrderById(@Body() xmlPayload: any, @Res() res: Response) {
     try {
-      const { contentType, responseBody, status } = await this.labOrderService.handleGetLabOrderById(xmlPayload);
+      const { contentType, responseBody, status } =
+        await this.labOrderService.handleGetLabOrderById(xmlPayload);
       res.setHeader('Content-Type', contentType);
       res.status(status);
       res.write(responseBody);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).write('Internal Server Error');
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .write('Internal Server Error');
     } finally {
       res.end();
     }

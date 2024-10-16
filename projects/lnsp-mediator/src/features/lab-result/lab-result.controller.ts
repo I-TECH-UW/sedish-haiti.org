@@ -11,12 +11,15 @@ export class LabResultController {
   @Post('create')
   async create(@Body() xmlPayload: any, @Res() res: Response) {
     try {
-      const { contentType, responseBody, status } = await this.labResultService.handleCreateLabResult(xmlPayload);
+      const { contentType, responseBody, status } =
+        await this.labResultService.handleCreateLabResult(xmlPayload);
       res.setHeader('Content-Type', contentType);
       res.status(status);
       res.write(responseBody);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).write('Internal Server Error');
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .write('Internal Server Error');
     } finally {
       res.end();
     }
@@ -25,12 +28,15 @@ export class LabResultController {
   @Post('get-by-facility')
   async findAll(@Body() xmlPayload: any, @Res() res: Response) {
     try {
-      const { contentType, responseBody, status } = await this.labResultService.handleGetLabResultsByFacility(xmlPayload);
+      const { contentType, responseBody, status } =
+        await this.labResultService.handleGetLabResultsByFacility(xmlPayload);
       res.setHeader('Content-Type', contentType);
       res.status(status);
       res.write(responseBody);
     } catch (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).write('Internal Server Error');
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .write('Internal Server Error');
     } finally {
       res.end();
     }

@@ -3,8 +3,6 @@ import { LabOrder, LabOrderDocument } from './lab-order.schema';
 import { LabOrderDAO } from './lab-order.dao';
 import { NotificationService } from '../notification/notification.service';
 import { Hl7Service } from 'src/core/hl7/hl7.service';
-import { last } from 'rxjs';
-import e from 'express';
 
 const documentSubmissionSuccessTemplate = `------=_Part_60435_1628391534.1724167510003
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
@@ -250,22 +248,25 @@ export class LabOrderService {
     let lines = xmlMultipart.split('\r\n');
 
     // Handle postman vs. isanteplus eol encodings
-    if(lines.length === 1) {
+    if (lines.length === 1) {
       lines = xmlMultipart.split('\n');
     }
 
     let hl7Message = '';
-    let startParsing = false;
 
     // Find line that starts HL7 message
-    const firstHl7LineI = lines.findIndex((line: string) => line.startsWith('MSH|^~\\&|'));
-    const lastHl7LineI = lines.findIndex((line: string) => line.startsWith('OBR|'));
+    const firstHl7LineI = lines.findIndex((line: string) =>
+      line.startsWith('MSH|^~\\&|'),
+    );
+    const lastHl7LineI = lines.findIndex((line: string) =>
+      line.startsWith('OBR|'),
+    );
 
     if (firstHl7LineI === -1) throw new Error('HL7 message not found in XML');
     const firstHl7Line = lines[firstHl7LineI];
 
-    if(lastHl7LineI === -1) {
-      if(firstHl7Line.includes('\r')) {
+    if (lastHl7LineI === -1) {
+      if (firstHl7Line.includes('\r')) {
         hl7Message = firstHl7Line;
       } else {
         throw new Error('HL7 message not found in XML');
@@ -318,7 +319,7 @@ export class LabOrderService {
   }
 
   labOrderSubmissionGeneralFailure(error?: string) {
-    if(!error) {
+    if (!error) {
       error = 'General error';
     }
     return documentSubmissionGeneralFailureTemplate.replace('{{error}}', error);

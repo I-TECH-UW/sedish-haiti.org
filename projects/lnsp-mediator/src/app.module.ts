@@ -14,10 +14,20 @@ import * as path from 'path';
     CoreModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: fs.existsSync(path.resolve(__dirname, `../.env.${process.env.NODE_ENV || 'development'}`))
+      envFilePath: fs.existsSync(
+        path.resolve(
+          __dirname,
+          `../.env.${process.env.NODE_ENV || 'development'}`,
+        ),
+      )
         ? `.env.${process.env.NODE_ENV || 'development'}`
         : undefined,
-      ignoreEnvFile: !fs.existsSync(path.resolve(__dirname, `../.env.${process.env.NODE_ENV || 'development'}`)),
+      ignoreEnvFile: !fs.existsSync(
+        path.resolve(
+          __dirname,
+          `../.env.${process.env.NODE_ENV || 'development'}`,
+        ),
+      ),
     }),
     Hl7Module.forRoot({
       mapping: false,

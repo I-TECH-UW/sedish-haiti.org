@@ -16,6 +16,5 @@ import { NotificationModule } from '../notification/notification.module';
   providers: [LabOrderDAO, LabOrderService],
   controllers: [LabOrderController],
   exports: [LabOrderService, LabOrderDAO],
-
 })
 export class LabOrderModule {}
