@@ -1,4 +1,5 @@
 ./build-custom-images.sh
+#./build-image.sh
 
 #./instant project down --env-file .env
 #./instant project destroy --env-file .env
@@ -88,7 +89,7 @@
 
 
 # LNSP Mediator
-./instant package remove -n lnsp-mediator --env-file .env -d
+./instant package remove -n lnsp-mediator --env-file .env
 ./instant package init -n lnsp-mediator --env-file .env -d
 # ./instant package down -n lnsp-mediator --env-file .env -d
 # ./instant package up -n lnsp-mediator --env-file .env -d

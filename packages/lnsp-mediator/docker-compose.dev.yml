@@ -8,3 +8,5 @@ services:
         published: 9229
         mode: host
     command: yarn start:debug
+    environment:
+      - NODE_ENV=development

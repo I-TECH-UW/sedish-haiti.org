@@ -10,7 +10,7 @@ export class LabOrder {
   @Prop({ required: true, unique: true })
   documentId: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   alternateVisitId: string;
 
   @Prop({ required: true })

@@ -16,13 +16,23 @@ export class AppController {
   async handleRequest(@Body() body: any, @Res() res: Response) {
     try {
       let serviceResponse;
-      if(!body || typeof body !== 'string') {
+
+      // Handle XML as string
+      if(!body) {
         res.status(HttpStatus.BAD_REQUEST).send('Invalid request body');
         return;
       }
 
-      if (body.split('\n').some(line => line.startsWith('Content-Type:') && line.includes('urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b'))) {
-          serviceResponse = await this.labOrderService.handleCreateLabOrder(body);
+      let bodyString = body;
+
+      if (typeof bodyString !== 'string') {
+        bodyString = JSON.stringify(body);
+      }
+
+      if (bodyString.split('\n').some((line: string) => line.startsWith('Content-Type:') && line.includes('urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b'))) {
+        serviceResponse = await this.labOrderService.handleCreateLabOrder(body);
+      } else if (bodyString.includes('urn:ihe:iti:2007:RetrieveDocumentSet')) {
+        serviceResponse = await this.labOrderService.handleGetLabOrderById(body);
       } else {
         serviceResponse = await this.labResultService.handleCreateLabResult(body);
       }
