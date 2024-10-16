@@ -26,7 +26,7 @@ jobs:
         run: docker swarm init
 
       - name: Build local docker image of HIE
-        run: ./build-custom-image.sh
+        run: ./build-custom-images.sh
 
       - name: Download instant CLI
         run: ./get-cli.sh linux latest
