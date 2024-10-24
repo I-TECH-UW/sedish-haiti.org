@@ -26,6 +26,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     networks:
       - public 
+      - reverse-proxy
       - mysql
 
 volumes:
@@ -38,6 +39,9 @@ networks:
   mysql:
     external: true
     name: mysql_public
+  reverse-proxy:
+    name: reverse-proxy_public
+    external: true
 
 
       
