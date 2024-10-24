@@ -1,6 +1,7 @@
 import { Controller, Post, Body, Res, HttpStatus } from '@nestjs/common';
 import { LabOrderService } from './features/lab-order/lab-order.service';
 import { LabResultService } from './features/lab-result/lab-result.service';
+import { SubscriptionService } from './features/subscription/subscription.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
@@ -10,6 +11,7 @@ export class AppController {
   constructor(
     private readonly labOrderService: LabOrderService,
     private readonly labResultService: LabResultService,
+    private readonly subscriptionService: SubscriptionService,
   ) {}
 
   @Post()
@@ -42,7 +44,14 @@ export class AppController {
       } else if (bodyString.includes('urn:ihe:iti:2007:RetrieveDocumentSet')) {
         serviceResponse =
           await this.labOrderService.handleGetLabOrderById(body);
-      } else {
+      } else if (bodyString.includes('ns2:GetMessages')) {
+        serviceResponse =
+          await this.labResultService.handleGetLabResultsByFacility(body);
+      } else if (bodyString.includes('http://docs.oasis-open.org/wsn/bw2/NotificationProducer/SubscribeRequest')) {
+        serviceResponse =
+          await this.subscriptionService.handleSubscription(body);
+      } else
+        {
         serviceResponse =
           await this.labResultService.handleCreateLabResult(body);
       }

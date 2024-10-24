@@ -8,7 +8,20 @@ docker build \
     -t lnsp-mediator:local \
     -f projects/lnsp-mediator/Dockerfile \
     projects/lnsp-mediator \
-    
+
+# Load Env vars from json file environmentVariables field
+filepath="./packages/emr-isanteplus/package-metadata.json"
+envs=$(jq -r '.environmentVariables | to_entries | .[] | "\(.key)=\(.value)"' $filepath)
+
+# Export each environment variable
+while IFS= read -r line; do
+  export "$line"
+done <<< "$envs"
+
+docker compose \
+    -f packages/emr-isanteplus/docker-compose.yml \
+    build
+
 # Build the Platform to contain the above custom builds
 ./build-image.sh
 

@@ -11,17 +11,9 @@ export class SubscriptionController {
   @Post()
   @ApiOperation({ summary: 'Create a new subscription' })
   async create(@Body() xmlPayload: any) {
-    const targetAddress =
-      xmlPayload['soap:envelope']['soap:body'][0]['wsnt:subscribe'][0][
-        'wsnt:consumerreference'
-      ][0]['wsa:address'][0];
-
-    const subscriptionData: Subscription = {
-      targetAddress: targetAddress,
-    };
-
-    const r = this.subscriptionService.create(subscriptionData);
-
+    const r = this.subscriptionService.handleSubscription(xmlPayload);
+    
+    // TODO: Return valid subscription response
     return r;
   }
 

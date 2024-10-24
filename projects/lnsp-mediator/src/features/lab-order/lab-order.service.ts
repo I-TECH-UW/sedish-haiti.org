@@ -4,6 +4,53 @@ import { LabOrderDAO } from './lab-order.dao';
 import { NotificationService } from '../notification/notification.service';
 import { Hl7Service } from 'src/core/hl7/hl7.service';
 
+const example_message = `------=_Part_59239_818160219.1723569579332
+Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
+
+
+<env:Envelope 
+  xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+  <env:Header 
+    xmlns:wsa="http://www.w3.org/2005/08/addressing">
+    <wsa:To env:mustUnderstand="true">http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    <wsa:Action>urn:ihe:iti:2007:RetrieveDocumentSetResponse</wsa:Action>
+    <wsa:MessageID>urn:uuid:0da76f77-05e7-4f5f-a2aa-26a1969d8e03</wsa:MessageID>
+    <wsa:RelatesTo>urn:uuid:1551bec4-61a4-4e90-81da-adffa8c5ad49</wsa:RelatesTo>
+  </env:Header>
+  <env:Body>
+    <ns4:RetrieveDocumentSetResponse 
+      xmlns:ns4="urn:ihe:iti:xds-b:2007" 
+      xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0" 
+      xmlns:ns3="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0" 
+      xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0" 
+      xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0">
+      <ns3:RegistryResponse status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success"/>
+      <ns4:DocumentResponse>
+        <ns4:RepositoryUniqueId>1.3.6.1.4.1.21367.2010.1.2.1125</ns4:RepositoryUniqueId>
+        <ns4:DocumentUniqueId>2.25.7430734057429358897</ns4:DocumentUniqueId>
+        <ns4:mimeType>text/plain</ns4:mimeType>
+        <ns4:Document>
+          <xop:Include 
+            xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:db353581-b1b7-4421-b941-f1cc46131ea6%40null"/>
+          </ns4:Document>
+        </ns4:DocumentResponse>
+      </ns4:RetrieveDocumentSetResponse>
+    </env:Body>
+  </env:Envelope>
+------=_Part_59239_818160219.1723569579332
+Content-Type: text/plain
+Content-ID: 
+  <db353581-b1b7-4421-b941-f1cc46131ea6@null>
+Content-Transfer-Encoding: binary
+
+MSH|^~\&||LNSP|||20240813131934||ORM^O01^ORM_O01|2024081313193400010|D|2.5
+PID||1122132411^^^^^ND11221|||Demo^Patient|LUCIE|19550822|F|||^^^^^HTI|||||^Lòt||685923^^^^^LNSP
+PV1|||11221||||11221^Demo^Provider|||||||||||||||||||||||||||||||||||||20240813||||||b26a3921-a7c4-43f3-9501-995ac9cf88e8^f037e97b-471e-4898-a07c-b8e169e0ddc4^^353faea9-198c-4827-a3c8-55eb1570dd4a^671eeb63-047a-42c3-9fb0-6649565f2556
+ORC|NW|11221685923|||||^^^20240813131934||20240813131934|||11221^Demo^Provider|||||||||||||||||25836-8
+OBR||11221685923||VLCVR|||20240813131934||||O|||||11221^Demo^Provider|||||||||||^^^20240813131934
+
+------=_Part_59239_818160219.1723569579332--`;
+
 const documentSubmissionSuccessTemplate = `------=_Part_60435_1628391534.1724167510003
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
 
@@ -121,7 +168,7 @@ Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
       xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0">
       <ns3:RegistryResponse status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure">
         <ns3:RegistryErrorList>
-          <ns3:RegistryError codeContext="Document not found! document UID:{{documentId}}" errorCode="XDSMissingDocument" location="2.25.8729812114953458533" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error">Document not found! document UID:2.25.8729812114953458533</ns3:RegistryError>
+          <ns3:RegistryError codeContext="Document not found! document UID:{{documentId}}" errorCode="XDSMissingDocument" location="{{documentId}}" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Error">Document not found! document UID:{{documentId}}</ns3:RegistryError>
         </ns3:RegistryErrorList>
       </ns3:RegistryResponse>
     </ns4:RetrieveDocumentSetResponse>
@@ -167,8 +214,9 @@ export class LabOrderService {
 
     let responseBody;
     let status;
-    const contentType =
-      'multipart/related;start="<rootpart*59239_818160219.1723569579332@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:59239_818160219.1723569579332";start-info="application/soap+xml;action="urn:ihe:iti:2007:RetrieveDocumentSet""';
+
+    const contentType = 'multipart/related;boundary="----=_Part_59239_818160219.1723569579332"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8'
+    //const contentType = 'multipart/related;start="<rootpart*59239_818160219.1723569579332@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:59239_818160219.1723569579332";start-info="application/soap+xml;action="urn:ihe:iti:2007:RetrieveDocumentSet""';
 
     if (result && result.length === 1) {
       responseBody = this.decorateLabOrderResponse(result[0]);
@@ -333,6 +381,6 @@ export class LabOrderService {
   }
 
   documentNotFoundResponse(documentId: string) {
-    return documentNotFoundTemplate.replace('{{documentId}}', documentId);
+    return documentNotFoundTemplate.replaceAll('{{documentId}}', documentId);
   }
 }

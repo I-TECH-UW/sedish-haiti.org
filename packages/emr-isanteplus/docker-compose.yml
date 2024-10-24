@@ -2,7 +2,12 @@ version: '3.9'
 
 services:
   isanteplus:
-    image:  ghcr.io/isanteplus/docker-isanteplus-server:v2.3.4
+    #image:  ghcr.io/isanteplus/docker-isanteplus-server:v2.3.4
+    # See ./build-custom-images.sh for how to build local image to include custom modules
+    image: itechuw/docker-isanteplus-server:local
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       - OMRS_JAVA_MEMORY_OPTS=${OMRS_JAVA_MEMORY_OPTS}
       - OMRS_CONFIG_CONNECTION_SERVER=${OMRS_CONFIG_CONNECTION_SERVER}
@@ -19,44 +24,24 @@ services:
       - isanteplus-data:/openmrs/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    ports:
-      - 1046:1044
     networks:
       - public 
-      - openhim
-    configs:
-      - target: /custom_modules/labintegration-2.2.1-SNAPSHOT.omod
-        source: labintegration-2.2.1-SNAPSHOT.omod
- 
-
-configs:
-  labintegration-2.2.1-SNAPSHOT.omod:
-    file: ./config/custom_modules/labintegration-2.2.1-SNAPSHOT.omod
-    name: labintegration-2.2.1-SNAPSHOT.omod
-    labels:
-      name: labintegration-2.2.1-SNAPSHOT
-  # isanteplusreports-1.1-SNAPSHOT.omod:
-  #   file: ./config/custom_modules/isanteplusreports-1.1-SNAPSHOT.omod
-  #   name: isanteplusreports-1.1-SNAPSHOT.omod
-  #   labels:
-  #     name: isanteplusreports
+      - reverse-proxy
+      - mysql
 
 volumes:
   isanteplus-data:
-  custom_modules:
-    driver: local
-
-  #etc/timezone:
-  #etc/localtime:
-
 
 networks:
   public:
     external: true
-    name: reverse-proxy_public
-  openhim:
+    name: isanteplus_public
+  mysql:
     external: true
-    name: openhim_public
+    name: mysql_public
+  reverse-proxy:
+    name: reverse-proxy_public
+    external: true
 
 
       
