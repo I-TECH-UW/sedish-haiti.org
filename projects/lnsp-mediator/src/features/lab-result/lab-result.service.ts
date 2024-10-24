@@ -33,7 +33,7 @@ Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
 </env:Envelope>
 ------=_Part_59931_102464640.1723834961072--`;
 
-const labResultCreationSuccessTemplate = `------=_Part_60435_1628391534.1724167510003
+const labResultCreationSuccessTemplate = `------=_Part_59931_102464640.1723834961072
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
 
 
@@ -55,7 +55,7 @@ Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
       xmlns:ns6="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0" status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success"/>
     </env:Body>
   </env:Envelope>
-------=_Part_60435_1628391534.1724167510003--`;
+------=_Part_59931_102464640.1723834961072--`;
 
 const resultListTemplate = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:GetMessagesResponse xmlns="http://www.w3.org/2005/08/addressing"

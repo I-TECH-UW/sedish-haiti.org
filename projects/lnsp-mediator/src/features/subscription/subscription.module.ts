@@ -14,6 +14,6 @@ import { SubscriptionDAO } from './subscription.dao';
 
   providers: [SubscriptionService, SubscriptionDAO],
   controllers: [SubscriptionController],
-  exports: [SubscriptionDAO],
+  exports: [SubscriptionDAO, SubscriptionService],
 })
 export class SubscriptionModule {}

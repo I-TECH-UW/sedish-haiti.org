@@ -8,6 +8,7 @@ packages:
   - fhir-datastore-hapi-fhir
   - monitoring
   - database-postgres
+  - database-mysql
   - identity-access-manager-keycloak
   - client-registry-opencr
   - analytics-datastore-elastic-search
@@ -22,6 +23,7 @@ packages:
   - shared-health-record-openshr
   - openhim-mediator-openxds
   - lnsp-mediator
+
 
 
 profiles:

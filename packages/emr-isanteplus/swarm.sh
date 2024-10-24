@@ -47,7 +47,7 @@ function initialize_package() {
   # fi
 
   (
-    docker::deploy_service "$STACK" "${COMPOSE_FILE_PATH}" "docker-compose-mysql.yml"
+    #docker::deploy_service "$STACK" "${COMPOSE_FILE_PATH}" "docker-compose-mysql.yml"
 
     docker::deploy_service "$STACK" "${COMPOSE_FILE_PATH}" "docker-compose.yml" 
   ) ||

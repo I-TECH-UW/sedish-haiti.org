@@ -3,8 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { SubscriptionDAO } from '../subscription/subscription.dao';
 import { firstValueFrom } from 'rxjs';
 
-const subscriptionNotificationTemplate = `
-<?xml version="1.0" encoding="UTF-8"?>
+const subscriptionNotificationTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 <s:Envelope 
   xmlns:s="http://www.w3.org/2003/05/soap-envelope" 
   xmlns:a="http://www.w3.org/2005/08/addressing" 
@@ -72,7 +71,7 @@ export class NotificationService {
     try {
       const response = await firstValueFrom(
         this.httpService.post(url, payload, {
-          headers: { 'Content-Type': 'application/soap+xml; charset=UTF-8' },
+          headers: { 'Content-Type': 'application/xml; charset=UTF-8' },
         }),
       );
       return response.data;
