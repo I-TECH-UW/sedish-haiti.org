@@ -119,6 +119,7 @@ export class LabResultService {
 
     if (resultList.length === 0) {
       status = HttpStatus.NOT_FOUND;
+      responseBody = this.decorateResultList([]);
     } else {
       responseBody = this.decorateResultList(resultList);
       status = HttpStatus.ACCEPTED;
