@@ -98,4 +98,9 @@ export class NotificationService {
     const resultHL7 = hl7.serializeJSON(parsedHL7);
     return resultHL7;
   }
+
+  sendHL7Result(resultHL7: string): string {
+
+    return resultHL7;
+  }
 }

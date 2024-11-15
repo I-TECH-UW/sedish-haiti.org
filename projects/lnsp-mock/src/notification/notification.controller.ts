@@ -23,8 +23,10 @@ export class NotificationController {
       // Generate a random HL7 result message
       const resultHL7 = this.notificationService.generateRandomHL7Result(parsedHL7);
 
-      // Send back the result (you can define how you want to send it)
-      res.status(HttpStatus.OK).send(resultHL7);
+      // Send back the result
+      const response = this.notificationService.sendHL7Result(resultHL7);
+      
+      res.status(HttpStatus.OK).send(response);
     } catch (error) {
       console.error(error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred');
