@@ -2721,6 +2721,13 @@ exponential-backoff@^3.1.1:
   resolved "https://registry.yarnpkg.com/exponential-backoff/-/exponential-backoff-3.1.1.tgz#64ac7526fe341ab18a39016cd22c787d01e00bf6"
   integrity sha512-dX7e/LHVJ6W3DE1MHWi9S1EYzDESENfLrYohG2G++ovZrYOkm4Knwa0mc1cn84xJOR4KEU0WSchhLbd0UklbHw==
 
+express-xml-bodyparser@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/express-xml-bodyparser/-/express-xml-bodyparser-0.3.0.tgz#b1f5a98adf6c6e412c4ccba634234b82945c62be"
+  integrity sha512-biHFKaZsPZQaf6H+xB8f8aawqe4c671JIF2RN8f3k9iOtPe8TVBb4H8tQkURFWFpGic53TCD5+uno9u52hdYoA==
+  dependencies:
+    xml2js "^0.4.11"
+
 express@4.21.1:
   version "4.21.1"
   resolved "https://registry.yarnpkg.com/express/-/express-4.21.1.tgz#9dae5dda832f16b4eec941a4e44aa89ec481b281"
@@ -6250,6 +6257,14 @@ write-file-atomic@^6.0.0:
   dependencies:
     imurmurhash "^0.1.4"
     signal-exit "^4.0.1"
+
+xml2js@^0.4.11:
+  version "0.4.23"
+  resolved "https://registry.yarnpkg.com/xml2js/-/xml2js-0.4.23.tgz#a0c69516752421eb2ac758ee4d4ccf58843eac66"
+  integrity sha512-ySPiMjM0+pLDftHgXY4By0uswI3SPKLDw/i3UXbnO8M/p28zqexCUoPmQFrYD+/1BzhGJSs2i1ERWKJAtiLrug==
+  dependencies:
+    sax ">=0.6.0"
+    xmlbuilder "~11.0.0"
 
 xml2js@^0.6.2:
   version "0.6.2"

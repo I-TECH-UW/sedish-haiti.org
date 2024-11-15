@@ -1,49 +1,73 @@
+// src/notification/notification.service.ts
 import { Injectable } from '@nestjs/common';
 import * as xml2js from 'xml2js';
-import * as hl7 from 'hl7';
 import axios from 'axios';
+import * as hl7 from 'hl7';
+import { ConfigService } from '@nestjs/config';
 
+
+const result_template = `MSH|^~\&|||||20240816150153-0400||ORU^R01|00000303|P|2.5.1
+PID||1110012004^^^^MR^111600|1110012004^^^^MR^111600||Patient^Demo||19220411[0000]|M||U||||||||^85359815-dccd-4cde-a49a-301cbcf27a5b
+PV1||R|11100||||11100^Provider^Demo^^^^^^^^^^L||||||||||^^^^^^^^^^^^L|||||||||||||||||||||||||||202408081056||||||d02d8a25-0b1e-4c8d-8437-1b0c8611c503^f037e97b-471e-4898-a07c-b8e169e0ddc4^ST-02924^3a2d07cd-fda4-4dfa-ac11-04579eae4dff^85359815-dccd-4cde-a49a-301cbcf27a5b
+ORC|RE|11100695547|1|A0080176|||^^^202408081127-0400^^R||202408081127|HISTC||11100^HUEH^PRESTATAIRE^^^^^^^^^^L|11100
+OBR|1|11100695547|1|f037e97b-471e-4898-a07c-b8e169e0ddc4|||202408081127|||HISTC|N|||202408091052||11100^HUEH^PRESTATAIRE^^^^^^^^^^L||||||202408161501-0400|||F||^^^202408081127-0400^^R|||||||I/AUT
+OBX|1|ST|25836-8^^LN^LBCVR^Copies / ml (CVr)^L|0|voir ci-dessous||||||F|||202408150505||I/AUT|||202408161501
+NTE|1||Indétectable
+OBX|2|ST|25836-8^^LN^LBLOG^Log (Copies / ml)^L|1|voir ci-dessous||||||F|||202408150505||I/AUT|||202408161501
+NTE|1||Indétectable
+`
 @Injectable()
 export class NotificationService {
   private parser = new xml2js.Parser({ explicitArray: false });
-  private builder = new xml2js.Builder();
+  // No need to instantiate xml2js.Builder if not used
+
+  constructor(private configService: ConfigService) {}
 
   async extractDocumentId(soapMessage: string): Promise<string> {
     const parsedSoap = await this.parser.parseStringPromise(soapMessage);
-    // Navigate through the parsed SOAP to find the document ID
-    const documentId = parsedSoap['s:Envelope']['s:Body']['wsnt:Notify']['wsnt:NotificationMessage']['wsnt:Message']['lcm:SubmitObjectsRequest']['rim:RegistryObjectList']['rim:ObjectRef']['$']['id'];
+    const documentId =
+      parsedSoap['s:Envelope']['s:Body']['wsnt:Notify']['wsnt:NotificationMessage']['wsnt:Message']['lcm:SubmitObjectsRequest']['rim:RegistryObjectList']['rim:ObjectRef']['$']['id'];
     return documentId;
   }
 
   async retrieveHL7Message(documentId: string): Promise<string> {
-    const repoId = 'YOUR_CONFIGURED_REPO_ID'; // Replace with your repo ID
+    const repoId = this.configService.get<string>('REPO_ID');
+    const xdsRepositoryUrl = this.configService.get<string>('HIE_URL');
+    const username = this.configService.get<string>('HIE_CLIENT');
+    const password = this.configService.get<string>('HIE_PW');
+
     const soapRequest = this.buildRetrieveDocumentSetRequest(repoId, documentId);
 
-    const response = await axios.post('https://openhimcore.sedish.live/xdsrepository', soapRequest, {
-      headers: { 'Content-Type': 'application/soap+xml' },
+    const response = await axios.post(xdsRepositoryUrl, soapRequest, {
+      headers: { 'Content-Type': 'application/soap+xml; charset=UTF-8' },
+      auth: {
+        username: username,
+        password: password,
+      },
     });
 
-    // Extract HL7 message from the response
-    // Assume the HL7 message is in the response body or a specific XML node
     const hl7Message = this.extractHL7FromResponse(response.data);
     return hl7Message;
   }
 
   buildRetrieveDocumentSetRequest(repoId: string, documentId: string): string {
+    const soapActionUrl = this.configService.get<string>('SOAP_ACTION_URL');
+    const uuid = this.generateUUID();
+
     const soapEnvelope = `<?xml version="1.0" encoding="UTF-8"?>
 <soap:Envelope
   xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
   <soap:Header>
     <wsa:MessageID
       xmlns:wsa="http://www.w3.org/2005/08/addressing"
-      xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" soapenv:mustUnderstand="false">urn:uuid:${this.generateUUID()}
+      xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" soapenv:mustUnderstand="false">urn:uuid:${uuid}
     </wsa:MessageID>
     <wsa:Action
       xmlns:wsa="http://www.w3.org/2005/08/addressing">urn:ihe:iti:2007:RetrieveDocumentSet
     </wsa:Action>
     <wsa:To
       xmlns:wsa="http://www.w3.org/2005/08/addressing"
-      xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" soapenv:mustUnderstand="false">https://sedish.net:5000/xdsbrepository
+      xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" soapenv:mustUnderstand="false">${soapActionUrl}
     </wsa:To>
   </soap:Header>
   <soap:Body>
@@ -61,22 +85,40 @@ export class NotificationService {
   }
 
   extractHL7FromResponse(responseData: string): string {
-    // Parse the SOAP response to extract the HL7 message
-    // This will depend on the structure of the response
-    // For this example, we'll assume the HL7 message is in a specific node
-    // Adjust the parsing logic as per actual response
-    return responseData; // Placeholder
-  }
+    let lines = responseData.split('\r\n');
 
-  generateUUID(): string {
-    // Generate a UUID for MessageID
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      /* eslint-disable */
-      const r = (Math.random() * 16) | 0,
-        v = c == 'x' ? r : (r & 0x3) | 0x8;
-      /* eslint-enable */
-      return v.toString(16);
-    });
+    // Handle postman vs. isanteplus eol encodings
+    if (lines.length === 1) {
+      lines = responseData.split('\n');
+    }
+
+    let hl7Message = '';
+
+    // Find line that starts HL7 message
+    const firstHl7LineI = lines.findIndex((line: string) =>
+      line.startsWith('MSH|^~\\&|'),
+    );
+    const lastHl7LineI = lines.findIndex((line: string) =>
+      line.startsWith('OBR|'),
+    );
+
+    if (firstHl7LineI === -1) throw new Error('HL7 message not found in XML');
+    
+    const firstHl7Line = lines[firstHl7LineI];
+
+    if (lastHl7LineI === -1) {
+      if (firstHl7Line.includes('\r')) {
+        hl7Message = firstHl7Line;
+      } else {
+        throw new Error('HL7 message not found in XML');
+      }
+    } else {
+      hl7Message = lines.slice(firstHl7LineI, lastHl7LineI).join('\r');
+    }
+
+    hl7Message = hl7Message.trim();
+
+    return hl7Message;
   }
 
   parseHL7Message(hl7Message: string): any {
@@ -85,18 +127,21 @@ export class NotificationService {
   }
 
   generateRandomHL7Result(parsedHL7: any): string {
-    // Modify the parsed HL7 message to create a result message
-    // For simplicity, we'll replace certain fields with random values
+    
 
-    // Example: Update OBX segment with random values
-    const obxIndex = parsedHL7.findIndex((segment) => segment[0][0] === 'OBX');
-    if (obxIndex !== -1) {
-      parsedHL7[obxIndex][5][0] = Math.floor(Math.random() * 1000).toString(); // Random value
-    }
+    
 
-    // Convert the modified parsed HL7 message back to string
-    const resultHL7 = hl7.serializeJSON(parsedHL7);
     return resultHL7;
+  }
+
+  generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      /* eslint-disable */
+      const r = (Math.random() * 16) | 0,
+        v = c === 'x' ? r : (r & 0x3) | 0x8;
+      /* eslint-enable */
+      return v.toString(16);
+    });
   }
 
   sendHL7Result(resultHL7: string): string {

@@ -16,13 +16,8 @@ export class LabResultDAO extends DAO<LabResultDocument> {
   ) {
     const query = this.model
       .find({ facilityId })
+      .where({ createdAt: { $gte: sinceDate } })
       .sort({ createdAt: -1 })
-      .where('createdAt').gte(sinceDate);
-
-    // TODO: Figure out why can't filter by Date
-    // if (afterDateTime) {
-    //   query.where('createdAt').gte(afterDateTime);
-    // }
 
     return query.exec();
   }
