@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { SubscriptionDAO } from '../subscription/subscription.dao';
 import { firstValueFrom } from 'rxjs';
+import { Notification } from './notification.schema';
+import { NotificationDAO } from './notification.dao';
 
 const subscriptionNotificationTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 <s:Envelope 
@@ -46,21 +48,42 @@ export class NotificationService {
   constructor(
     private readonly subscriptionDAO: SubscriptionDAO,
     private readonly httpService: HttpService,
+    private readonly notificationDAO: NotificationDAO,
   ) {}
+
+  async create(notification: Notification) {
+    return this.notificationDAO.create(notification);
+  }
 
   async notifySubscribers(documentId: string) {
     const subscriptions = await this.subscriptionDAO.find({});
 
     const notificationPromises = subscriptions.map(async (subscription) => {
       const url = subscription.targetAddress;
-      const notification = subscriptionNotificationTemplate
+      const notificationBody = subscriptionNotificationTemplate
         .replace('{{targetUrl}}', url)
         .replace('{{documentId}}', documentId);
+      const notificationRecord = new Notification();
+      notificationRecord.targetUrl = url;
+      notificationRecord.documentId = documentId;
+
       try {
-        const response = await this.sendNotification(url, notification);
+        const response = await this.sendNotification(url, notificationBody);
+        // Mark notification as successfully delivered
+        notificationRecord.delivered = true;
         return response;
       } catch (error) {
         console.error(`Failed to notify ${url}:`, error.message);
+        // Mark notification as failed and ready for retry
+        notificationRecord.delivered = false;
+        notificationRecord.lastRetryAt = new Date();
+      }
+
+      try {
+        await this.notificationDAO.create(notificationRecord);
+      } catch (error) {
+        console.error(`Failed to create notification record! `, error.message)
+        throw error;
       }
     });
 
@@ -79,4 +102,6 @@ export class NotificationService {
       throw error;
     }
   }
+
+
 }

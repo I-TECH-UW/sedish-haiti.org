@@ -13,11 +13,11 @@ export class NotificationController {
 
     try {
       const documentId = await this.notificationService.extractDocumentId(soapMessage);
-      const hl7Message = await this.notificationService.retrieveHL7Message(documentId);
-      const parsedHL7 = this.notificationService.parseHL7Message(hl7Message);
-      const resultHL7 = this.notificationService.generateRandomHL7Result(parsedHL7);
-      const response = this.notificationService.sendHL7Result(resultHL7);
-      res.status(HttpStatus.OK).send(response);
+      const hl7Message = await this.notificationService.retrieveORMMessage(documentId);
+      const parsedHL7 = this.notificationService.parseORMMessage(hl7Message);
+      const resultHL7 = this.notificationService.generateORUMessage(parsedHL7);
+      const response = await this.notificationService.sendOruMessage(resultHL7);
+      res.status(HttpStatus.OK);
     } catch (error) {
       console.error(error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred');
