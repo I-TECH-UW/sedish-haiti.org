@@ -12,18 +12,32 @@ export class NotificationController {
     const soapMessage = body;
 
     try {
-      const documentId =
-        await this.notificationService.extractDocumentId(soapMessage);
-      const hl7Message =
-        await this.notificationService.retrieveORMMessage(documentId);
+      const documentId = await this.notificationService.extractDocumentId(soapMessage);
+      const hl7Message = await this.notificationService.retrieveORMMessage(documentId);
+
+      if (hl7Message) {
+        res.status(HttpStatus.OK).send('ORM message retrieved successfully');
+        console.log(`Successfully retrieved ORM message for order document id: ${documentId}`);
+
+        // Asynchronously handle the rest of the process
+        this.processOruMessage(hl7Message, documentId);
+      } else {
+        res.status(HttpStatus.NO_CONTENT).send('No HL7 message found');
+      }
+    } catch (error) {
+      console.error(`Could not retrieve ORM message: ${error.message}`);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred');
+    }
+  }
+
+  private async processOruMessage(hl7Message: string, documentId: string) {
+    try {
       const parsedHL7 = this.notificationService.parseORMMessage(hl7Message);
       const resultHL7 = this.notificationService.generateORUMessage(parsedHL7);
-      const response = await this.notificationService.sendOruMessage(resultHL7);
-      res.status(HttpStatus.OK);
-      console.log(response);
+      await this.notificationService.sendOruMessage(resultHL7);
+      console.log(`Successfully sent ORU message for order document id: ${documentId}`);
     } catch (error) {
-      console.error(error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('An error occurred');
+      console.error(`Could not send ORU message successfully: ${error.message}`);
     }
   }
 }

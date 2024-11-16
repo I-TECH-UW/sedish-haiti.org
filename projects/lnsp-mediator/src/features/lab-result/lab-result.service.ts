@@ -96,11 +96,11 @@ export class LabResultService {
         responseBody = this.labResultSubmissionSuccess();
         status = HttpStatus.OK;
       } else {
-        responseBody = this.labResultSubmissionGeneralFailure();
+        responseBody = this.labResultSubmissionGeneralFailure("Could not create lab result");
         status = HttpStatus.UNPROCESSABLE_ENTITY;
       }
     } catch (error) {
-      responseBody = this.labResultSubmissionGeneralFailure();
+      responseBody = this.labResultSubmissionGeneralFailure(error.message);
       status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
     return { contentType: this.contentType, responseBody, status };
