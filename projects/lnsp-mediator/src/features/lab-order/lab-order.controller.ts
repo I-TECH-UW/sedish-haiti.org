@@ -43,7 +43,7 @@ export class LabOrderController {
   }
 
   @Get()
-  async getAll() {
+  async getAll(): Promise<any> {
     return this.labOrderService.findAll();
   }
 }
