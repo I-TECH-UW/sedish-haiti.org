@@ -4,6 +4,7 @@ import { LabOrderDAO } from './lab-order.dao';
 import { NotificationService } from '../notification/notification.service';
 import { Hl7Service } from 'src/core/hl7/hl7.service';
 
+/*
 const example_message = `------=_Part_59239_818160219.1723569579332
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
 
@@ -50,6 +51,7 @@ ORC|NW|11221685923|||||^^^20240813131934||20240813131934|||11221^Demo^Provider||
 OBR||11221685923||VLCVR|||20240813131934||||O|||||11221^Demo^Provider|||||||||||^^^20240813131934
 
 ------=_Part_59239_818160219.1723569579332--`;
+*/
 
 const documentSubmissionSuccessTemplate = `------=_Part_60435_1628391534.1724167510003
 Content-Type: application/xop+xml; charset=utf-8; type="application/soap+xml"
@@ -215,7 +217,8 @@ export class LabOrderService {
     let responseBody;
     let status;
 
-    const contentType = 'multipart/related;boundary="----=_Part_59239_818160219.1723569579332"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8'
+    const contentType =
+      'multipart/related;boundary="----=_Part_59239_818160219.1723569579332"; type="application/xop+xml"; start-info="application/soap+xml";charset=UTF-8';
     //const contentType = 'multipart/related;start="<rootpart*59239_818160219.1723569579332@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:59239_818160219.1723569579332";start-info="application/soap+xml;action="urn:ihe:iti:2007:RetrieveDocumentSet""';
 
     if (result && result.length === 1) {

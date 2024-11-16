@@ -62,7 +62,7 @@ function initialize_package() {
     #   fi
     # fi
 
-    docker::deploy_service $STACK "${COMPOSE_FILE_PATH}" "docker-compose.yml" "$xds_dev_compose_filename"
+    #docker::deploy_service $STACK "${COMPOSE_FILE_PATH}" "docker-compose.yml" "$xds_dev_compose_filename"
   ) ||
     {
       log error "Failed to deploy package"

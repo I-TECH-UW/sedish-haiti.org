@@ -110,7 +110,7 @@ export class LabResultService {
     const parsedData = await this.parseLabResultRequest(xmlPayload);
     const resultList = await this.findAllByFacilityId(
       parsedData.facilityId,
-      parsedData.maxNumber,
+      parsedData.sinceDate,
     );
 
     let responseBody;
@@ -119,6 +119,7 @@ export class LabResultService {
 
     if (resultList.length === 0) {
       status = HttpStatus.NOT_FOUND;
+      responseBody = this.decorateResultList([]);
     } else {
       responseBody = this.decorateResultList(resultList);
       status = HttpStatus.ACCEPTED;
@@ -139,9 +140,9 @@ export class LabResultService {
 
   async findAllByFacilityId(
     facilityId: string,
-    maxNumber: number = 100,
+    sinceDate: Date,
   ): Promise<LabResult[]> {
-    return this.labResultDAO.findByFacilityId(facilityId, maxNumber);
+    return this.labResultDAO.findByFacilityId(facilityId, sinceDate);
   }
 
   async parseLabResultDocument(xmlPayload: any): Promise<LabResult> {
@@ -225,24 +226,23 @@ export class LabResultService {
 
   parseLabResultRequest(xmlPayload: any): {
     facilityId: string;
-    maxNumber: number;
+    sinceDate: Date;
   } {
     try {
       const facilityId =
         xmlPayload['soap-env:envelope']['soap-env:body'][0][
           'ns2:getmessages'
         ][0].$.facility;
-      const maxNumberString =
+      const sinceDate = new Date(
         xmlPayload['soap-env:envelope']['soap-env:body'][0][
           'ns2:getmessages'
-        ][0]['ns2:maximumnumber'][0];
+        ][0].$.since,
+      );
 
-      const maxNumber = parseInt(maxNumberString);
-
-      return { facilityId, maxNumber };
+      return { facilityId, sinceDate };
     } catch (error) {
       throw new Error(
-        'Could not parse facility ID and maximum number from request',
+        'Could not parse facility ID and since date from request',
       );
     }
   }

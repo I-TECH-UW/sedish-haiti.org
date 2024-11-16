@@ -1,7 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { SubscriptionDAO } from '../subscription/subscription.dao';
 import { firstValueFrom } from 'rxjs';
+import { Notification } from './notification.schema';
+import { NotificationDAO } from './notification.dao';
+import { ConfigService } from '@nestjs/config';
+import Agenda from 'agenda';
 
 const subscriptionNotificationTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 <s:Envelope 
@@ -43,24 +47,66 @@ const subscriptionNotificationTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 
 @Injectable()
 export class NotificationService {
+  private readonly maxRetries: number;
+  private readonly retryInterval: number;
+
   constructor(
     private readonly subscriptionDAO: SubscriptionDAO,
     private readonly httpService: HttpService,
-  ) {}
+    private readonly notificationDAO: NotificationDAO,
+    private readonly configService: ConfigService,
+    @Inject('AGENDA_INSTANCE') private readonly agenda: Agenda,
+  ) {
+    this.maxRetries = Number(this.configService.get('MAX_RETRIES', '5'));
+    this.retryInterval = Number(this.configService.get('RETRY_INTERVAL', '1'));
+    this.defineRetryJob();
+  }
+
+  async create(notification: Notification) {
+    return this.notificationDAO.create(notification);
+  }
 
   async notifySubscribers(documentId: string) {
     const subscriptions = await this.subscriptionDAO.find({});
-
     const notificationPromises = subscriptions.map(async (subscription) => {
       const url = subscription.targetAddress;
-      const notification = subscriptionNotificationTemplate
+      const notificationBody = subscriptionNotificationTemplate
         .replace('{{targetUrl}}', url)
         .replace('{{documentId}}', documentId);
+
+      const notificationRecord = new Notification();
+      notificationRecord.targetUrl = url;
+      notificationRecord.documentId = documentId;
+      notificationRecord.delivered = false;
+      notificationRecord.dmq = false;
+      notificationRecord.retries = 0;
+
       try {
-        const response = await this.sendNotification(url, notification);
-        return response;
+        await this.sendNotification(url, notificationBody);
+        notificationRecord.delivered = true;
+        notificationRecord.lastRetryAt = new Date();
       } catch (error) {
         console.error(`Failed to notify ${url}:`, error.message);
+        notificationRecord.lastRetryAt = new Date();
+      }
+
+      try {
+        const savedNotification =
+          await this.notificationDAO.create(notificationRecord);
+
+        if (!notificationRecord.delivered) {
+          // Schedule the first retry using the saved notification's _id
+          const delayInMinutes = this.getExponentialDelay(
+            notificationRecord.retries + 1,
+          );
+          await this.scheduleRetry(
+            savedNotification._id.toString(),
+            delayInMinutes,
+          );
+        }
+      } catch (error) {
+        console.error(`Failed to create notification record:`, error.message);
+        throw error;
       }
     });
 
@@ -78,5 +124,58 @@ export class NotificationService {
     } catch (error) {
       throw error;
     }
+  }
+
+  private defineRetryJob() {
+    this.agenda.define('retryNotification', async (job: any) => {
+      const { notificationId } = job.attrs.data;
+      const notification = await this.notificationDAO.findById(notificationId);
+
+      if (!notification || notification.delivered || notification.dmq) {
+        return;
+      }
+
+      try {
+        const notificationBody = subscriptionNotificationTemplate
+          .replace('{{targetUrl}}', notification.targetUrl)
+          .replace('{{documentId}}', notification.documentId);
+
+        await this.sendNotification(notification.targetUrl, notificationBody);
+        notification.delivered = true;
+        await this.notificationDAO.update(notification._id, notification);
+      } catch (error) {
+        notification.retries += 1;
+        notification.lastRetryAt = new Date();
+
+        if (notification.retries >= this.maxRetries) {
+          notification.dmq = true;
+          // TODO: Notify the admin about the failed notification
+        } else {
+          // Schedule the next retry with exponential backoff
+          const nextRetryInMinutes = this.getExponentialDelay(
+            notification.retries,
+          );
+          await this.scheduleRetry(
+            notification._id.toString(),
+            nextRetryInMinutes,
+          );
+        }
+
+        await this.notificationDAO.update(notification._id, notification);
+      }
+    });
+  }
+
+  private async scheduleRetry(notificationId: string, delayInMinutes: number) {
+    await this.agenda.schedule(
+      new Date(Date.now() + delayInMinutes * 60 * 1000),
+      'retryNotification',
+      { notificationId },
+    );
+  }
+
+  private getExponentialDelay(retryCount: number): number {
+    const base = 1.9; // Adjusted exponential base
+    return this.retryInterval * Math.pow(base, retryCount - 1);
   }
 }
