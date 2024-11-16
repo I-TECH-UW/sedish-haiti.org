@@ -8,9 +8,14 @@ import { Notification, NotificationSchema } from './notification.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [ MongooseModule.forFeature([{ name: Notification.name, schema: NotificationSchema }]),
-    HttpModule, SubscriptionModule],
-  providers: [NotificationService,NotificationDAO],
+  imports: [
+    MongooseModule.forFeature([
+      { name: Notification.name, schema: NotificationSchema },
+    ]),
+    HttpModule,
+    SubscriptionModule,
+  ],
+  providers: [NotificationService, NotificationDAO],
   exports: [NotificationService, NotificationDAO],
 })
 export class NotificationModule {}

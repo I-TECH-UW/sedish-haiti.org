@@ -10,14 +10,11 @@ export class LabResultDAO extends DAO<LabResultDocument> {
     super(model);
   }
 
-  async findByFacilityId(
-    facilityId: string,
-    sinceDate: Date,
-  ) {
+  async findByFacilityId(facilityId: string, sinceDate: Date) {
     const query = this.model
       .find({ facilityId })
       .where({ createdAt: { $gte: sinceDate } })
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1 });
 
     return query.exec();
   }

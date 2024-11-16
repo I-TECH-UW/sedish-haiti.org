@@ -20,7 +20,6 @@ export class SubscriptionService {
 
     let responseBody;
     let status;
-    
 
     try {
       this.create(subscriptionData);

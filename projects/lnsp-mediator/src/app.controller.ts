@@ -47,11 +47,14 @@ export class AppController {
       } else if (bodyString.includes('ns2:GetMessages')) {
         serviceResponse =
           await this.labResultService.handleGetLabResultsByFacility(body);
-      } else if (bodyString.includes('http://docs.oasis-open.org/wsn/bw2/NotificationProducer/SubscribeRequest')) {
+      } else if (
+        bodyString.includes(
+          'http://docs.oasis-open.org/wsn/bw2/NotificationProducer/SubscribeRequest',
+        )
+      ) {
         serviceResponse =
           await this.subscriptionService.handleSubscription(body);
-      } else
-        {
+      } else {
         serviceResponse =
           await this.labResultService.handleCreateLabResult(body);
       }

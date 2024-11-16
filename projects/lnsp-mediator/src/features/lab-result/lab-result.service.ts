@@ -233,9 +233,13 @@ export class LabResultService {
         xmlPayload['soap-env:envelope']['soap-env:body'][0][
           'ns2:getmessages'
         ][0].$.facility;
-      const sinceDate = new Date(xmlPayload['soap-env:envelope']['soap-env:body'][0]['ns2:getmessages'][0].$.since);
+      const sinceDate = new Date(
+        xmlPayload['soap-env:envelope']['soap-env:body'][0][
+          'ns2:getmessages'
+        ][0].$.since,
+      );
 
-      return { facilityId, sinceDate } 
+      return { facilityId, sinceDate };
     } catch (error) {
       throw new Error(
         'Could not parse facility ID and since date from request',

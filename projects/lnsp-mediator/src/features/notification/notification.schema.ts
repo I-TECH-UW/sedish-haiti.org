@@ -7,7 +7,7 @@ export type NotificationDocument = HydratedDocument<Notification>;
 export class Notification {
   @Prop()
   _id: string;
-  
+
   @Prop({ required: true })
   targetUrl: string;
 

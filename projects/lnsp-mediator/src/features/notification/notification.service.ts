@@ -73,14 +73,14 @@ export class NotificationService {
       const notificationBody = subscriptionNotificationTemplate
         .replace('{{targetUrl}}', url)
         .replace('{{documentId}}', documentId);
-  
+
       const notificationRecord = new Notification();
       notificationRecord.targetUrl = url;
       notificationRecord.documentId = documentId;
       notificationRecord.delivered = false;
       notificationRecord.dmq = false;
       notificationRecord.retries = 0;
-  
+
       try {
         await this.sendNotification(url, notificationBody);
         notificationRecord.delivered = true;
@@ -88,28 +88,29 @@ export class NotificationService {
         console.error(`Failed to notify ${url}:`, error.message);
         notificationRecord.lastRetryAt = new Date();
       }
-  
+
       try {
-        const savedNotification = await this.notificationDAO.create(
-          notificationRecord,
-        );
-  
+        const savedNotification =
+          await this.notificationDAO.create(notificationRecord);
+
         if (!notificationRecord.delivered) {
           // Schedule the first retry using the saved notification's _id
           const delayInMinutes = this.getExponentialDelay(
             notificationRecord.retries + 1,
           );
-          await this.scheduleRetry(savedNotification._id.toString(), delayInMinutes);
+          await this.scheduleRetry(
+            savedNotification._id.toString(),
+            delayInMinutes,
+          );
         }
       } catch (error) {
         console.error(`Failed to create notification record:`, error.message);
         throw error;
       }
     });
-  
+
     return Promise.all(notificationPromises);
   }
-  
 
   private async sendNotification(url: string, payload: any) {
     try {
@@ -128,31 +129,26 @@ export class NotificationService {
     this.agenda.define('retryNotification', async (job: any) => {
       const { notificationId } = job.attrs.data;
       const notification = await this.notificationDAO.findById(notificationId);
-  
+
       if (!notification || notification.delivered || notification.dmq) {
         return;
       }
-  
-      try {
-        const notificationBody = subscriptionNotificationTemplate.replace(
-          '{{targetUrl}}',
-          notification.targetUrl,
-        ).replace('{{documentId}}', notification.documentId);
 
-        await this.sendNotification(
-          notification.targetUrl,
-          notificationBody
-        );
+      try {
+        const notificationBody = subscriptionNotificationTemplate
+          .replace('{{targetUrl}}', notification.targetUrl)
+          .replace('{{documentId}}', notification.documentId);
+
+        await this.sendNotification(notification.targetUrl, notificationBody);
         notification.delivered = true;
         await this.notificationDAO.update(notification._id, notification);
       } catch (error) {
         notification.retries += 1;
         notification.lastRetryAt = new Date();
-  
+
         if (notification.retries >= this.maxRetries) {
           notification.dmq = true;
           // TODO: Notify the admin about the failed notification
-
         } else {
           // Schedule the next retry with exponential backoff
           const nextRetryInMinutes = this.getExponentialDelay(
@@ -163,13 +159,12 @@ export class NotificationService {
             nextRetryInMinutes,
           );
         }
-  
+
         await this.notificationDAO.update(notification._id, notification);
       }
     });
   }
-  
-  
+
   private async scheduleRetry(notificationId: string, delayInMinutes: number) {
     await this.agenda.schedule(
       new Date(Date.now() + delayInMinutes * 60 * 1000),
@@ -182,6 +177,4 @@ export class NotificationService {
     const base = 1.9; // Adjusted exponential base
     return this.retryInterval * Math.pow(base, retryCount - 1);
   }
-  
-
 }

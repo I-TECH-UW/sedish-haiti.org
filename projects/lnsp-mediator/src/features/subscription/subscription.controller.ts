@@ -1,6 +1,5 @@
 import { Controller, Post, Body, Get } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
-import { Subscription } from './subscription.schema';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('subscription')
@@ -12,7 +11,7 @@ export class SubscriptionController {
   @ApiOperation({ summary: 'Create a new subscription' })
   async create(@Body() xmlPayload: any) {
     const r = this.subscriptionService.handleSubscription(xmlPayload);
-    
+
     // TODO: Return valid subscription response
     return r;
   }
