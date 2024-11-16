@@ -89,8 +89,5 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  },
-  "resolutions": {
-    "mongodb": "6.10.0"
   }
 }

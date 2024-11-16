@@ -26,7 +26,7 @@ import * as path from 'path';
         ),
       ),
     }),
-    NotificationModule
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService, NotificationService],

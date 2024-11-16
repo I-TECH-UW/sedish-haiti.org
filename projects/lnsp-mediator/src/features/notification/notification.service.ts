@@ -84,6 +84,7 @@ export class NotificationService {
       try {
         await this.sendNotification(url, notificationBody);
         notificationRecord.delivered = true;
+        notificationRecord.lastRetryAt = new Date();
       } catch (error) {
         console.error(`Failed to notify ${url}:`, error.message);
         notificationRecord.lastRetryAt = new Date();

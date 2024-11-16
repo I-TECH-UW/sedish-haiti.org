@@ -5,6 +5,7 @@ import * as xml2js from 'xml2js';
 import axios from 'axios';
 import * as hl7 from 'hl7';
 import { ConfigService } from '@nestjs/config';
+import { v4 as uuidv4 } from 'uuid';
 
 const oruWrapper = `--uuid:4574f962-5ee0-45ff-9a0e-cb24c8d917de
 Content-Type: application/xop+xml; charset=UTF-8; type="application/soap+xml"
@@ -107,7 +108,7 @@ Content-ID: <root.message@cxf.apache.org>
                               </rim:ValueList>
                            </rim:Slot>
                         </rim:Classification>
-                        <rim:ExternalIdentifier id="ei8" identificationScheme="urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab" registryObject="699866eb-c6da-42f3-a09e-e2f652d73bf6/8ec96629-c2d8-4f78-b1c7-2b627a3e066d/f037e97b-471e-4898-a07c-b8e169e0ddc4/e583ab03-150b-4752-bbcd-0f636e2fc343/2023-03-29/2.25.6879235708703285157" value="2.25.9798696379623523800">
+                        <rim:ExternalIdentifier id="ei8" identificationScheme="urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab" registryObject="699866eb-c6da-42f3-a09e-e2f652d73bf6/8ec96629-c2d8-4f78-b1c7-2b627a3e066d/f037e97b-471e-4898-a07c-b8e169e0ddc4/e583ab03-150b-4752-bbcd-0f636e2fc343/2023-03-29/2.25.6879235708703285157" value="{{documentId}}">
                            <rim:Name>
                               <rim:LocalizedString value="XDSDocumentEntry.uniqueId"/>
                            </rim:Name>
@@ -172,31 +173,35 @@ Content-ID: <Payload>
 {{oruMessage}}
 
 --uuid:4574f962-5ee0-45ff-9a0e-cb24c8d917de--
-`
+`;
 
 @Injectable()
 export class NotificationService {
-
   private parser = new xml2js.Parser({ explicitArray: false });
 
   constructor(private configService: ConfigService) {}
 
-  // Existing method to extract the document ID from the SOAP message
   async extractDocumentId(soapMessage: string): Promise<string> {
     const parsedSoap = await this.parser.parseStringPromise(soapMessage);
     const documentId =
-      parsedSoap['s:Envelope']['s:Body']['wsnt:Notify']['wsnt:NotificationMessage']['wsnt:Message']['lcm:SubmitObjectsRequest']['rim:RegistryObjectList']['rim:ObjectRef']['$']['id'];
+      parsedSoap['s:Envelope']['s:Body']['wsnt:Notify'][
+        'wsnt:NotificationMessage'
+      ]['wsnt:Message']['lcm:SubmitObjectsRequest']['rim:RegistryObjectList'][
+        'rim:ObjectRef'
+      ]['$']['id'];
     return documentId;
   }
 
-  // Existing method to retrieve the HL7 message using the document ID
   async retrieveORMMessage(documentId: string): Promise<string> {
     const repoId = this.configService.get<string>('REPO_ID');
     const xdsRepositoryUrl = this.configService.get<string>('HIE_URL');
     const username = this.configService.get<string>('HIE_CLIENT');
     const password = this.configService.get<string>('HIE_PW');
 
-    const soapRequest = this.buildRetrieveDocumentSetRequest(repoId, documentId);
+    const soapRequest = this.buildRetrieveDocumentSetRequest(
+      repoId,
+      documentId,
+    );
 
     const response = await axios.post(xdsRepositoryUrl, soapRequest, {
       headers: { 'Content-Type': 'application/soap+xml' },
@@ -204,7 +209,6 @@ export class NotificationService {
         username: username,
         password: password,
       },
-
     });
 
     const hl7Message = this.extractHL7FromResponse(response.data);
@@ -265,7 +269,7 @@ export class NotificationService {
     );
 
     if (firstHl7LineI === -1) throw new Error('HL7 message not found in XML');
-    
+
     const firstHl7Line = lines[firstHl7LineI];
 
     if (lastHl7LineI === -1) {
@@ -317,7 +321,9 @@ export class NotificationService {
     oruMessage.push(...obxSegments);
 
     // Serialize the ORU message to a string
-    const oruMessageString = hl7.serializeJSON(oruMessage);
+    let oruMessageString = hl7.serializeJSON(oruMessage);
+
+    oruMessageString = oruMessageString.replace(/\r/g, '\r\n');
 
     return oruMessageString;
   }
@@ -327,14 +333,16 @@ export class NotificationService {
     const hieUrl = this.configService.get<string>('HIE_URL');
     const client = this.configService.get<string>('HIE_CLIENT');
     const pw = this.configService.get<string>('HIE_PW');
-    const header = `multipart/related;start="<rootpart*4574f962-5ee0-45ff-9a0e-cb24c8d917de@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:4574f962-5ee0-45ff-9a0e-cb24c8d917de";start-info="application/soap+xml;action=\"urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b\""`
-    const oruMessageWithWrapper = oruWrapper.replace('{{oruMessage}}', oruMessage);
+    const header = `multipart/related;start="<rootpart*4574f962-5ee0-45ff-9a0e-cb24c8d917de@example.jaxws.sun.com>";type="application/xop+xml";boundary="uuid:4574f962-5ee0-45ff-9a0e-cb24c8d917de";start-info="application/soap+xml;action=\"urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b\""`;
+    const oruMessageWithWrapper = oruWrapper
+      .replace('{{oruMessage}}', oruMessage)
+      .replace('{{documentId}}', this.generateNewDocumentId());
 
     const response = await axios.post(hieUrl, oruMessageWithWrapper, {
       headers: {
         'Content-Type': header,
-        'Authorization': `Basic ${Buffer.from(`${client}:${pw}`).toString('base64')}`
-      }
+        Authorization: `Basic ${Buffer.from(`${client}:${pw}`).toString('base64')}`,
+      },
     });
 
     return response;
@@ -365,8 +373,8 @@ export class NotificationService {
       pv1_50_components.push('');
     }
 
-    const patientUUID = pv1_50_components[0];
-    const encounterID = pv1_50_components[4];
+    //  const patientUUID = pv1_50_components[0];
+    //  const encounterID = pv1_50_components[4];
 
     // Set PV1-50 in ORU message
     // pv1Segment[50][0] = `${patientUUID}^^^^${encounterID}`;
@@ -442,12 +450,23 @@ export class NotificationService {
 
   // Utility method to generate a UUID
   private generateUUID(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      /* eslint-disable */
-      const r = (Math.random() * 16) | 0,
-        v = c === 'x' ? r : (r & 0x3) | 0x8;
-      /* eslint-enable */
-      return v.toString(16);
-    });
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+      /[xy]/g,
+      function (c) {
+        /* eslint-disable */
+        const r = (Math.random() * 16) | 0,
+          v = c === 'x' ? r : (r & 0x3) | 0x8;
+        /* eslint-enable */
+        return v.toString(16);
+      },
+    );
+  }
+
+  // Utility to generate a new document ID in the 2.25.9798696379623523800 format
+  private generateNewDocumentId(): string {
+    const uuid = uuidv4().replace(/-/g, '');
+    const numericId = BigInt(`0x${uuid}`).toString();
+    const adjustedNumericId = numericId.padStart(19, '0').slice(0, 19);
+    return `2.25.${adjustedNumericId}`;
   }
 }

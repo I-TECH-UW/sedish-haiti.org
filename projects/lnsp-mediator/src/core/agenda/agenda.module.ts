@@ -1,6 +1,9 @@
 import { Module, Global, Inject, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Agenda from 'agenda';
+import { Logger } from '@nestjs/common';
+
+const logger = new Logger('Agenda');
 
 @Global()
 @Module({
@@ -13,6 +16,7 @@ import Agenda from 'agenda';
         const name = configService.get<string>('DB_NAME');
 
         const uri = `mongodb://${host}:${port}/${name}`;
+        logger.log(`Agenda connecting to MongoDB at ${uri}`);
 
         const agenda = new Agenda({
           db: { address: uri, collection: 'agendaJobs' },
@@ -40,8 +44,9 @@ import Agenda from 'agenda';
             `Job ${job.attrs.name} failed with error: ${error.message}`,
           );
         });
-
-        await agenda.start(); // Start Agenda
+        logger.log('Starting Agenda');
+        await agenda.start();
+        logger.log('Agenda started');
 
         return agenda;
       },

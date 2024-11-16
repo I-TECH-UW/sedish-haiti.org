@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 
 export type NotificationDocument = HydratedDocument<Notification>;
 
 @Schema({ timestamps: true })
 export class Notification {
-  @Prop()
-  _id: string;
+  @Prop({ type: MongooseSchema.Types.ObjectId, default: () => new Types.ObjectId() })
+  _id: Types.ObjectId;
 
   @Prop({ required: true })
   targetUrl: string;
@@ -23,7 +23,7 @@ export class Notification {
   @Prop({ required: true, default: 0, index: true })
   retries: number;
 
-  @Prop({ required: true, nullable: true, default: null })
+  @Prop({ required: true, nullable: true })
   lastRetryAt: Date;
 }
 

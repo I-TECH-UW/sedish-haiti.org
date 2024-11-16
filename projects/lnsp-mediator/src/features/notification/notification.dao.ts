@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Notification, NotificationDocument } from './notification.schema';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class NotificationDAO {
   }
 
   async update(
-    id: string,
+    id: Types.ObjectId,
     updateData: Partial<Notification>,
   ): Promise<Notification | null> {
     return this.notificationModel
