@@ -11,6 +11,14 @@
 #./instant package down -n nfs --env-file .env
 #./instant package up -n nfs --env-file .env
 
+# PostGRES
+./instant package remove -n database-postgres --env-file .env
+./instant package init -n database-postgres --env-file .env
+
+#keycloack
+./instant package remove -n identity-access-manager-keycloak --env-file .env
+./instant package init -n identity-access-manager-keycloak --env-file .env
+
 
 #reverse proxy
 # ./instant package remove -n reverse-proxy-nginx --env-file .env
@@ -20,10 +28,10 @@
 
 #openhim
 
-#./instant package remove -n interoperability-layer-openhim --env-file .env
-#./instant package init -n interoperability-layer-openhim --env-file .env -d
-#./instant package down -n interoperability-layer-openhim --env-file .env
-#./instant package up -n interoperability-layer-openhim --env-file .env
+# ./instant package remove -n interoperability-layer-openhim --env-file .env
+# ./instant package init -n interoperability-layer-openhim --env-file .env -d
+# ./instant package down -n interoperability-layer-openhim --env-file .env
+# ./instant package up -n interoperability-layer-openhim --env-file .env -d
 
 #mysql 
 #./instant package remove -n database-mysql --env-file .env
@@ -92,9 +100,9 @@
 
 
 # LNSP Mediator
-./instant package remove -n lnsp-mediator --env-file .env
-./instant package init -n lnsp-mediator --env-file .env -d
-# ./instant package down -n lnsp-mediator --env-file .env -d
+# ./instant package remove -n lnsp-mediator --env-file .env
+# ./instant package init -n lnsp-mediator --env-file .env -d
+# ./instant package down -n lnsp-mediator --env-file .env
 # ./instant package up -n lnsp-mediator --env-file .env -d
 
 # 172.31.2.125
