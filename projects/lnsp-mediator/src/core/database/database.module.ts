@@ -21,7 +21,9 @@ import mongoose from 'mongoose';
               console.log(`Connected to database ${name} at ${host}:${port}`);
             }
 
-            mongoose.set('debug', true);
+            if (configService.get<string>('NODE_ENV') === 'development') {
+              mongoose.set('debug', true);
+            }
 
             return connection;
           },

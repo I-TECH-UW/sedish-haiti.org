@@ -6,6 +6,7 @@ import { Notification } from './notification.schema';
 import { NotificationDAO } from './notification.dao';
 import { ConfigService } from '@nestjs/config';
 import Agenda from 'agenda';
+import { Logger } from '@nestjs/common';
 
 const subscriptionNotificationTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 <s:Envelope 
@@ -50,6 +51,8 @@ export class NotificationService {
   private readonly maxRetries: number;
   private readonly retryInterval: number;
 
+  private readonly logger = new Logger("NotificationService");
+
   constructor(
     private readonly subscriptionDAO: SubscriptionDAO,
     private readonly httpService: HttpService,
@@ -57,18 +60,21 @@ export class NotificationService {
     private readonly configService: ConfigService,
     @Inject('AGENDA_INSTANCE') private readonly agenda: Agenda,
   ) {
-    this.maxRetries = Number(this.configService.get('MAX_RETRIES', '5'));
-    this.retryInterval = Number(this.configService.get('RETRY_INTERVAL', '1'));
+    this.maxRetries = Number(this.configService.get('MAX_RETRIES', '7'));
+    this.retryInterval = Number(this.configService.get('RETRY_INTERVAL', '30'));
     this.defineRetryJob();
   }
 
   async create(notification: Notification) {
+    this.logger.log('Creating notification record');
     return this.notificationDAO.create(notification);
   }
 
   async notifySubscribers(documentId: string) {
+    this.logger.log('Notifying subscribers');
     const subscriptions = await this.subscriptionDAO.find({});
     const notificationPromises = subscriptions.map(async (subscription) => {
+      this.logger.log(`Notifying ${subscription.targetAddress} about ${documentId}`);
       const url = subscription.targetAddress;
       const notificationBody = subscriptionNotificationTemplate
         .replace('{{targetUrl}}', url)
@@ -82,23 +88,30 @@ export class NotificationService {
       notificationRecord.retries = 0;
 
       try {
+        this.logger.log(`Sending notification to ${url}`);
         await this.sendNotification(url, notificationBody);
         notificationRecord.delivered = true;
         notificationRecord.lastRetryAt = new Date();
+        this.logger.log(`Notification successfuly sent to ${url}`);
       } catch (error) {
-        console.error(`Failed to notify ${url}:`, error.message);
+        this.logger.error(`Failed to notify ${url}:`, error.message);
         notificationRecord.lastRetryAt = new Date();
       }
 
       try {
+        this.logger.log('Creating notification record');
         const savedNotification =
           await this.notificationDAO.create(notificationRecord);
 
         if (!notificationRecord.delivered) {
           // Schedule the first retry using the saved notification's _id
+
           const delayInMinutes = this.getExponentialDelay(
-            notificationRecord.retries + 1,
+            notificationRecord.retries,
           );
+          
+          this.logger.log(`Scheduling retry for ${url} in ${delayInMinutes} minutes`);
+
           await this.scheduleRetry(
             savedNotification._id.toString(),
             delayInMinutes,
@@ -128,10 +141,22 @@ export class NotificationService {
 
   private defineRetryJob() {
     this.agenda.define('retryNotification', async (job: any) => {
+      this.logger.log(`Retrying notification ${JSON.stringify(job.attrs.data)}`);
       const { notificationId } = job.attrs.data;
       const notification = await this.notificationDAO.findById(notificationId);
 
-      if (!notification || notification.delivered || notification.dmq) {
+      if(!notification){
+        this.logger.log('Notification does not exist!');
+        return;
+      }
+
+      if ( notification.delivered) {
+        this.logger.log('Notification already delivered!');
+        return;
+      }
+
+      if(notification.dmq){
+        this.logger.log('Notification is in DMQ!');
         return;
       }
 
@@ -139,15 +164,21 @@ export class NotificationService {
         const notificationBody = subscriptionNotificationTemplate
           .replace('{{targetUrl}}', notification.targetUrl)
           .replace('{{documentId}}', notification.documentId);
-
+        
+        this.logger.log(`Retrying notification to ${notification.targetUrl}`);
         await this.sendNotification(notification.targetUrl, notificationBody);
+
+        this.logger.log(`Notification successfully sent to ${notification.targetUrl}`);
         notification.delivered = true;
         await this.notificationDAO.update(notification._id, notification);
+
       } catch (error) {
         notification.retries += 1;
         notification.lastRetryAt = new Date();
+        this.logger.error(`Failed to notify ${notification.targetUrl} on retry ${notification.retries}:`, error.message);
 
         if (notification.retries >= this.maxRetries) {
+          this.logger.error(`Notification ${notification._id} has reached max retries`);
           notification.dmq = true;
           // TODO: Notify the admin about the failed notification
         } else {
@@ -155,6 +186,8 @@ export class NotificationService {
           const nextRetryInMinutes = this.getExponentialDelay(
             notification.retries,
           );
+          this.logger.log(`Scheduling retry # ${notification.retries+1} in ${nextRetryInMinutes} minutes for ${notification.targetUrl}`);
+
           await this.scheduleRetry(
             notification._id.toString(),
             nextRetryInMinutes,

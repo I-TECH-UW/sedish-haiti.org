@@ -1,23 +1,26 @@
 # Stage 1: Build the application
-FROM node:14-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+COPY package*.json yarn.lock ./
+
+RUN yarn install
 COPY . .
-RUN npm run build
+
+RUN yarn build
 
 # Stage 2: Run the application
-FROM node:14-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
 COPY --from=builder /app/dist ./dist
-COPY package*.json ./
+COPY package.json yarn.lock ./
 
-RUN npm install --only=production
+
+RUN yarn install --production
 
 EXPOSE 3030
 
-CMD ["node", "dist/main"]
+CMD ["yarn", "start:prod"]

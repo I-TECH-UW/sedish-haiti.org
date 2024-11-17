@@ -8,10 +8,13 @@ services:
       - DB_PORT=${DB_PORT}
       - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}
+      - RETRY_INTERVAL=30  
+      - MAX_RETRIES=7
     networks:
       - default
       - openhim
       - xds-repo-mongo
+
 
 volumes:
   mongo-data:
