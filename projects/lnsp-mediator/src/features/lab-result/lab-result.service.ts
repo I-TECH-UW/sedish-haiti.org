@@ -68,7 +68,7 @@ const resultListTemplate = `<?xml version="1.0" encoding="UTF-8" standalone="yes
 const resultItemTemplate = `  <ns2:NotificationMessage>
     <ns2:Topic>{{facilityId}}</ns2:Topic>
     <ns2:Message>
-      <root documentId="{{documentId}}""
+      <root documentId="{{documentId}}"
         xmlns=""
         xmlns:ns5="http://www.w3.org/2005/08/addressing">{{base64Message}}</root>
     </ns2:Message>
