@@ -1,0 +1,2 @@
+projects/isanteplus-db/initial-db/*.sql filter=lfs diff=lfs merge=lfs -text
+*.omod filter=lfs diff=lfs merge=lfs -text
