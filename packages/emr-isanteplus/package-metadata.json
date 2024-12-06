@@ -1,5 +1,5 @@
 {
-  "id": "emr-isanteplus",
+  "id": "emr-isanteplus-old",
   "name": "iSantePlus",
   "description": "An OpenMRS-based EMR for Haiti",
   "type": "infrastructure",
@@ -13,8 +13,8 @@
      "OMRS_CONFIG_CONNECTION_URL":"jdbc:mysql://mysql:3306/openmrs?autoReconnect=true",
      "OMRS_CONFIG_HAS_CURRENT_OPENMRS_DATABASE":"true",
      "OMRS_JAVA_SERVER_OPTS":"-Dfile.encoding=UTF-8 -server -Djava.security.egd=file:/dev/./urandom -Djava.awt.headless=true -Djava.awt.headlesslib=true",
-     "OMRS_CONFIG_CONNECTION_USERNAME":"mysqluser",
-     "OMRS_CONFIG_CONNECTION_PASSWORD":"mysqlpw",
+     "OMRS_CONFIG_CONNECTION_USERNAME":"openmrs",
+     "OMRS_CONFIG_CONNECTION_PASSWORD":"dev_password_only",
      "OMRS_DEV_DEBUG_PORT":"1044",
      "OMRS_JAVA_MEMORY_OPTS":"-Xmx8192m -Xms4096m -XX:NewSize=512m",
      "ISANTEPLUS_VERSION": "v2.3.4"

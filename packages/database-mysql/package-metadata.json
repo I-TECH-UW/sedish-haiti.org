@@ -6,12 +6,11 @@
   "version": "0.1.0",
   "dependencies": [],
   "environmentVariables": {
-    "MYSQL_IMAGE": "my-mysql:5.7",
+    "MYSQL_IMAGE": "isanteplus-mysql:5.7.44",
     "MYSQL_ROOT_PASSWORD": "root_password",
     "OPENMRS_DB_COUNT": "3",
     "INITIAL_SQL_FILE": "/docker-entrypoint-initdb.d/initial.dump",
     "SWARM_STACK_NAME": "mysql_stack",
-    "MYSQL_SERVICE_NAME": "mysql",  
     "MYSQL_INSTANCES": "3", 
     "MYSQL_CPU_LIMIT": "0",
     "MYSQL_CPU_RESERVE": "0.1",

@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  ${MYSQL_SERVICE_NAME}:
+  mysql:
     image: ${MYSQL_IMAGE}
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
     environment:
@@ -10,47 +10,15 @@ services:
       - INITIAL_SQL_FILE=${INITIAL_SQL_FILE}
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
-      - "/var/lib/mysql"
+      - /home/ubuntu/db/mysql:/var/lib/mysql
     networks:
       - mysql
     configs:
       - source: mysql.cnf
         target: /etc/mysql/conf.d/custom.cnf
-
-version: "3.9"
-
-services:
-  ${MYSQL_SERVICE_NAME}:
-    image: ${MYSQL_IMAGE}
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      OPENMRS_DB_COUNT: ${OPENMRS_DB_COUNT}
-      INITIAL_SQL_FILE: ${INITIAL_SQL_FILE}
-    configs:
-      - source: initial_dump
-        target: /docker-entrypoint-initdb.d/initial.dump
-      - source: create_dbs_script
-        target: /docker-entrypoint-initdb.d/10-create-dbs.sh
     deploy:
       replicas: 1
-    networks:
-      - mysql_net
-
-configs:
-  initial_dump:
-    file: ./initdb/initial.dump
-  create_dbs_script:
-    file: ./initdb/10-create-dbs.sh
-
-networks:
-  mysql_net:
-    driver: overlay
-    attachable: true
-
-
-
+      
 configs:
   mysql.cnf:
     file: ./config/mysql.cnf
