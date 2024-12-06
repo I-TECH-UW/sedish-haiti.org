@@ -1,9 +1,18 @@
 #!/bin/bash
 
 
-# TEMP: Ensure the /tmp/backups folder exists
-mkdir /tmp/backups
-
+# Ensure required directories exist for volume mapping
+if [ ! -d "/tmp/backups" ]; then
+  mkdir /tmp/backups
+fi
+if [ ! -d "/var/lib/db-volume/mysql" ]; then
+  mkdir -p /var/lib/db-volume/mysql
+  chmod +w /var/lib/db-volume/mysql
+fi
+if [ ! -d "/var/lib/openmrs-volume/openmrs-data" ]; then
+  mkdir -p /var/lib/openmrs-volume/openmrs-data
+  chmod +w /var/lib/openmrs-volume/openmrs-data
+fi
 
 ##
 # iSantePlus DB

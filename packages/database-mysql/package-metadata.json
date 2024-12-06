@@ -7,8 +7,10 @@
   "dependencies": [],
   "environmentVariables": {
     "MYSQL_IMAGE": "isanteplus-mysql:5.7.44",
-    "MYSQL_ROOT_PASSWORD": "root_password",
-    "OPENMRS_DB_COUNT": "10",
+    "MYSQL_ROOT_PASSWORD": "change_for_prod!",
+    "OMRS_CONFIG_CONNECTION_USERNAME_1": "openmrs",
+    "OMRS_CONFIG_CONNECTION_PASSWORD_1": "change_for_prod!",
+    "OPENMRS_DB_COUNT": "1",
     "INITIAL_SQL_FILE": "/docker-entrypoint-initdb.d/initial.dump",
     "SWARM_STACK_NAME": "mysql_stack",
     "MYSQL_INSTANCES": "1", 

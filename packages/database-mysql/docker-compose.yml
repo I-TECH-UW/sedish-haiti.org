@@ -1,16 +1,16 @@
-version: "3.9"
-
 services:
   mysql:
     image: ${MYSQL_IMAGE}
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PW}
+      - OMRS_CONFIG_CONNECTION_USERNAME_1=${OMRS_CONFIG_CONNECTION_USERNAME_1}
+      - OMRS_CONFIG_CONNECTION_PASSWORD_1=${OMRS_CONFIG_CONNECTION_PASSWORD_1}
       - OPENMRS_DB_COUNT=${OPENMRS_DB_COUNT}
       - INITIAL_SQL_FILE=${INITIAL_SQL_FILE}
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
-      - /home/ubuntu/db/mysql:/var/lib/mysql
+      - /var/lib/db-volume/mysql:/var/lib/mysql
     networks:
       - mysql
     configs:

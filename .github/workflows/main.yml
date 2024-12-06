@@ -32,7 +32,7 @@ jobs:
         run: ./get-cli.sh linux latest
 
       - name: Boot up HIE 
-        run: ./instant project init --env-file .env.hie -d
+        run: ./instant project init --env-file .env.hie
 
       - name: Display container status
         run: docker service ls

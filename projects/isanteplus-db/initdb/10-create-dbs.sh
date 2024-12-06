@@ -2,7 +2,13 @@
 set -e
 
 # This script runs during the MySQL initialization phase, thanks to docker-entrypoint.sh.
-# It uses OPENMRS_DB_COUNT and INITIAL_SQL_FILE from environment variables.
+# It uses the following ENV variables:
+#   - OPENMRS_DB_COUNT 
+#   - INITIAL_SQL_FILE
+#   - MYSQL_ROOT_PASSWORD
+#   - OMRS_CONFIG_CONNECTION_USERNAME_1
+#   - OMRS_CONFIG_CONNECTION_PASSWORD_1
+
 # For each database "openmrsN":
 # 1. CREATE DATABASE openmrsN
 # 2. CREATE USER 'openmrsN'@'%' IDENTIFIED BY 'dev_password_only'
@@ -12,7 +18,7 @@ set -e
 
 if [ -z "$OPENMRS_DB_COUNT" ]; then
   # set default
-  OPENMRS_DB_COUNT=10
+  OPENMRS_DB_COUNT=1
 fi
 
 if [ -z "$INITIAL_SQL_FILE" ]; then
@@ -27,14 +33,26 @@ if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
 fi
 
 for i in $(seq 1 "$OPENMRS_DB_COUNT"); do
+
+
   if [ "$i" -eq 1 ]; then
     db="openmrs"
   else
     db="openmrs$i"
   fi
   
-  user="$db"
-  password="dev_password_only"
+  # Check if user variable is set
+  if [ -z "$OMRS_CONFIG_CONNECTION_USERNAME_1" ]; then
+    user="$OMRS_CONFIG_CONNECTION_USERNAME_1"
+  else
+    user="$db"
+  fi
+
+  if [ -z "$OMRS_CONFIG_CONNECTION_PASSWORD_1" ]; then
+    password="$OMRS_CONFIG_CONNECTION_PASSWORD_1"
+  else
+    password="dev_password_only"
+  fi
 
   echo "Creating database: $db"
   mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS \`$db\`;"

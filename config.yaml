@@ -4,9 +4,7 @@ logPath: /tmp/logs
 
 packages:
   - interoperability-layer-openhim
-  - reverse-proxy-nginx
   - database-mysql
-  - identity-access-manager-keycloak
   - emr-isanteplus
   - data-pipeline-isanteplus
 
