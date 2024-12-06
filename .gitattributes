@@ -1,0 +1,3 @@
+projects/isanteplus-db/initial-db/*.sql filter=lfs diff=lfs merge=lfs -text
+*.omod filter=lfs diff=lfs merge=lfs -text
+packages/database-mysql/config/initdb/*.sql filter=lfs diff=lfs merge=lfs -text

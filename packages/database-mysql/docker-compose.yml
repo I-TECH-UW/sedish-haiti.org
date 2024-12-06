@@ -2,22 +2,23 @@ version: "3.9"
 
 services:
   mysql:
-    image: ghcr.io/isanteplus/docker-isanteplus-db:vtestUpdatedDb
+    image: ${MYSQL_IMAGE}
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --sql_mode=""
     environment:
-      - MYSQL_DATABASE=${MYSQL_DB_NAME}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PW}
-      - MYSQL_USER=${MYSQL_CONNECTION_USERNAME}
-      - MYSQL_PASSWORD=${MYSQL_CONNECTION_PASSWORD}
+      - OPENMRS_DB_COUNT=${OPENMRS_DB_COUNT}
+      - INITIAL_SQL_FILE=${INITIAL_SQL_FILE}
       - MYSQL_ROOT_HOST=% # Allow docker containers to connect to mysql
     volumes:
-      - "/var/lib/mysql"
+      - /home/ubuntu/db/mysql:/var/lib/mysql
     networks:
       - mysql
     configs:
       - source: mysql.cnf
         target: /etc/mysql/conf.d/custom.cnf
-
+    deploy:
+      replicas: 1
+      
 configs:
   mysql.cnf:
     file: ./config/mysql.cnf
@@ -30,3 +31,6 @@ networks:
     external: true
     name: mysql_public
 
+volumes:
+  mysql_data:
+    external: true
