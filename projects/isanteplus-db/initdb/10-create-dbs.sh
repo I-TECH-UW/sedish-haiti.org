@@ -11,11 +11,12 @@ set -e
 # 5. FLUSH PRIVILEGES
 
 if [ -z "$OPENMRS_DB_COUNT" ]; then
-  echo "OPENMRS_DB_COUNT is not set. No databases will be created."
-  exit 0
+  # set default
+  OPENMRS_DB_COUNT=10
 fi
 
 if [ -z "$INITIAL_SQL_FILE" ]; then
+
   echo "INITIAL_SQL_FILE not set. Please provide the path to the SQL dump file."
   exit 1
 fi

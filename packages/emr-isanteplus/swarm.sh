@@ -70,6 +70,8 @@ function destroy_package() {
 main() {
   init_vars "$@"
   import_sources
+  # chmod +x "${COMPOSE_FILE_PATH}/docker-compose.sh"
+  # source "${COMPOSE_FILE_PATH}/docker-compose.sh"
 
   if [[ "${ACTION}" == "init" ]] || [[ "${ACTION}" == "up" ]]; then
     if [[ "${CLUSTERED_MODE}" == "true" ]]; then
