@@ -11,7 +11,7 @@
     "OPENMRS_DB_COUNT": "10",
     "INITIAL_SQL_FILE": "/docker-entrypoint-initdb.d/initial.dump",
     "SWARM_STACK_NAME": "mysql_stack",
-    "MYSQL_INSTANCES": "10", 
+    "MYSQL_INSTANCES": "1", 
     "MYSQL_CPU_LIMIT": "0",
     "MYSQL_CPU_RESERVE": "0.1",
     "MYSQL_MEMORY_LIMIT": "1G",
