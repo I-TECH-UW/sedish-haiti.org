@@ -30,4 +30,4 @@ if [ -z "$1" ]; then
     fi
 fi
 
-docker build -t itechuw/sedish-haiti:"$TAG_NAME" . --no-cache
+docker build -t itechuw/isanteplus-local:"$TAG_NAME" . --no-cache
