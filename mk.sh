@@ -12,12 +12,12 @@
 #./instant package up -n nfs --env-file .env
 
 # PostGRES
-./instant package remove -n database-postgres --env-file .env
-./instant package init -n database-postgres --env-file .env
+# ./instant package remove -n database-postgres --env-file .env
+# ./instant package init -n database-postgres --env-file .env
 
 #keycloack
-./instant package remove -n identity-access-manager-keycloak --env-file .env
-./instant package init -n identity-access-manager-keycloak --env-file .env
+# ./instant package remove -n identity-access-manager-keycloak --env-file .env
+# ./instant package init -n identity-access-manager-keycloak --env-file .env
 
 
 #reverse proxy
@@ -35,13 +35,15 @@
 
 #mysql 
 #./instant package remove -n database-mysql --env-file .env
-#./instant package init -n database-mysql --env-file .env
+# ./instant package init -n database-mysql --env-file .env -d
+# ./instant package down -n database-mysql --env-file .env
+# ./instant package up -n database-mysql --env-file .env
 
 #isanteplus
 # ./instant package remove -n emr-isanteplus --env-file .env
-# ./instant package init -n emr-isanteplus --env-file .env
+# ./instant package init -n emr-isanteplus --env-file .env -d
 # ./instant package down -n emr-isanteplus --env-file .env
-# ./instant package up -n emr-isanteplus --env-file .env
+./instant package up -n emr-isanteplus --env-file .env
 
 # #opencr
 #./instant package remove -n client-registry-opencr --env-file .env
@@ -100,8 +102,8 @@
 
 
 # LNSP Mediator
-# ./instant package remove -n lnsp-mediator --env-file .env
-# ./instant package init -n lnsp-mediator --env-file .env -d
+#  ./instant package remove -n lnsp-mediator --env-file .env
+#  ./instant package init -n lnsp-mediator --env-file .env -d
 # ./instant package down -n lnsp-mediator --env-file .env
 # ./instant package up -n lnsp-mediator --env-file .env -d
 
