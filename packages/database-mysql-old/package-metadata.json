@@ -1,5 +1,5 @@
 {
-  "id": "database-mysql",
+  "id": "database-mysql-old",
   "name": "MySQL",
   "description": "MySQL database",
   "type": "infrastructure",

@@ -118,7 +118,7 @@ export class LabResultService {
     const contentType = 'application/xml; charset=UTF-8';
 
     if (resultList.length === 0) {
-      status = HttpStatus.NOT_FOUND;
+      status = HttpStatus.ACCEPTED;
       responseBody = this.decorateResultList([]);
     } else {
       responseBody = this.decorateResultList(resultList);

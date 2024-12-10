@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   isanteplus:
-    image: itechuw/docker-isanteplus-server:local
+    image: itechuw/docker-isanteplus-server:local-2
     build:
       context: .
       dockerfile: Dockerfile
@@ -28,7 +28,7 @@ services:
       - mysql
 
   isanteplus2:
-    image: itechuw/docker-isanteplus-server:local
+    image: itechuw/docker-isanteplus-server:local-2
     build:
       context: .
       dockerfile: Dockerfile
@@ -54,7 +54,7 @@ services:
       - mysql
 
   isanteplus3:
-    image: itechuw/docker-isanteplus-server:local
+    image: itechuw/docker-isanteplus-server:local-2
     build:
       context: .
       dockerfile: Dockerfile
@@ -80,7 +80,7 @@ services:
       - mysql
 
   isanteplus4:
-    image: itechuw/docker-isanteplus-server:local
+    image: itechuw/docker-isanteplus-server:local-2
     build:
       context: .
       dockerfile: Dockerfile
@@ -235,7 +235,7 @@ services:
   #     - reverse-proxy
   #     - mysql
 
-  # isanteplus10:
+  # isanteplus10: 
   #   image: itechuw/docker-isanteplus-server:local
   #   build:
   #     context: .

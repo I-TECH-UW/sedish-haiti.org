@@ -34,18 +34,16 @@
 # ./instant package up -n interoperability-layer-openhim --env-file .env -d
 
 #mysql 
-#./instant package down -n emr-isanteplus --env-file .env
-
 #./instant package remove -n database-mysql --env-file .env
-./instant package init -n database-mysql --env-file .env -d
+# ./instant package init -n database-mysql --env-file .env -d
 # ./instant package down -n database-mysql --env-file .env
 # ./instant package up -n database-mysql --env-file .env
 
 #isanteplus
 # ./instant package remove -n emr-isanteplus --env-file .env
 # ./instant package init -n emr-isanteplus --env-file .env -d
-
-#./instant package up -n emr-isanteplus --env-file .env
+# ./instant package down -n emr-isanteplus --env-file .env
+./instant package up -n emr-isanteplus --env-file .env
 
 # #opencr
 #./instant package remove -n client-registry-opencr --env-file .env
