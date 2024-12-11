@@ -1,0 +1,9 @@
+{
+  "name": "mongo-migrate",
+  "version": "1.0.0",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "migrate-mongo": "^11.0.0",
+    "mongodb": "^6.12.0"
+  }
+}

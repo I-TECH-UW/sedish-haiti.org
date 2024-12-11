@@ -1,0 +1,36 @@
+services:
+  mongo-migrate:
+    image: node-mongo-migrate:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      MONGO_URL: ${MONGO_URL}
+    networks:
+      - xds-repo-mongo
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: none
+    # configs:
+    #   - source: migrate-mongo-config.js
+    #     target: /usr/src/app/migrate-mongo-config.js
+    #   - source: package.json
+    #     target: /usr/src/app/package.json
+
+# configs:
+#   migrate-mongo-config.js:
+#     file: ./migrate-mongo-config.js
+#     name: migrate-mongo-config.js-${migrate_mongo_config_js_DIGEST:?err}
+#     labels:
+#       name: lns-mediator
+#   package.json:
+#     file: ./package.json
+#     name: package.json-${package_json_DIGEST:?err}
+#     labels:
+#       name: lnsp-mediator
+
+networks:
+  xds-repo-mongo:
+    name: xds_repo_mongo
+    external: true

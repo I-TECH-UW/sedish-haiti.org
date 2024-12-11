@@ -370,12 +370,11 @@ docker::deploy_config_importer() {
             exit 1
         fi
 
+        d
+
         config::set_config_digests "$CONFIG_COMPOSE_PATH"
 
-        try \
-            "docker stack deploy -d -c ${CONFIG_COMPOSE_PATH} ${STACK_NAME}" \
-            throw \
-            "Wrong configuration in $CONFIG_COMPOSE_PATH"
+        docker stack deploy -d -c "${CONFIG_COMPOSE_PATH}" "${STACK_NAME}" 
 
         log info "Waiting to give core config importer time to run before cleaning up service"
 

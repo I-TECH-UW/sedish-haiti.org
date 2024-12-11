@@ -20,3 +20,9 @@ networks:
   xds-repo-mongo:
     name: xds_repo_mongo
     external: true
+
+# export MONGO_URL=mongodb://172.31.2.125:27019/nest
+
+# docker run --rm -v "$(pwd)":/backup mongo:6.0 mongodump --uri "mongodb://172.31.2.125:27019/nest" --out /backup
+# docker run --rm -v "$(pwd)/backup":/backup mongo:6.0 mongorestore --uri "mongodb://172.31.2.125:27019/nest" /backup/nest
+

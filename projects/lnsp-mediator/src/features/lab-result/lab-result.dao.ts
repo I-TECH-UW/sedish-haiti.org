@@ -10,12 +10,33 @@ export class LabResultDAO extends DAO<LabResultDocument> {
     super(model);
   }
 
-  async findByFacilityId(facilityId: string, sinceDate: Date) {
-    const query = this.model
-      .find({ facilityId })
-      .where({ createdAt: { $gte: sinceDate } })
-      .sort({ createdAt: -1 });
+  async findByLabOrderId(labOrderId: string): Promise<LabResultDocument | null> {
+    return this.model.findOne({ labOrderId }).sort({ version: -1 }).exec();
+  }
 
-    return query.exec();
+  async findByFacilityId(facilityId: string, sinceDate: Date) {
+    return this.model.aggregate([
+      {
+        $match: {
+          facilityId: facilityId,
+          createdAt: { $gte: sinceDate },
+        },
+      },
+      {
+        $sort: { version: -1, createdAt: -1 },
+      },
+      {
+        $group: {
+          _id: "$labOrderId",
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: { newRoot: "$doc" },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+    ]).exec();
   }
 }
