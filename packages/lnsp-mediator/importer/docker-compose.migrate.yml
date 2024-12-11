@@ -1,23 +1,34 @@
-version: '3.9'
-
 services:
   mongo-migrate:
-    image: node:16-alpine
-    working_dir: /usr/src/app
-    # Bind-mount the importer folder so we have access to migrate-mongo-config.js and migrations
-    volumes:
-      - ./importer:/usr/src/app
+    image: node-mongo-migrate:local
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       MONGO_URL: ${MONGO_URL}
-    command: >
-      sh -c "yarn install --immutable && \
-      yarn dlx migrate-mongo up --config ./migrate-mongo-config.js --db $MONGO_URL"
     networks:
       - xds-repo-mongo
     deploy:
       replicas: 1
       restart_policy:
         condition: none
+    # configs:
+    #   - source: migrate-mongo-config.js
+    #     target: /usr/src/app/migrate-mongo-config.js
+    #   - source: package.json
+    #     target: /usr/src/app/package.json
+
+# configs:
+#   migrate-mongo-config.js:
+#     file: ./migrate-mongo-config.js
+#     name: migrate-mongo-config.js-${migrate_mongo_config_js_DIGEST:?err}
+#     labels:
+#       name: lns-mediator
+#   package.json:
+#     file: ./package.json
+#     name: package.json-${package_json_DIGEST:?err}
+#     labels:
+#       name: lnsp-mediator
 
 networks:
   xds-repo-mongo:

@@ -3,7 +3,7 @@ module.exports = {
     console.log("Adding default version field to results collection...");
 
     // Update all documents that do not have a `version` field
-    const result = await db.collection('results').updateMany(
+    const result = await db.collection('labresults').updateMany(
       { version: { $exists: false } }, // Find documents without a `version` field
       { $set: { version: 1 } }         // Add the `version` field with default value 1
     );

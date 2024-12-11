@@ -53,7 +53,7 @@ function initialize_package() {
     # If DB does not exist, bring up Mongo stack on init/up
     if [[ "${LNSP_DB_EXISTS}" != "true" ]]; then
       if [[ "${ACTION}" == "init" || "${ACTION}" == "up" ]]; then
-        docker::deploy_service "${MONGO_STACK}" "${COMPOSE_FILE_PATH}/../lnsp-mongo" "docker-compose.yml" \
+        docker::deploy_service "${MONGO_STACK}" "${COMPOSE_FILE_PATH}" "docker-compose-mongo.yml" \
           "$mongo_cluster_compose_filename" "$mongo_dev_compose_filename"
       fi
     else
@@ -66,11 +66,9 @@ function initialize_package() {
     # If run_migrations is true and action is init or up, run migrations
     if [[ "${LNSP_RUN_MIGRATIONS}" == "true" && ( "${ACTION}" == "init" || "${ACTION}" == "up" ) ]]; then
       log info "LNSP_RUN_MIGRATIONS=true, running MongoDB migrations..."
-      docker-compose -f "${COMPOSE_FILE_PATH}/importer/docker-compose.migrate.yml" run --rm mongo-migrate
-      if [[ $? -ne 0 ]]; then
-        log error "Migrations failed"
-        exit 1
-      fi
+
+      #docker::deploy_config_importer $STACK "${COMPOSE_FILE_PATH}/importer/docker-compose.migrate.yml" "mongo-migrate" "lnsp-mediator"
+      docker::deploy_service $STACK "${COMPOSE_FILE_PATH}/importer/" "docker-compose.migrate.yml"
     else
       log info "LNSP_RUN_MIGRATIONS=false or not init/up action, skipping migrations."
     fi
