@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  mongo-migrate:
+    image: node:16-alpine
+    working_dir: /usr/src/app
+    # Bind-mount the importer folder so we have access to migrate-mongo-config.js and migrations
+    volumes:
+      - ./importer:/usr/src/app
+    environment:
+      MONGO_URL: ${MONGO_URL}
+    command: >
+      sh -c "yarn install --immutable && \
+      yarn dlx migrate-mongo up --config ./migrate-mongo-config.js --db $MONGO_URL"
+    networks:
+      - xds-repo-mongo
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: none
+
+networks:
+  xds-repo-mongo:
+    name: xds_repo_mongo
+    external: true
