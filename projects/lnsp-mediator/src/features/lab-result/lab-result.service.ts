@@ -129,10 +129,12 @@ export class LabResultService {
   }
 
   async create(labResult: LabResult) {
-    // Create lab result and connect with lab order
-
-    return this.labResultDAO.create(labResult);
+    const latestResult = await this.labResultDAO.findByLabOrderId(labResult.labOrderId);
+    labResult.version = latestResult ? latestResult.version + 1 : 1;
+  
+    return this.labResultDAO.create(labResult); 
   }
+  
 
   async findByLabOrderId(labOrderId: string) {
     return this.labResultDAO.findOne({ labOrderId });
