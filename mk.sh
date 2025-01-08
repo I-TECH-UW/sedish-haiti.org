@@ -23,8 +23,8 @@
 #reverse proxy
 # ./instant package remove -n reverse-proxy-nginx --env-file .env
 # ./instant package init -n reverse-proxy-nginx --env-file .env
-# ./instant package down -n reverse-proxy-nginx --env-file .env
-# ./instant package up -n reverse-proxy-nginx --env-file .env
+#./instant package down -n reverse-proxy-nginx --env-file .env
+./instant package up -n reverse-proxy-nginx --env-file .env
 
 #openhim
 
@@ -43,7 +43,7 @@
 # ./instant package remove -n emr-isanteplus --env-file .env
 # ./instant package init -n emr-isanteplus --env-file .env -d
 # ./instant package down -n emr-isanteplus --env-file .env
-./instant package up -n emr-isanteplus --env-file .env
+#./instant package up -n emr-isanteplus --env-file .env
 
 # #opencr
 #./instant package remove -n client-registry-opencr --env-file .env
@@ -103,8 +103,8 @@
 
 # LNSP Mediator
 #  ./instant package remove -n lnsp-mediator --env-file .env
-#  ./instant package init -n lnsp-mediator --env-file .env -d
-# ./instant package down -n lnsp-mediator --env-file .env
-# ./instant package up -n lnsp-mediator --env-file .env -d
+#  ./instant package init -n lnsp-mediator --env-file .env -d#
+#./instant package down -n lnsp-mediator --env-file .env
+#./instant package up -n lnsp-mediator --env-file .env -d
 
 # 172.31.2.125

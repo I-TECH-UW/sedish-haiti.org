@@ -5,6 +5,7 @@ declare MODE=""
 declare COMPOSE_FILE_PATH=""
 declare UTILS_PATH=""
 declare STACK="lnsp-mediator"
+declare MONGO_STACK="lnsp-mongo"
 
 function init_vars() {
   ACTION=$1
@@ -49,32 +50,48 @@ function initialize_package() {
   fi
 
   (
-    docker::deploy_service $STACK "${COMPOSE_FILE_PATH}" "docker-compose-mongo.yml" "$mongo_cluster_compose_filename" "$mongo_dev_compose_filename"
+    # If DB does not exist, bring up Mongo stack on init/up
+    if [[ "${LNSP_DB_EXISTS}" != "true" ]]; then
+      if [[ "${ACTION}" == "init" || "${ACTION}" == "up" ]]; then
+        docker::deploy_service "${MONGO_STACK}" "${COMPOSE_FILE_PATH}" "docker-compose-mongo.yml" \
+          "$mongo_cluster_compose_filename" "$mongo_dev_compose_filename"
+      fi
+    else
+      log info "LNSP_DB_EXISTS=true, assuming Mongo is already running."
+    fi
 
-    # if [[ "${ACTION}" == "init" ]]; then
-    #   if [[ "${CLUSTERED_MODE}" == "true" ]]; then
-    #     try "${COMPOSE_FILE_PATH}/initiate-replica-set.sh $STACK" throw "Fatal: Initiate Mongo replica set failed"
-    #   else
-    #     config::await_service_running "mongo-1" "${COMPOSE_FILE_PATH}"/docker-compose.await-helper-mongo.yml "1" "$STACK"
+    log info "Waiting for Mongo to be ready..."
+    config::await_service_running "lnsp-mongo-1" "${COMPOSE_FILE_PATH}/docker-compose.await-helper-mongo.yml" "1" "$MONGO_STACK"
+    
+    # If run_migrations is true and action is init or up, run migrations
+    if [[ "${LNSP_RUN_MIGRATIONS}" == "true" && ( "${ACTION}" == "init" || "${ACTION}" == "up" ) ]]; then
+      log info "LNSP_RUN_MIGRATIONS=true, running MongoDB migrations..."
 
-    #     try "docker exec -i $(docker ps -q -f name=xds_mongo) mongo --eval \"rs.initiate({'_id': 'mongo-set','members': [{'_id': 0,'priority': 1,'host': 'mongo-1:27017'}]})\"" throw "Could not initiate replica set for the single mongo instance. Some services use \
-    #     mongo event listeners which only work with a replica set"
-    #   fi
-    # fi
+      #docker::deploy_config_importer $STACK "${COMPOSE_FILE_PATH}/importer/docker-compose.migrate.yml" "mongo-migrate" "lnsp-mediator"
+      docker::deploy_service $STACK "${COMPOSE_FILE_PATH}/importer/" "docker-compose.migrate.yml"
+    else
+      log info "LNSP_RUN_MIGRATIONS=false or not init/up action, skipping migrations."
+    fi
 
+    # Deploy main application services after waiting for DB and running migrations (if any)
     docker::deploy_service $STACK "${COMPOSE_FILE_PATH}" "docker-compose.yml" "$xds_dev_compose_filename"
-  ) ||
-    {
-      log error "Failed to deploy package"
-      exit 1
-    }
+  ) || {
+    log error "Failed to deploy package"
+    exit 1
+  }
 }
 
 function destroy_package() {
-  docker::stack_destroy "$STACK"
-
-  if [[ "${CLUSTERED_MODE}" == "true" ]]; then
-    log warn "Volumes are only deleted on the host on which the command is run. Mongo volumes on other nodes are not deleted"
+  # If the DB does not exist, we manage stacks fully
+  if [[ "${LNSP_DB_EXISTS}" != "true" ]]; then
+    docker::stack_destroy "$STACK"
+    if [[ "${CLUSTERED_MODE}" == "true" ]]; then
+      log warn "Volumes are only deleted on the host on which the command is run. Mongo volumes on other nodes are not deleted"
+    fi
+    docker::stack_destroy "$MONGO_STACK"
+  else
+    log info "LNSP_DB_EXISTS=true, not destroying DB stack, only destroying lnsp services."
+    docker::stack_destroy "$STACK"
   fi
 
   docker::prune_configs "lnsp-mediator"
@@ -84,7 +101,7 @@ main() {
   init_vars "$@"
   import_sources
 
-  if [[ "${ACTION}" == "init" ]] || [[ "${ACTION}" == "up" ]]; then
+  if [[ "${ACTION}" == "init" || "${ACTION}" == "up" ]]; then
     if [[ "${CLUSTERED_MODE}" == "true" ]]; then
       log info "Running package in Cluster node mode"
     else
@@ -94,8 +111,11 @@ main() {
     initialize_package
   elif [[ "${ACTION}" == "down" ]]; then
     log info "Scaling down package"
-
     docker::scale_services "$STACK" 0
+    # Only scale down mongo services if DB does not exist
+    if [[ "${LNSP_DB_EXISTS}" != "true" ]]; then
+      docker::scale_services "$MONGO_STACK" 0
+    fi
   elif [[ "${ACTION}" == "destroy" ]]; then
     log info "Destroying package"
     destroy_package
