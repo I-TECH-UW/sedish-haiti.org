@@ -27,6 +27,7 @@
 #./instant package down -n reverse-proxy-nginx --env-file .env
 #./instant package up -n reverse-proxy-nginx --env-file .env
 
+
 #openhim
 
 # ./instant package remove -n interoperability-layer-openhim --env-file .env
@@ -43,8 +44,6 @@
 #isanteplus
 # ./instant package remove -n emr-isanteplus --env-file .env
 # ./instant package init -n emr-isanteplus --env-file .env -d
-./instant package down -n emr-isanteplus --env-file .env
-./instant package up -n emr-isanteplus --env-file .env
 
 # #opencr
 #./instant package remove -n client-registry-opencr --env-file .env

@@ -121,7 +121,6 @@ This project deploys a multi-component Health Information Exchange (HIE) on a cl
 
 ---
 
-
 ## HIE Setup and Configuration
 
 ### 1. Clone the Repository
