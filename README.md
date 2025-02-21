@@ -29,34 +29,42 @@ https://hapifhir.io/hapi-fhir/docs/server_jpa/get_started.html
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [System Requirements](#system-requirements)
-3. [Environment Setup](#environment-setup)
-   - [Linux VM Setup](#linux-vm-setup)
-   - [Installing Git and Docker](#installing-git-and-docker)
-   - [Initializing Docker Swarm](#initializing-docker-swarm)
-4. [Security Best Practices](#security-best-practices)
-   - [Docker and Swarm Security](#docker-and-swarm-security)
-   - [Host and OS Hardening](#host-and-os-hardening)
-   - [Cloud-Specific Controls (AWS)](#cloud-specific-controls-aws)
-5. [Project Configuration](#project-configuration)
-   - [Project Structure and .env File](#project-structure-and-env-file)
-   - [Docker Secrets and Swarm Locking](#docker-secrets-and-swarm-locking)
-6. [Component Modules](#component-modules)
-   - [Interoperability Layer - OpenHIM](#interoperability-layer---openhim)
-   - [Reverse Proxy - Nginx](#reverse-proxy---nginx)
-   - [FHIR Datastore - HAPI FHIR](#fhir-datastore---hapi-fhir)
-   - [Monitoring](#monitoring)
-   - [Database Modules (Postgres and MySQL)](#database-modules)
-   - [Identity & Client Registries (Keycloak & OpenCR)](#identity--client-registries)
-   - [Analytics Datastore - ElasticSearch](#analytics-datastore---elasticsearch)
-   - [Message Bus - Kafka](#message-bus---kafka)
-   - [Shared Health Record - FHIR / OpenSHR](#shared-health-record)
-   - [Sedish Haiti Custom Packages](#sedish-haiti-custom-packages)
-7. [Deployment Steps](#deployment-steps)
-8. [Post-Deployment Configuration](#post-deployment-configuration)
-9. [Troubleshooting & Logging](#troubleshooting--logging)
-10. [Additional Resources](#additional-resources)
+- [SEDISH: The Haiti HIE](#sedish-the-haiti-hie)
+  - [Components](#components)
+    - [1. iSantePlus EMR](#1-isanteplus-emr)
+    - [Links](#links)
+    - [2. OpenCR](#2-opencr)
+    - [3. OpenHIM](#3-openhim)
+    - [4. HAPI JPA Server](#4-hapi-jpa-server)
+  - [Deployment Guide](#deployment-guide)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [System Requirements](#system-requirements)
+  - [Environment Setup](#environment-setup)
+    - [Linux VM Setup](#linux-vm-setup)
+    - [Installing Git and Docker](#installing-git-and-docker)
+    - [Initializing Docker Swarm](#initializing-docker-swarm)
+  - [Security Best Practices](#security-best-practices)
+    - [Docker and Swarm Security](#docker-and-swarm-security)
+    - [Host and OS Hardening](#host-and-os-hardening)
+    - [Cloud-Specific Controls (AWS)](#cloud-specific-controls-aws)
+  - [Project Configuration](#project-configuration)
+    - [Project Structure and .env File](#project-structure-and-env-file)
+    - [Docker Secrets and Swarm Locking](#docker-secrets-and-swarm-locking)
+  - [Component Modules](#component-modules)
+    - [Interoperability Layer – OpenHIM](#interoperability-layer--openhim)
+    - [Reverse Proxy – Nginx](#reverse-proxy--nginx)
+    - [FHIR Datastore – HAPI FHIR](#fhir-datastore--hapi-fhir)
+    - [Monitoring](#monitoring)
+    - [Database Modules – Postgres \& MySQL](#database-modules--postgres--mysql)
+    - [Analytics Datastore – ElasticSearch](#analytics-datastore--elasticsearch)
+    - [Message Bus – Kafka](#message-bus--kafka)
+    - [Shared Health Record – FHIR / OpenSHR](#shared-health-record--fhir--openshr)
+    - [Sedish Haiti Custom Packages](#sedish-haiti-custom-packages)
+  - [Deployment Steps](#deployment-steps)
+  - [Post-Deployment Configuration](#post-deployment-configuration)
+  - [Troubleshooting \& Logging](#troubleshooting--logging)
+  - [Additional Resources](#additional-resources)
 
 ---
 
@@ -95,13 +103,7 @@ This project deploys a multi-component Health Information Exchange (HIE) on a cl
    ```
 
 2. **Install Docker:**  
-   Follow [Docker’s installation guide](https://docs.docker.com/engine/install/ubuntu/) for your Linux distribution. For example:  
-   ```bash
-   curl -fsSL https://get.docker.com -o get-docker.sh
-   sudo sh get-docker.sh
-   sudo usermod -aG docker $USER
-   ```
-   *Log out and back in to apply group changes.*
+   Follow [Docker’s installation guide](https://docs.docker.com/engine/install/ubuntu/) for your Linux distribution. 
 
 ### Initializing Docker Swarm
 
@@ -111,7 +113,7 @@ This project deploys a multi-component Health Information Exchange (HIE) on a cl
    ```
    If you have multiple nodes, join worker nodes using the token provided by the `docker swarm init` command.
 
-2. **(Optional) Lock the Swarm:**  
+2. **Lock the Swarm:**  
    To secure the swarm’s Certificate Authority (CA) key, run:
    ```bash
    docker swarm ca --rotate --passphrase "YourSecurePassphrase"
@@ -183,8 +185,8 @@ Organize your project repository as follows:
 /sedish-haiti
   ├── config.yaml           # Main project configuration file
   ├── .env                  # Environment variable definitions
-  ├── docker-compose.yml    # Docker Compose configuration (optional, if used)
   ├── scripts/              # Helper scripts (e.g., deploy.sh)
+  ├── projects/             # Sedish-specific services
   └── packages/
         ├── interoperability-layer-openhim/
         ├── reverse-proxy-nginx/
@@ -205,7 +207,7 @@ Organize your project repository as follows:
         └── lnsp-mediator/
 ```
 
-A sample **.env** file (adjust as needed):
+A sample **.env** file:
 
 ```bash
 # General
@@ -290,10 +292,6 @@ Each package listed in the configuration file corresponds to a containerized mod
 - **Purpose:** Provide robust data storage for different parts of the HIE.
 - **Configuration:** Integrated with replication settings (for Postgres) and tailored resource allocations.
 
-### Identity & Client Registries – Keycloak & OpenCR
-- **Purpose:** Manage user identities and client systems within the HIE.
-- **Configuration:** Environment variables specify URLs for frontend access and integration with other HIE components.
-
 ### Analytics Datastore – ElasticSearch
 - **Purpose:** Stores and indexes analytics data, enabling rapid query and reporting.
 - **Configuration:** Resource limits ensure that heavy data loads do not impact system performance.
@@ -310,10 +308,7 @@ Each package listed in the configuration file corresponds to a containerized mod
 - **Modules:** 
   - **emr-isanteplus**
   - **data-pipeline-isanteplus**
-  - **document-data-store-xds**
-  - **shared-health-record-openshr**
-  - **openhim-mediator-openxds**
-  - **lnsp-mediator**
+
 - **Purpose:** These packages provide additional functionality specific to the Sedish Haiti deployment, such as electronic medical records, data pipelines, and document storage.
 - **Configuration:** Managed through package-specific environment variables and integrated with the core HIE components.
 
@@ -389,9 +384,4 @@ After the containers are up, complete the following manual configurations:
 - [AWS Security Best Practices](https://aws.amazon.com/security/)
 - [Docker Secrets Documentation](https://docs.docker.com/engine/swarm/secrets/)
 
----
-
-By following this guide, you should have a secure, scalable, and fully functional Health Information Exchange deployed on AWS using Docker Swarm. Adjust the configurations as necessary to meet your specific operational and security requirements.
-
-Happy deploying!
-
+~
