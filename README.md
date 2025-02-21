@@ -74,7 +74,7 @@ This project deploys a multi-component Health Information Exchange (HIE) on a cl
 
 ---
 
-## System Requirements
+## Suggested System Requirements
 
 - **Operating System:** AWS Linux VM (Ubuntu, Amazon Linux 2, etc.)
 - **Docker:** Latest Docker CE installed (with Docker Swarm mode enabled)
@@ -120,6 +120,123 @@ This project deploys a multi-component Health Information Exchange (HIE) on a cl
    ```
 
 ---
+
+## HIE Setup and Configuration
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/I-TECH-UW/sedish-haiti.org.git
+cd sedish-haiti.org
+```
+
+### 2. Explore Project Structure
+The project follows a modular structure outlined by the Instant OpneHIE V2 framework. The main configuration file is `config.yaml`, and environment variables are defined in the `.env` file. The project structure is as follows:
+
+```
+/sedish-haiti.org
+  ├── config.yaml           # Main project configuration file
+  ├── .env                  # Environment variable definitions
+  ├── scripts/              # Helper scripts (e.g., deploy.sh)
+  ├── projects/             # Sedish-specific services
+  └── packages/
+        ├── interoperability-layer-openhim/
+        ├── reverse-proxy-nginx/
+        ├── fhir-datastore-hapi-fhir/
+        ├── monitoring/
+        ├── database-postgres/
+        ├── database-mysql/
+        ├── identity-access-manager-keycloak/
+        ├── client-registry-opencr/
+        ├── analytics-datastore-elastic-search/
+        ├── message-bus-kafka/
+        ├── shared-health-record-fhir/
+        ├── emr-isanteplus/
+        ├── data-pipeline-isanteplus/
+        ├── document-data-store-xds/
+        ├── shared-health-record-openshr/
+        ├── openhim-mediator-openxds/
+        └── lnsp-mediator/
+```
+
+This template `.env` file can be used as a starting point for configuration:
+
+```bash
+# General
+CLUSTERED_MODE=false
+
+# Log configuration
+DEBUG=1
+BASHLOG_FILE=1
+BASHLOG_FILE_PATH=platform.log
+
+# Interoperability Layer - OpenHIM
+OPENHIM_CORE_INSTANCES=1
+OPENHIM_CONSOLE_INSTANCES=1
+OPENHIM_MEDIATOR_API_PORT=443
+OPENHIM_CORE_MEDIATOR_HOSTNAME=openhimcomms.sedish.live
+MONGO_SET_COUNT=1
+OPENHIM_MONGO_URL=mongodb://mongo-1:27017/openhim
+OPENHIM_MONGO_ATNAURL=mongodb://mongo-1:27017/openhim
+
+# FHIR Datastore - HAPI FHIR
+HAPI_FHIR_INSTANCES=1
+REPMGR_PARTNER_NODES=postgres-1
+POSTGRES_REPLICA_SET=postgres-1:5432
+
+# Reverse Proxy - Nginx
+REVERSE_PROXY_INSTANCES=1
+DOMAIN_NAME=sedish.live
+SUBDOMAINS=openhimcomms.sedish.live,openhimcore.sedish.live,openhimconsole.sedish.live,keycloak.sedish.live,grafana.sedish.live,isanteplus.sedish.live,hueh.sedish.live,lapaix.sedish.live,ofatma.sedish.live,foyer-saint-camille.sedish.live,klinik-eritaj.sedish.live,ofatma-sonapi.sedish.live,gressier.sedish.live,pestel.sedish.live,stdemiragoane.sedish.live,bethel-fdn.sedish.live
+STAGING=false
+INSECURE=false
+
+# Message Bus - Kafka
+KAFKA_TOPICS=map-concepts,map-locations,send-adt-to-ipms,send-orm-to-ipms,save-pims-patient,save-ipms-patient,handle-oru-from-ipms
+KAFKA_HOSTS=kafka-01:9092
+
+# Identity Access Manager - Keycloak
+KC_FRONTEND_URL=https://keycloak.sedish.live
+KC_GRAFANA_ROOT_URL=https://grafana.sedish.live
+KC_SUPERSET_ROOT_URL=https://superset.domain
+KC_OPENHIM_ROOT_URL=https://openhimconsole.sedish.live
+GF_SERVER_DOMAIN=grafana.sedish.live
+
+# Resource limits
+OPENHIM_MEMORY_LIMIT=4G
+ES_MEMORY_LIMIT=20G
+LOGSTASH_MEMORY_LIMIT=8G
+KAFKA_MEMORY_LIMIT=8G
+KAFDROP_MEMORY_LIMIT=500M
+
+LNSP_RUN_MIGRATIONS=true
+LNSP_DATABASE_EXISTS=true
+```
+
+### 3. Build the Project
+
+1. Run `./get-cli.sh linux` to download the Instant OpenHIE CLI for Linux.
+
+2. Run `./build-custom-images.sh` to build the necessary project components.
+
+3. Run `./build-images.sh` to build the Docker images for the HIE deployment.
+
+
+### 4. Configure the Project
+
+1. Update the `.env` file with your specific configuration settings.
+
+### 5. Deploy the Project
+
+1. Run `./instant project up --env-file .env` to deploy the project.
+
+### 6. Manage individual packages
+
+You can use the `mk.sh` file or the `instant` CLI to manage individual packages. For example, to bring up the OpenHIM package:
+
+```bash
+./instant package up -n interoperability-layer-openhim --env-file .env
+``` 
 
 ## Security Best Practices
 
@@ -175,92 +292,6 @@ This project deploys a multi-component Health Information Exchange (HIE) on a cl
 
 ---
 
-## Project Configuration
-
-### Project Structure and .env File
-
-Organize your project repository as follows:
-
-```
-/sedish-haiti
-  ├── config.yaml           # Main project configuration file
-  ├── .env                  # Environment variable definitions
-  ├── scripts/              # Helper scripts (e.g., deploy.sh)
-  ├── projects/             # Sedish-specific services
-  └── packages/
-        ├── interoperability-layer-openhim/
-        ├── reverse-proxy-nginx/
-        ├── fhir-datastore-hapi-fhir/
-        ├── monitoring/
-        ├── database-postgres/
-        ├── database-mysql/
-        ├── identity-access-manager-keycloak/
-        ├── client-registry-opencr/
-        ├── analytics-datastore-elastic-search/
-        ├── message-bus-kafka/
-        ├── shared-health-record-fhir/
-        ├── emr-isanteplus/
-        ├── data-pipeline-isanteplus/
-        ├── document-data-store-xds/
-        ├── shared-health-record-openshr/
-        ├── openhim-mediator-openxds/
-        └── lnsp-mediator/
-```
-
-A sample **.env** file:
-
-```bash
-# General
-CLUSTERED_MODE=false
-
-# Log configuration
-DEBUG=1
-BASHLOG_FILE=1
-BASHLOG_FILE_PATH=platform.log
-
-# Interoperability Layer - OpenHIM
-OPENHIM_CORE_INSTANCES=1
-OPENHIM_CONSOLE_INSTANCES=1
-OPENHIM_MEDIATOR_API_PORT=443
-OPENHIM_CORE_MEDIATOR_HOSTNAME=openhimcomms.sedish.live
-MONGO_SET_COUNT=1
-OPENHIM_MONGO_URL=mongodb://mongo-1:27017/openhim
-OPENHIM_MONGO_ATNAURL=mongodb://mongo-1:27017/openhim
-
-# FHIR Datastore - HAPI FHIR
-HAPI_FHIR_INSTANCES=1
-REPMGR_PARTNER_NODES=postgres-1
-POSTGRES_REPLICA_SET=postgres-1:5432
-
-# Reverse Proxy - Nginx
-REVERSE_PROXY_INSTANCES=1
-DOMAIN_NAME=sedish.live
-SUBDOMAINS=openhimcomms.sedish.live,openhimcore.sedish.live,openhimconsole.sedish.live,keycloak.sedish.live,grafana.sedish.live,isanteplus.sedish.live,hueh.sedish.live,lapaix.sedish.live,ofatma.sedish.live,foyer-saint-camille.sedish.live,klinik-eritaj.sedish.live,ofatma-sonapi.sedish.live,gressier.sedish.live,pestel.sedish.live,stdemiragoane.sedish.live,bethel-fdn.sedish.live
-STAGING=false
-INSECURE=false
-
-# Message Bus - Kafka
-KAFKA_TOPICS=map-concepts,map-locations,send-adt-to-ipms,send-orm-to-ipms,save-pims-patient,save-ipms-patient,handle-oru-from-ipms
-KAFKA_HOSTS=kafka-01:9092
-
-# Identity Access Manager - Keycloak
-KC_FRONTEND_URL=https://keycloak.sedish.live
-KC_GRAFANA_ROOT_URL=https://grafana.sedish.live
-KC_SUPERSET_ROOT_URL=https://superset.domain
-KC_OPENHIM_ROOT_URL=https://openhimconsole.sedish.live
-GF_SERVER_DOMAIN=grafana.sedish.live
-
-# Resource limits
-OPENHIM_MEMORY_LIMIT=4G
-ES_MEMORY_LIMIT=20G
-LOGSTASH_MEMORY_LIMIT=8G
-KAFKA_MEMORY_LIMIT=8G
-KAFDROP_MEMORY_LIMIT=500M
-
-LNSP_RUN_MIGRATIONS=true
-LNSP_DATABASE_EXISTS=true
-```
-
 ### Docker Secrets and Swarm Locking
 
 - **Docker Secrets:** Store sensitive configuration (e.g., passwords) as Docker secrets. Reference these secrets in your service definitions.
@@ -314,7 +345,7 @@ Each package listed in the configuration file corresponds to a containerized mod
 
 ---
 
-## Deployment Steps
+## Summary of Deployment Steps
 
 1. **Clone the Repository:**  
    ```bash

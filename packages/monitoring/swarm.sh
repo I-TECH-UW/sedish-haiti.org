@@ -6,7 +6,6 @@ declare COMPOSE_FILE_PATH=""
 declare UTILS_PATH=""
 declare STACK="monitoring"
 
-
 function init_vars() {
   ACTION=$1
   MODE=$2
@@ -33,44 +32,46 @@ function import_sources() {
 }
 
 function initialize_package() {
-  local postgres_cluster_compose_filename=""
-  local hapi_fhir_dev_compose_filename=""
-  local package_dev_compose_filename=""
+  local monitoring_dev_compose_filename=""
+  local monitoring_cluster_compose_filename=""
 
-  if [ "${MODE}" == "dev" ]; then
+  if [[ "${CLUSTERED_MODE}" == "true" ]]; then
+    monitoring_cluster_compose_filename="docker-compose.cluster.yml"
+    export NUM_MINIO_SERVERS=4
+  else
+    export NUM_MINIO_SERVERS=1
+  fi
+
+  if [[ "${MODE}" == "dev" ]]; then
     log info "Running package in DEV mode"
-    hapi_fhir_dev_compose_filename="docker-compose-hapi.dev.yml"
-    package_dev_compose_filename="docker-compose.dev.yml"
+    monitoring_dev_compose_filename="docker-compose.dev.yml"
   else
     log info "Running package in PROD mode"
   fi
 
-  if [ "${CLUSTERED_MODE}" == "true" ]; then
-    postgres_cluster_compose_filename="docker-compose-postgres.cluster.yml"
-  fi
-
   (
-    # docker::deploy_service "$STACK" "${COMPOSE_FILE_PATH}" "docker-compose-postgres.yml" "$postgres_cluster_compose_filename" "$postgres_dev_compose_filename"
-    
+    docker::deploy_service $STACK "${COMPOSE_FILE_PATH}" "docker-compose.yml" "$monitoring_dev_compose_filename" "$monitoring_cluster_compose_filename"
+  ) || {
+    log error "Failed to deploy package"
+    exit 1
+  }
+}
 
+function scale_services_down() {
+  docker::service_destroy $STACK "cadvisor" "node-exporter" "promtail"
 
-
-    docker::deploy_service "$STACK" "${COMPOSE_FILE_PATH}" "docker-compose.yml" 
-  ) ||
-    {
-      log error "Failed to deploy package"
-      exit 1
-    }
+  docker::scale_services $STACK 0
 }
 
 function destroy_package() {
-  docker::stack_destroy "$STACK"
+  docker::stack_destroy $STACK
 
-  if [[ "${CLUSTERED_MODE}" == "true" ]]; then
-    log warn "Volumes are only deleted on the host on which the command is run. Postgres volumes on other nodes are not deleted"
+  if [[ $CLUSTERED_MODE == "true" ]]; then
+    sleep 5
+    log warn "Volumes are only deleted on the host on which the command is run. Monitoring volumes on other nodes are not deleted"
   fi
 
-  docker::prune_configs "hapi-fhir"
+  docker::prune_configs "grafana" "prometheus" "promtail" "loki"
 }
 
 main() {
@@ -81,14 +82,14 @@ main() {
     if [[ "${CLUSTERED_MODE}" == "true" ]]; then
       log info "Running package in Cluster node mode"
     else
-    log info "Running package in Single node mode"
+      log info "Running package in Single node mode"
     fi
 
     initialize_package
   elif [[ "${ACTION}" == "down" ]]; then
     log info "Scaling down package"
 
-    docker::scale_services "$STACK" 0
+    scale_services_down
   elif [[ "${ACTION}" == "destroy" ]]; then
     log info "Destroying package"
     destroy_package
