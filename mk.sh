@@ -1,6 +1,7 @@
 ./build-custom-images.sh
 #./build-image.sh
 
+#./instant project up --env-file .env
 #./instant project down --env-file .env
 #./instant project destroy --env-file .env
 #./instant project init --env-file .env
@@ -24,7 +25,7 @@
 # ./instant package remove -n reverse-proxy-nginx --env-file .env
 # ./instant package init -n reverse-proxy-nginx --env-file .env
 #./instant package down -n reverse-proxy-nginx --env-file .env
-./instant package up -n reverse-proxy-nginx --env-file .env
+#./instant package up -n reverse-proxy-nginx --env-file .env
 
 #openhim
 
@@ -42,8 +43,8 @@
 #isanteplus
 # ./instant package remove -n emr-isanteplus --env-file .env
 # ./instant package init -n emr-isanteplus --env-file .env -d
-# ./instant package down -n emr-isanteplus --env-file .env
-#./instant package up -n emr-isanteplus --env-file .env
+./instant package down -n emr-isanteplus --env-file .env
+./instant package up -n emr-isanteplus --env-file .env
 
 # #opencr
 #./instant package remove -n client-registry-opencr --env-file .env

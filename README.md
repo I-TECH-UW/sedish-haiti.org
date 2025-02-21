@@ -1,4 +1,6 @@
 # SEDISH: The Haiti HIE 
+This README details the end-to-end deployment of a docker-swarm based HIE using instant OpenHIE. The deployment follows the Jembi platform pattern and includes instructions for setting up the Linux environment, installing and configuring Docker, initializing a Docker Swarm, configuring security best practices, and deploying the project packages.
+
 [![CI](https://github.com/I-TECH-UW/sedish-haiti.org/actions/workflows/main.yml/badge.svg)](https://github.com/I-TECH-UW/sedish-haiti.org/actions/workflows/main.yml)
 ## Components
 
@@ -17,126 +19,401 @@ http://openhim.org/docs/installation/docker
 https://github.com/hapifhir/hapi-fhir-jpaserver-starter#deploy-with-docker-compose
 https://hapifhir.io/hapi-fhir/docs/server_jpa/get_started.html
 
-### 5. Shared Health Record
-https://github.com/i-tech-uw/shared-health-record
 
-## Installation
-### 1. Install Docker
-
-**Docker Engine:**
-
-https://docs.docker.com/compose/install/
-
-**Docker Compose:**
-
-https://docs.docker.com/compose/install/
+## Deployment Guide
 
 
-### 2. Clone the Sedish Repository
+> **Note:** This deployment uses instant OpenHIE v2. For more background, see the [Instant OpenHIE documentation](https://jembi.gitbook.io/instant-v2) and [Jembi Platform README](https://github.com/jembi/platform/blob/main/README.md).
 
-```sh
+---
+
+## Table of Contents
+
+- [SEDISH: The Haiti HIE](#sedish-the-haiti-hie)
+  - [Components](#components)
+    - [1. iSantePlus EMR](#1-isanteplus-emr)
+    - [Links](#links)
+    - [2. OpenCR](#2-opencr)
+    - [3. OpenHIM](#3-openhim)
+    - [4. HAPI JPA Server](#4-hapi-jpa-server)
+  - [Deployment Guide](#deployment-guide)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [System Requirements](#system-requirements)
+  - [Environment Setup](#environment-setup)
+    - [Linux VM Setup](#linux-vm-setup)
+    - [Installing Git and Docker](#installing-git-and-docker)
+    - [Initializing Docker Swarm](#initializing-docker-swarm)
+  - [Security Best Practices](#security-best-practices)
+    - [Docker and Swarm Security](#docker-and-swarm-security)
+    - [Host and OS Hardening](#host-and-os-hardening)
+    - [Cloud-Specific Controls (AWS)](#cloud-specific-controls-aws)
+  - [Project Configuration](#project-configuration)
+    - [Project Structure and .env File](#project-structure-and-env-file)
+    - [Docker Secrets and Swarm Locking](#docker-secrets-and-swarm-locking)
+  - [Component Modules](#component-modules)
+    - [Interoperability Layer – OpenHIM](#interoperability-layer--openhim)
+    - [Reverse Proxy – Nginx](#reverse-proxy--nginx)
+    - [FHIR Datastore – HAPI FHIR](#fhir-datastore--hapi-fhir)
+    - [Monitoring](#monitoring)
+    - [Database Modules – Postgres \& MySQL](#database-modules--postgres--mysql)
+    - [Analytics Datastore – ElasticSearch](#analytics-datastore--elasticsearch)
+    - [Message Bus – Kafka](#message-bus--kafka)
+    - [Shared Health Record – FHIR / OpenSHR](#shared-health-record--fhir--openshr)
+    - [Sedish Haiti Custom Packages](#sedish-haiti-custom-packages)
+  - [Deployment Steps](#deployment-steps)
+  - [Post-Deployment Configuration](#post-deployment-configuration)
+  - [Troubleshooting \& Logging](#troubleshooting--logging)
+  - [Additional Resources](#additional-resources)
+
+---
+
+## Overview
+
+This project deploys a multi-component Health Information Exchange (HIE) on a cloud-based AWS Linux VM using Docker Swarm. The system uses [instant OpenHIE](https://jembi.gitbook.io/instant-v2) to package and deploy several modules following the Jembi platform pattern. The deployed components include core interoperability layers, data stores, identity management, analytics, messaging, and additional custom packages for the Sedish Haiti project.
+
+---
+
+## Suggested System Requirements
+
+- **Operating System:** AWS Linux VM (Ubuntu, Amazon Linux 2, etc.)
+- **Docker:** Latest Docker CE installed (with Docker Swarm mode enabled)
+- **Git:** Installed for source code retrieval
+- **AWS:** Proper IAM roles and security group configuration for port and network isolation
+
+---
+
+## Environment Setup
+
+### Linux VM Setup
+
+1. **Provision an AWS Linux VM:**  
+   Use your preferred AWS method (EC2, AWS Marketplace AMI, etc.) and ensure you have SSH access.
+
+2. **Update your system:**  
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   ```
+
+### Installing Git and Docker
+
+1. **Install Git:**  
+   ```bash
+   sudo apt install -y git
+   ```
+
+2. **Install Docker:**  
+   Follow [Docker’s installation guide](https://docs.docker.com/engine/install/ubuntu/) for your Linux distribution. 
+
+### Initializing Docker Swarm
+
+1. **Enable Swarm mode:**  
+   ```bash
+   docker swarm init
+   ```
+   If you have multiple nodes, join worker nodes using the token provided by the `docker swarm init` command.
+
+2. **Lock the Swarm:**  
+   To secure the swarm’s Certificate Authority (CA) key, run:
+   ```bash
+   docker swarm ca --rotate --passphrase "YourSecurePassphrase"
+   ```
+
+---
+
+
+## HIE Setup and Configuration
+
+### 1. Clone the Repository
+
+```bash
 git clone https://github.com/I-TECH-UW/sedish-haiti.org.git
+cd sedish-haiti.org
 ```
 
-### 3. Port-based Setup
+### 2. Explore Project Structure
+The project follows a modular structure outlined by the Instant OpneHIE V2 framework. The main configuration file is `config.yaml`, and environment variables are defined in the `.env` file. The project structure is as follows:
 
-
-**a) Pull all containers**  
-
-```sh
-sudo docker-compose -f docker-compose.ports.yml pull
 ```
-**b) Start up Core Containers** 
-
-Generate self-signed certs:  
-```sh
-sudo docker-compose -f docker-compose.ports.yml up certgen
-```
-
-```sh
-sudo docker-compose -f docker-compose.ports.yml up -d nginx openhim-core openhim-console mongo-db
-```
-
-**c) Load Default OpenHIM Config**
-First, make sure to choose and set a desired admin PW for OpenHIM that you'll use in all of the mediator configuration. 
-
-You can set this Password with the "ADMIN_PW" env setting. 
-
-```sh
-sudo docker-compose -f docker-compose.ports.yml up openhim-config
-```
-
-**d) Access the OpenHIM Console**  
-You should now be able to access the OpenHIM console at https://localhost, or whatever IP address the server is running on. The OpenHIM console runs on ports 80 and 443. 
-
-*Note: If you are using Chrome and get a certificate error, you can type `thisisunsafe` after clicking anywhere on the page to be able to proceed.*
-
-Make sure that the console is pointint to the correct `openhim-core` container. You should be able to access that container using `<your-ip-address>:8080/heartbeat`. You can configure this connection in `configs/openhim-console/ports.json`. 
-
-**e) Modify OpenHIM settings as desired**   
-Log in to the console, and set the admin password to `openhim` (for development), or the password of your choice if you haven't done so earlier automatically.
-
-You can also set up Clients and Roles for the following systems:
-- postman for testing
-- each isanteplus instance that will connect to the HIE
-- the Shared Health Record
-
-*Note: any changes to the OpenHIM console container might not show up until you disable/clear the browser cache. You can also disable the cache by opening Chrome dev tools with F12 and selecting the `disable cache` checkbox*
-
-**f) Start up Support Containers**  
-```sh
-sudo docker-compose -f docker-compose.ports.yml up -d shr-fhir opencr-fhir opencr-es kafka zookeeper
+/sedish-haiti.org
+  ├── config.yaml           # Main project configuration file
+  ├── .env                  # Environment variable definitions
+  ├── scripts/              # Helper scripts (e.g., deploy.sh)
+  ├── projects/             # Sedish-specific services
+  └── packages/
+        ├── interoperability-layer-openhim/
+        ├── reverse-proxy-nginx/
+        ├── fhir-datastore-hapi-fhir/
+        ├── monitoring/
+        ├── database-postgres/
+        ├── database-mysql/
+        ├── identity-access-manager-keycloak/
+        ├── client-registry-opencr/
+        ├── analytics-datastore-elastic-search/
+        ├── message-bus-kafka/
+        ├── shared-health-record-fhir/
+        ├── emr-isanteplus/
+        ├── data-pipeline-isanteplus/
+        ├── document-data-store-xds/
+        ├── shared-health-record-openshr/
+        ├── openhim-mediator-openxds/
+        └── lnsp-mediator/
 ```
 
-**g) Configure Mediators**  
-Open, examine, and edit the following files as needed, to update the IP address for OpenHIM and set the right passwords:
-  - `./configs/opencr/config_ports.json`
-  - `./configs/shr/config_ports.json`
-#### Start up Mediators  
+This template `.env` file can be used as a starting point for configuration:
 
-```sh
-sudo docker-compose -f docker-compose.ports.yml up -d shr opencr
+```bash
+# General
+CLUSTERED_MODE=false
+
+# Log configuration
+DEBUG=1
+BASHLOG_FILE=1
+BASHLOG_FILE_PATH=platform.log
+
+# Interoperability Layer - OpenHIM
+OPENHIM_CORE_INSTANCES=1
+OPENHIM_CONSOLE_INSTANCES=1
+OPENHIM_MEDIATOR_API_PORT=443
+OPENHIM_CORE_MEDIATOR_HOSTNAME=openhimcomms.sedish.live
+MONGO_SET_COUNT=1
+OPENHIM_MONGO_URL=mongodb://mongo-1:27017/openhim
+OPENHIM_MONGO_ATNAURL=mongodb://mongo-1:27017/openhim
+
+# FHIR Datastore - HAPI FHIR
+HAPI_FHIR_INSTANCES=1
+REPMGR_PARTNER_NODES=postgres-1
+POSTGRES_REPLICA_SET=postgres-1:5432
+
+# Reverse Proxy - Nginx
+REVERSE_PROXY_INSTANCES=1
+DOMAIN_NAME=sedish.live
+SUBDOMAINS=openhimcomms.sedish.live,openhimcore.sedish.live,openhimconsole.sedish.live,keycloak.sedish.live,grafana.sedish.live,isanteplus.sedish.live,hueh.sedish.live,lapaix.sedish.live,ofatma.sedish.live,foyer-saint-camille.sedish.live,klinik-eritaj.sedish.live,ofatma-sonapi.sedish.live,gressier.sedish.live,pestel.sedish.live,stdemiragoane.sedish.live,bethel-fdn.sedish.live
+STAGING=false
+INSECURE=false
+
+# Message Bus - Kafka
+KAFKA_TOPICS=map-concepts,map-locations,send-adt-to-ipms,send-orm-to-ipms,save-pims-patient,save-ipms-patient,handle-oru-from-ipms
+KAFKA_HOSTS=kafka-01:9092
+
+# Identity Access Manager - Keycloak
+KC_FRONTEND_URL=https://keycloak.sedish.live
+KC_GRAFANA_ROOT_URL=https://grafana.sedish.live
+KC_SUPERSET_ROOT_URL=https://superset.domain
+KC_OPENHIM_ROOT_URL=https://openhimconsole.sedish.live
+GF_SERVER_DOMAIN=grafana.sedish.live
+
+# Resource limits
+OPENHIM_MEMORY_LIMIT=4G
+ES_MEMORY_LIMIT=20G
+LOGSTASH_MEMORY_LIMIT=8G
+KAFKA_MEMORY_LIMIT=8G
+KAFDROP_MEMORY_LIMIT=500M
+
+LNSP_RUN_MIGRATIONS=true
+LNSP_DATABASE_EXISTS=true
 ```
-#### Start up iSantePlus
-```sh
-sudo docker-compose -f docker-compose.ports.yml up -d isanteplus-mysql isanteplus
-```
-#### Start up SHR Streaming Pipeline
-```sh
-sudo docker-compose -f docker-compose.ports.yml up -d streaming-pipeline
-```
 
-## 4. Testing and Validation
-Setup a Postman environment and run tests from this workspace: https://www.postman.com/itechuw/workspace/haiti-sedish
+### 3. Build the Project
 
-## 5. Domain-based setup
-Follow section 3.2, but use the main `docker-compose.yml` file, so without the `-f` flag. Also, set up certificate generation like so:
-#### SSL Certificate Generation & Refresh 
-Modify the configuration for the `certbot` entry in the `docker-compose.yml` file to match server settings. See the [Certbot Docs](https://certbot.eff.org/) for more information.
+1. Run `./get-cli.sh linux` to download the Instant OpenHIE CLI for Linux.
 
-Here are example settings for the AWS setup:
+2. Run `./build-custom-images.sh` to build the necessary project components.
 
-```yaml
-  certbot:
-    image: certbot/dns-route53
-    container_name: certbot
-    entrypoint: "certbot certonly -n --agree-tos --email <your-email> -d <your-domain> -d '*.<your-domain>' --dns-route53 --preferred-challenges=dns"
-    environment:
-    - AWS_ACCESS_KEY_ID
-    - AWS_SECRET_ACCESS_KEY
-    volumes:
-    - certs:/etc/letsencrypt
-    - letsencrypt:/var/lib/letsencrypt
-    networks:
-    - sedish
-```
-
-Then, run the following command:
-
-```sh
-sudo docker-compose up certbot
-```
-
-The certificates will be generated and provided to the other containers through a shared volume.
+3. Run `./build-images.sh` to build the Docker images for the HIE deployment.
 
 
+### 4. Configure the Project
+
+1. Update the `.env` file with your specific configuration settings.
+
+### 5. Deploy the Project
+
+1. Run `./instant project up --env-file .env` to deploy the project.
+
+### 6. Manage individual packages
+
+You can use the `mk.sh` file or the `instant` CLI to manage individual packages. For example, to bring up the OpenHIM package:
+
+```bash
+./instant package up -n interoperability-layer-openhim --env-file .env
+``` 
+
+## Security Best Practices
+
+### Docker and Swarm Security
+
+- **Docker Secrets:**  
+  Use Docker secrets to securely manage sensitive data (passwords, API keys). Create secrets during deployment and reference them in your services.
+  ```bash
+  echo "my-secret-value" | docker secret create my_secret -
+  ```
+
+- **Private Networks for Swarm Traffic:**  
+  Ensure manager/worker communications occur over a private VLAN/VPC. When creating overlay networks, use:
+  ```bash
+  docker network create --driver overlay --opt encrypted my_overlay_network
+  ```
+
+### Host and OS Hardening
+
+- **Patch & Update:**  
+  Regularly update your Linux distribution and kernel to apply security patches.
+
+- **SSH Hardening:**  
+  - Enforce key-based authentication.
+  - Disable root login.
+  - Consider using an SSH bastion host or VPN.
+  
+- **Firewall Configuration:**  
+  Use iptables or nftables to whitelist only necessary inbound/outbound connections.
+
+- **SELinux/AppArmor:**  
+  Enable SELinux (for Red Hat-based distros) or AppArmor (for Ubuntu/Debian) to add extra process-level isolation.
+
+### Cloud-Specific Controls (AWS)
+
+- **AWS Security Groups:**  
+  Restrict inbound/outbound traffic to only what’s necessary for your HIE components.
+  
+- **External WAF:**  
+  Consider AWS WAF or third-party services to protect your public endpoints.
+
+- **Load Balancer:**  
+  Use AWS ALB/NLB to distribute traffic and integrate with AWS WAF.
+
+- **EBS/RDS Encryption:**  
+  Use KMS-managed keys to encrypt data volumes and databases.
+
+- **IAM Roles:**  
+  Grant least privilege permissions to your EC2 instances and containers.
+
+- **Monitoring:**  
+  Enable CloudWatch and GuardDuty for real-time threat detection and log analysis.
+
+---
+
+### Docker Secrets and Swarm Locking
+
+- **Docker Secrets:** Store sensitive configuration (e.g., passwords) as Docker secrets. Reference these secrets in your service definitions.
+- **Swarm Locking:** Use the CA rotation command (as shown above) to secure your swarm’s CA key.
+
+---
+
+## Component Modules
+
+Each package listed in the configuration file corresponds to a containerized module in the HIE. Below is a brief description of each:
+
+### Interoperability Layer – OpenHIM
+- **Purpose:** Acts as the central mediator for all data exchange. It validates, routes, and logs messages between HIE components.
+- **Configuration:** Managed via environment variables (e.g., API ports, MongoDB URLs).
+
+### Reverse Proxy – Nginx
+- **Purpose:** Provides a reverse proxy layer to direct incoming requests to the appropriate internal services.
+- **Configuration:** Uses the DOMAIN_NAME and SUBDOMAINS to configure virtual hosts.
+
+### FHIR Datastore – HAPI FHIR
+- **Purpose:** Serves as the FHIR compliant datastore for healthcare records.
+- **Configuration:** Linked with the OpenHIM layer for secure data exchange and uses Postgres as the backend.
+
+### Monitoring
+- **Purpose:** Collects metrics and logs from all services to facilitate system health monitoring and debugging.
+- **Configuration:** Environment variables define memory and instance limits.
+
+### Database Modules – Postgres & MySQL
+- **Purpose:** Provide robust data storage for different parts of the HIE.
+- **Configuration:** Integrated with replication settings (for Postgres) and tailored resource allocations.
+
+### Analytics Datastore – ElasticSearch
+- **Purpose:** Stores and indexes analytics data, enabling rapid query and reporting.
+- **Configuration:** Resource limits ensure that heavy data loads do not impact system performance.
+
+### Message Bus – Kafka
+- **Purpose:** Facilitates asynchronous message passing between HIE components.
+- **Configuration:** Topics and host addresses are defined through environment variables.
+
+### Shared Health Record – FHIR / OpenSHR
+- **Purpose:** Manages shared patient records in a standardized FHIR format.
+- **Configuration:** Tightly integrated with the FHIR datastore and OpenHIM for secure data flow.
+
+### Sedish Haiti Custom Packages
+- **Modules:** 
+  - **emr-isanteplus**
+  - **data-pipeline-isanteplus**
+
+- **Purpose:** These packages provide additional functionality specific to the Sedish Haiti deployment, such as electronic medical records, data pipelines, and document storage.
+- **Configuration:** Managed through package-specific environment variables and integrated with the core HIE components.
+
+---
+
+## Summary of Deployment Steps
+
+1. **Clone the Repository:**  
+   ```bash
+   git clone https://github.com/your-org/sedish-haiti.git
+   cd sedish-haiti
+   ```
+
+2. **Set Up the Environment:**  
+   Ensure your `.env` file is correctly configured (see sample above).
+
+3. **Initialize Docker Swarm (if not already):**  
+   ```bash
+   docker swarm init
+   ```
+
+4. **Deploy the Instant Project:**  
+   Use the instant OpenHIE CLI command to start the project:
+   ```bash
+   ./instant project up --env-file .env
+   ```
+   This command will:
+   - Pull the required Docker images.
+   - Create Docker services for each package.
+   - Mount logs to the specified logPath (e.g., `/tmp/logs`).
+
+5. **Verify Deployment:**  
+   Check service status with:
+   ```bash
+   docker service ls
+   ```
+   And review logs (e.g., via `docker logs <service_name>`) to ensure each component is running correctly.
+
+---
+
+## Post-Deployment Configuration
+
+After the containers are up, complete the following manual configurations:
+- **OpenHIM Setup:**  
+  - Change default passwords.
+  - Configure users, roles, and API keys.
+  - Set up channels/routes between OpenHIM and HAPI FHIR.
+- **Database Authentication:**  
+  - Verify that Postgres/MySQL instances are secure and that credentials are correctly passed via Docker secrets.
+- **Client Systems Registration:**  
+  - Add any external systems or client registries required to interface with the HIE.
+- **Connectivity Testing:**  
+  - Test data flows between components (e.g., send test FHIR messages through OpenHIM and verify reception in HAPI FHIR).
+  
+---
+
+## Troubleshooting & Logging
+
+- **Logs:**  
+  All service logs are stored in `/tmp/logs` (or the location specified by `BASHLOG_FILE_PATH` in your .env file). Review these logs for error messages and warnings.
+- **Health Checks:**  
+  Use built-in container health checks and monitor via Docker Swarm’s service status.
+- **Security Audits:**  
+  Periodically rotate secrets and swarm CA keys. Review AWS CloudWatch and GuardDuty logs for any anomalies.
+
+---
+
+## Additional Resources
+
+- [Instant OpenHIE Documentation](https://jembi.gitbook.io/instant-v2)
+- [Jembi Platform README on GitHub](https://github.com/jembi/platform/blob/main/README.md)
+- [Docker Swarm Best Practices](https://docs.docker.com/engine/swarm/how-swarm-mode-works/)
+- [AWS Security Best Practices](https://aws.amazon.com/security/)
+- [Docker Secrets Documentation](https://docs.docker.com/engine/swarm/secrets/)
+
+~

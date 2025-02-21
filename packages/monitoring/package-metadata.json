@@ -1,12 +1,41 @@
 {
-    "id": "monitoring",
-    "name": "Monitoring package",
-    "description": "A package for monitoring the platform services",
-    "type": "infrastructure",
-    "version": "0.0.1",
-    "dependencies": [],
-    "environmentVariables": {
-  
-    }
+  "id": "monitoring",
+  "name": "Monitoring package",
+  "description": "A package for monitoring the platform services",
+  "type": "infrastructure",
+  "version": "0.0.1",
+  "dependencies": [],
+  "environmentVariables": {
+    "GRAFANA_IMAGE": "grafana/grafana-oss:9.2.3",
+    "LOKI_IMAGE": "grafana/loki:2.6.1",
+    "PROMTAIL_IMAGE": "grafana/promtail:2.6.1",
+    "PROMETHEUS_BACKUP_IMAGE": "prom/prometheus:v2.38.0",
+    "MINIO_IMAGE": "quay.io/minio/minio:RELEASE.2022-10-24T18-35-07Z",
+    "PROMETHEUS_PLACEMENT": "node-1",
+    "PROMETHEUS_BACKUP_PLACEMENT": "node-1",
+    "MINIO_01_PLACEMENT": "node-1",
+    "MINIO_02_PLACEMENT": "node-1",
+    "MINIO_03_PLACEMENT": "node-2",
+    "MINIO_04_PLACEMENT": "node-3",
+    "GF_SECURITY_ADMIN_USER": "admin",
+    "GF_SECURITY_ADMIN_PASSWORD": "dev_password_only",
+    "GF_SMTP_ENABLED": "false",
+    "GF_SMTP_HOST": "localhost:25",
+    "GF_SMTP_USER": "",
+    "GF_SMTP_PASSWORD": "",
+    "KC_GRAFANA_SSO_ENABLED": "false",
+    "KC_REALM_NAME": "platform-realm",
+    "KC_FRONTEND_URL": "http://localhost:9088",
+    "KC_API_URL": "http://identity-access-manager-keycloak:8080",
+    "KC_GRAFANA_CLIENT_ID": "grafana-oauth",
+    "KC_GRAFANA_CLIENT_SECRET": "CV14QfwnpYFj1IH5dK5lScPNCYAIYP1c",
+    "KC_GRAFANA_ROOT_URL": "http://localhost:3000",
+    "MO_SECURITY_ADMIN_USER": "admin",
+    "MO_SECURITY_ADMIN_PASSWORD": "dev_password_only",
+    "MO_RETENTION_TIME": "15d",
+    "GF_SERVER_SERVE_FROM_SUB_PATH": "false",
+    "MINIO_BROWSER_REDIRECT_URL": "",
+    "DOCKER_SOCK_FOLDER": "/var/run/docker.sock",
+    "DOCKER_LIB_FOLDER": "/var/lib/docker/"
   }
-  
+}
